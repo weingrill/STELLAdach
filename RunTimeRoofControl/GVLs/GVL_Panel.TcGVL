@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4020.3">
+  <GVL Name="GVL_Panel" Id="{d763849e-f78b-4e04-a5e2-07564e7cd556}">
+    <Declaration><![CDATA[{attribute 'qualified_only'}
+VAR_GLOBAL
+		IManualSwitch		AT%I*:	BOOL;
+		ILeftOpenswitch		AT%I*:	BOOL;
+		ILeftCloseswitch	AT%I*:	BOOL;
+		IRightOpenSwitch	AT%I*:	BOOL;
+		IRightCloseSwitch	AT%I*:	BOOL;
+		
+		Roof1Lamp			AT%Q*:	BOOL;
+		Roof2Lamp			AT%Q*:	BOOL;
+END_VAR]]></Declaration>
+  </GVL>
+</TcPlcObject>

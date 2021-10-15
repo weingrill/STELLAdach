@@ -1,0 +1,47 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4022.12">
+  <POU Name="FUN_AVG" Id="{153dd7e2-184a-4de4-8ca0-f17875b70ef6}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FUN_AVG
+VAR_INPUT
+	Signal: LREAL;
+END_VAR
+VAR_OUTPUT
+	Q: LREAL;
+END_VAR
+VAR
+	POS: LINT := 1;
+	I, END_POS: LINT;
+	A: ARRAY [1..6000] OF LREAL;
+	SUM: LREAL;
+	AFTER_INIT: SR;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[A[POS] := Signal;
+
+AFTER_INIT(SET1:=(POS=5999));
+
+IF AFTER_INIT.Q1 THEN
+	END_POS := 6000;
+ELSE
+	END_POS := POS;	
+END_IF
+
+POS := POS + 1;
+POS := POS MOD 6001;
+
+SUM := 0.0;
+FOR I := 1 TO END_POS DO
+	SUM := SUM + A[I];
+END_FOR
+
+Q := SUM / LINT_TO_LREAL(END_POS);
+]]></ST>
+    </Implementation>
+    <LineIds Name="FUN_AVG">
+      <LineId Id="25" Count="17" />
+      <LineId Id="9" Count="0" />
+      <LineId Id="43" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

@@ -1,0 +1,36 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4022.12">
+  <POU Name="FB_StatusLamp" Id="{c54cf8bc-73c8-4948-9c38-e8c2106fb5d4}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_StatusLamp
+VAR_INPUT
+	RoofStatus: E_RoofStatus;
+END_VAR
+VAR_OUTPUT
+	RoofLamp: BOOL;
+END_VAR
+VAR
+	LampPause: TIME := T#10S;
+	Blink:			FB_BLINK;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[IF RoofStatus = StatusError THEN 
+	LampPause := T#1S;
+ELSIF RoofStatus = StatusUndefined THEN 
+	LampPause := T#3S;
+ELSE
+	LampPause := T#10S;
+	RoofLamp := FALSE;
+END_IF;
+Blink(ENABLE := (RoofStatus = StatusError) OR (RoofStatus = StatusUndefined), 
+		ON_TIME := T#1S,
+		OFF_TIME := LampPause,
+		Q => RoofLamp);
+]]></ST>
+    </Implementation>
+    <LineIds Name="FB_StatusLamp">
+      <LineId Id="12" Count="11" />
+      <LineId Id="9" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

@@ -1,0 +1,197 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4022.12">
+  <POU Name="FB_RoofControl" Id="{546c1819-695d-4313-af97-53791c50f345}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_RoofControl
+VAR_INPUT
+	cmdRoofCommand:	E_RoofCommand;
+	bLocked1:    	BOOL;  // Riegel11zu
+	bUnlocked1:  	BOOL;  // Riegel11auf
+	bLocked2:    	BOOL;  // Riegel21zu
+	bUnlocked2:  	BOOL;  // Riegel21auf
+  	bFastSwitch:    BOOL;  // Dach1schnell
+	bOpenSwitch1:	BOOL;  // Dach1auf
+	bOpenSwitch2:	BOOL;  // Dach1auf2
+	bClosedSwitch1:	BOOL;  // Dach1zu
+	bClosedSwitch2:	BOOL;  // Dach1zu2
+END_VAR
+VAR_OUTPUT
+	bOpenLock1:		BOOL;	// Riegel11auf
+	bCloseLock1:	BOOL;	// Riegel11zu
+	bOpenLock2:		BOOL;	// Riegel21auf
+	bCloseLock2:	BOOL;	// Riegel21zu
+	bRoofOpen:		BOOL;	// Dach1auf
+	bRoofClose:		BOOL;	// Dach1zu
+	bMotorFast:		BOOL;	// Dach1schnell 
+	RoofStatus:		E_RoofStatus;
+	MotionAlarm:	BOOL;	
+END_VAR
+VAR
+	nStatus:			E_RoofStatus;
+	isBothLocked:		BOOL;
+	isBothUnlocked:		BOOL;
+	isOneLocked:		BOOL;
+	isOneUnlocked:		BOOL;
+	isClosed:			BOOL;
+	isOpen:				BOOL;
+	isMotorFast:		BOOL;
+	RoofOpenDelayed,
+	RoofCloseDelayed,
+	MotorFastDelayed: 	BOOL;
+	OpenDelay:			TON;
+	CloseDelay:			TON;
+	FastDelay:			TON;
+	isClosedDelay:		TON;
+	F_Closed,
+	F_Fast,
+	F_Open:			F_TRIG;
+	R_Fast:			R_TRIG;
+	lastError:			E_ErrorFlag;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[(* open_roof_command or close_roof_command may change state immediatly *)
+
+// Helper variables
+isOneLocked := bLocked1 OR bLocked2;
+isOneUnlocked := bUnlocked1 OR bUnlocked2;
+isBothLocked := bLocked1 AND bLocked2; 
+isBothUnlocked := bUnlocked1 AND bUnlocked2;
+//isClosed := bClosedSwitch1 OR bClosedSwitch2;
+isClosedDelay(IN := bClosedSwitch1 OR bClosedSwitch2, PT := T#2S, Q => isClosed);
+isOpen:= bOpenSwitch1 OR bOpenSwitch2;
+isMotorFast := (NOT bFastSwitch); 
+
+
+// Generic conditions
+IF isOpen THEN bRoofOpen := FALSE; END_IF
+IF isClosed THEN bRoofClose := FALSE; END_IF
+MotorFastDelayed := isMotorFast; 
+IF bUnlocked1 THEN bOpenLock1 := FALSE; END_IF
+IF bUnlocked2 THEN bOpenLock2 := FALSE; END_IF
+IF bLocked1 THEN bCloseLock1 := FALSE; END_IF
+IF bLocked2 THEN bCloseLock2 := FALSE; END_IF
+
+
+// detect falling edge of closed switch
+F_Closed(CLK := isClosed);
+F_Fast(CLK := isMotorFast);
+R_Fast(CLK := isMotorFast);
+F_Open(CLK := isOpen);
+
+
+IF cmdRoofCommand = OpenRoof THEN
+	// OpenRoof Conditions
+	bCloseLock1 := FALSE;
+	bCloseLock2 := FALSE;
+	IF NOT bUnlocked1 AND NOT bCloseLock1 THEN bOpenLock1 := TRUE; END_IF
+	IF NOT bUnlocked2 AND NOT bCloseLock2 THEN bOpenLock2 := TRUE; END_IF
+	RoofCloseDelayed  := FALSE;
+	RoofOpenDelayed := isBothUnlocked AND NOT isOpen AND NOT bRoofClose;	
+	
+	// identify OpenRoof States
+	IF bOpenLock1 OR bOpenLock2 THEN nStatus := StatusUnlocking; END_IF
+	IF F_Closed.Q THEN nStatus := StatusStartOpening; END_IF
+	IF isMotorFast THEN nStatus := StatusOpening; END_IF
+	IF F_Fast.Q THEN nStatus := StatusEndOpening; END_IF
+	// guess status based on the previous one
+	IF nStatus = StatusEndClosing THEN nStatus := StatusStartOpening; END_IF
+	IF nStatus = StatusStartClosing THEN nStatus := StatusEndOpening; END_IF
+	
+ELSIF cmdRoofCommand = CloseRoof THEN
+	// CloseRoof Conditions
+	bOpenLock1 := NOT isClosed AND NOT bUnlocked1;
+	bOpenLock2 := NOT isClosed AND NOT bUnlocked2;
+	bCloseLock1 := isClosed AND NOT isOpen AND NOT bLocked1 AND NOT bOpenLock1;
+	bCloseLock2 := isClosed AND NOT isOpen AND NOT bLocked2 AND NOT bOpenLock2;
+	RoofOpenDelayed := FALSE;
+	RoofCloseDelayed := isBothUnlocked AND NOT isOneLocked AND NOT isCLosed AND NOT bRoofOpen;
+
+	// identify CloseRoof States
+	IF bCloseLock1 OR bCloseLock2 THEN nStatus := StatusLocking; END_IF
+	IF F_Open.Q THEN nStatus := StatusStartClosing; END_IF
+	IF isMotorFast THEN nStatus := StatusClosing; END_IF
+	IF F_Fast.Q THEN nStatus := StatusEndClosing; END_IF
+	// guess status based on the previous one
+	IF nStatus = StatusStartOpening THEN nStatus := StatusEndClosing; END_IF
+	IF nStatus = StatusEndOpening THEN nStatus := StatusStartClosing; END_IF
+
+ELSE // Stop the Roof
+	bCloseLock1 := FALSE;
+	bCloseLock2 := FALSE;
+	bOpenLock1 := FALSE;
+	bOpenLock2 := FALSE;
+	bRoofOpen := FALSE;
+	bRoofClose := FALSE;
+	bMotorFast := FALSE;
+	RoofOpenDelayed := FALSE;
+	RoofCloseDelayed := FALSE;
+	MotorFastDelayed := FALSE; 
+	
+	// stopped Roof States
+	IF NOT isOpen AND NOT isClosed THEN nStatus := StatusUndefined; END_IF
+
+END_IF
+
+// generic States:
+IF isClosed THEN
+	IF isBothUnlocked THEN
+		nStatus := StatusClosed;
+	END_IF
+	IF isBothLocked THEN
+		nStatus := StatusLocked;
+	END_IF
+END_IF
+IF isOpen THEN
+	nStatus := StatusOpened;
+END_IF
+IF isOpen AND isClosed THEN
+	nStatus := StatusError;
+	lastError := E_ErrorFlag.ErrorOpenClose;
+END_IF
+// if roof is open and is Locked
+IF (NOT isClosed) AND isOneLocked THEN
+	nStatus := StatusError;
+	lastError := E_ErrorFlag.ErrorOpenLocked;
+END_IF
+// if one of the locks is locked and unlocked at the same time
+IF (bLocked1 AND bUnlocked1) OR (bLocked2 AND bUnlocked2) THEN
+	nStatus := StatusError;
+	lastError := E_ErrorFlag.ErrorLockUnlock;
+END_IF
+
+OpenDelay(IN := RoofOpenDelayed, PT := T#2S, Q => bRoofOpen);
+CloseDelay(IN := RoofCloseDelayed, PT := T#2S, Q => bRoofClose);
+FastDelay(IN := MotorFastDelayed AND (bRoofOpen OR bRoofClose), PT := T#2S, Q => bMotorFast);
+
+MotionAlarm := 	(RoofOpenDelayed AND NOT bRoofOpen) OR
+				(RoofCloseDelayed AND NOT bRoofClose);
+
+// Statemachine for operation
+(*
+IF nStatus = StatusError THEN
+	bCloseLock1 := FALSE;
+	bCloseLock2 := FALSE;
+	bOpenLock1 := FALSE;
+	bOpenLock2 := FALSE;
+	bRoofOpen := FALSE;
+	bRoofClose := FALSE;
+	bMotorFast := FALSE;
+	RoofOpenDelayed := FALSE;
+	RoofCloseDelayed := FALSE;
+	MotorFastDelayed := FALSE;
+	
+END_IF
+
+
+*)
+RoofStatus := nStatus;
+]]></ST>
+    </Implementation>
+    <LineIds Name="FB_RoofControl">
+      <LineId Id="3" Count="7" />
+      <LineId Id="184" Count="0" />
+      <LineId Id="11" Count="126" />
+      <LineId Id="2" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

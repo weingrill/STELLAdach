@@ -1,0 +1,52 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4018.5">
+  <POU Name="F_Y" Id="{afff79a1-5502-41d7-aa35-a4d2761c9eb4}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION F_Y : REAL
+VAR_INPUT
+	fX:		REAL;
+	fXmin, fXmax:	REAL;
+	fYmin, fYmax:	REAL;
+END_VAR
+VAR
+	fgain,
+	foffset:	REAL;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[(*
+y = mx+b
+
+		    delta X	  fYmax - fYmin
+m = fgain = ------- = -------------
+			delta Y	  fXmax - fXmin
+			
+b = foffset = y - m*x = y - fgain*x
+					  = fYmin - fgain * fXmin
+*)
+
+// y = fgain * x + foffset
+
+IF (fXmax - fXmin) <> 0 THEN
+
+	// Berechnung der Steigung
+	fgain := (fYmax - fYmin) / (fXmax - fXmin);
+	
+	// Berechnung des Offsets
+	foffset := fYmin - (fgain * fXmin);
+	
+	// Berechnung von F_Y
+
+	IF fgain * fX + foffset < fYmin THEN 
+		F_Y := fYmin;
+		
+	END_IF
+	IF fgain * fX + foffset > fYmax THEN 
+		F_Y := fYmax;
+	END_IF	
+	F_Y := fgain * fX + foffset;
+		
+END_IF
+]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

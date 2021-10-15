@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4020.3">
+  <DUT Name="E_RoofMode" Id="{176abd8d-b795-47c6-b888-3a74a8ff8092}">
+    <Declaration><![CDATA[TYPE E_RoofMode :
+(
+	RoofAutomatic := 0,
+ 	RoofManual := 1
+);
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

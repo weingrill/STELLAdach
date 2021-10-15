@@ -1,0 +1,59 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4020.3">
+  <GVL Name="Environment" Id="{5aba1c40-190c-423b-85e3-0e4c78c9f67d}">
+    <Declaration><![CDATA[{attribute 'qualified_only'}
+
+(* 
+source: sensors-upgrade.pdf
+STELLA building control sensors & switches 
+*)
+
+VAR_GLOBAL
+		
+	// Weather Station 1
+	rawWindSpeed1				AT%I*:	INT;
+	rawTemperature1				AT%I*:	INT;
+	rawHumidity1				AT%I*:	INT;
+	rawRain_analogue1			AT%I*:	INT;
+	Rain_alarm1					AT%I*:	BOOL;
+	rawWindDirection			AT%I*:	INT;
+	Overcorrect_status1			AT%I*:	BOOL;
+	rawPressure 				AT%I*:	INT;
+
+	// Weather Station 2
+	rawWindSpeed2				AT%I*:	INT;
+	rawTemperature2				AT%I*:	INT;
+	rawHumidity2				AT%I*:	INT;
+	rawRain_analogue2			AT%I*:	INT;
+	Rain_alarm2					AT%I*:	BOOL;
+	rawBrightness				AT%I*:	INT;
+	rawBrightnessLow			AT%I*:	INT;
+	Overcorrect_status2			AT%I*:	BOOL;
+
+	// indoors
+	rawTemperature_Electronics	AT%I*:	INT;
+	rawHumidity_Electronics		AT%I*:	INT;
+	rawTemperatureBay			AT%I*:	INT;
+	rawHumidityBay				AT%I*:	INT;
+	rawTemperature_Spec			AT%I*:	INT;
+	rawHumidity_Spec			AT%I*:	INT;
+	
+	// Bay
+	rawWindSpeedBay				AT%I*:	INT;
+	rawDust						AT%I*:	INT;
+
+	// Horn für Warnung beim Öffnen und Schliessen
+	Horn						AT%Q*:	BOOL;
+	// Entfeuchter
+	Dehumidifier				AT%Q*:	BOOL;
+	// RoofPower
+	RoofPower					AT%Q*:	BOOL;
+	// Licht in der Kuppel an
+	LightBay					AT%Q*:	BOOL;
+
+	// Lichtschalter in der Kuppel
+	LightSwitch					AT%I*:	BOOL;
+	
+END_VAR]]></Declaration>
+  </GVL>
+</TcPlcObject>

@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4020.3">
+  <DUT Name="E_ErrorFlag" Id="{d79e64fe-938f-4a5d-8b9a-7b182618ebb0}">
+    <Declaration><![CDATA[{attribute 'qualified_only'}
+{attribute 'strict'}
+TYPE E_ErrorFlag :
+(
+	noError := 0,
+	ErrorOneLocked,
+	ErrorNotUnlocked,
+	ErrorLockUnlock,
+	ErrorOpenClose,
+	ErrorOpenLocked
+);
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>
