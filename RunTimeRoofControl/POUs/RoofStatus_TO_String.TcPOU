@@ -1,0 +1,73 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <POU Name="RoofStatus_TO_String" Id="{4f65b15c-3691-4c6f-ad9a-3014f8b9e117}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION RoofStatus_TO_String : STRING
+VAR_INPUT
+	RoofStatus: E_RoofStatus;
+END_VAR
+VAR
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[(*
+	StatusUndefined 	:= 0,
+	StatusClosed 		:= 100,
+	StatusLocking 		:= 200,
+	StatusLocked 		:= 300,
+	StatusUnlocking 	:= 400,
+	StatusUnlocked 		:= 500,
+	StatusStartOpening 	:= 600,
+	StatusOpening 		:= 700,
+	StatusEndOpening 	:= 800,
+	StatusOpened 		:= 900,
+	StatusStartClosing 	:= 1000,
+	StatusClosing 		:= 1100,
+	StatusEndClosing 	:= 1200,
+	
+	StatusError 		:= -1
+
+*)
+IF RoofStatus = StatusError THEN
+	RoofStatus_TO_String := 'Error';
+ELSIF RoofStatus = StatusClosed THEN
+	RoofStatus_TO_String := 'Closed';
+ELSIF RoofStatus = StatusLocking THEN
+	RoofStatus_TO_String := 'Locking';
+ELSIF RoofStatus = StatusLocked THEN
+	RoofStatus_TO_String := 'Locked';
+ELSIF RoofStatus = StatusUnlocking THEN
+	RoofStatus_TO_String := 'Unlocking';
+ELSIF RoofStatus = StatusUnlocked THEN
+	RoofStatus_TO_String := 'Unlocked';
+ELSIF RoofStatus = StatusStartOpening THEN
+	RoofStatus_TO_String := 'StartOpening';
+ELSIF RoofStatus = StatusOpening THEN
+	RoofStatus_TO_String := 'Opening';
+ELSIF RoofStatus = StatusEndOpening THEN
+	RoofStatus_TO_String := 'EndOpening';
+ELSIF RoofStatus = StatusOpened THEN
+	RoofStatus_TO_String := 'Opened';
+ELSIF RoofStatus = StatusStartClosing THEN
+	RoofStatus_TO_String := 'StartClosing';
+ELSIF RoofStatus = StatusClosing THEN
+	RoofStatus_TO_String := 'Closing';
+ELSIF RoofStatus = StatusEndClosing THEN
+	RoofStatus_TO_String := 'EndClosing';
+ELSE
+	RoofStatus_TO_String := 'Undefined';
+END_IF]]></ST>
+    </Implementation>
+    <LineIds Name="RoofStatus_TO_String">
+      <LineId Id="7" Count="0" />
+      <LineId Id="11" Count="14" />
+      <LineId Id="10" Count="0" />
+      <LineId Id="9" Count="0" />
+      <LineId Id="26" Count="1" />
+      <LineId Id="29" Count="7" />
+      <LineId Id="38" Count="15" />
+      <LineId Id="37" Count="0" />
+      <LineId Id="54" Count="0" />
+      <LineId Id="28" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>
