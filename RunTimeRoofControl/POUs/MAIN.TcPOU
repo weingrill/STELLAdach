@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4022.12">
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
   <POU Name="MAIN" Id="{a96e5090-a34b-4fcc-a0b3-91ecf58e0624}" SpecialFunc="None">
     <Declaration><![CDATA[PROGRAM MAIN
 VAR
@@ -9,7 +9,9 @@ VAR
 	Roof1Command,
 	Roof2Command:	E_RoofCommand;
 	Roof1Status,
-	Roof2Status:	E_RoofStatus;
+	Roof2Status,
+	LastRoof1Status,
+	LastRoof2Status:	E_RoofStatus;
 	RSOpenRoof1,
 	RSCloseRoof1,
 	RSOpenRoof2,
@@ -52,6 +54,7 @@ VAR
 	EnvironmentBad: BOOL;
 	
 	EnvironmentBadTimer: TON;
+	sPayloadPub: STRING(255) := '';
 	
 END_VAR
 VAR CONSTANT
@@ -61,7 +64,8 @@ VAR CONSTANT
 	
 	WindSpeedLimit:		REAL := 20.0;
 	WindSpeedBayLimit:	REAL :=	15.0;
-	DustLimit:	REAL := 0.01;
+	DustLimit:			REAL := 0.01;
+	BrightnessLimit:	REAL := 10000.0;
 END_VAR]]></Declaration>
     <Implementation>
       <ST><![CDATA[IF GVL_Panel.IManualSwitch THEN
@@ -69,6 +73,8 @@ END_VAR]]></Declaration>
 ELSE
 	nMode := RoofAutomatic;
 END_IF
+
+MQTTCommunication();
 
 OpenRoof1 := nMode = RoofManual AND GVL_Panel.ILeftOpenSwitch AND NOT GVL_Panel.ILeftCloseSwitch;
 CloseRoof1 := nMode = RoofManual AND GVL_Panel.ILeftCloseSwitch AND NOT GVL_Panel.ILeftOpenSwitch;
@@ -101,7 +107,8 @@ EnvironmentBad := ConvertEnvironment.Dust > DustLimit OR
 		ConvertEnvironment.WindSpeed2 > WindSpeedLimit OR
 		ConvertEnvironment.Windspeed_bay > WindSpeedBayLimit OR
 		(NOT Environment.Rain_alarm1) OR
-		(NOT Environment.Rain_alarm2);
+		(NOT Environment.Rain_alarm2) OR
+		ConvertEnvironment.Brightness > BrightnessLimit;
 
 EnvironmentBadTimer(IN := EnvironmentBad,
 					PT := T#30S);
@@ -127,10 +134,38 @@ Roof1ErrorLog( Trigger := Roof1Status = StatusError, Level := ADSLOG_MSGTYPE_ERR
 Roof2ErrorLog( Trigger := Roof2Status = StatusError, Level := ADSLOG_MSGTYPE_ERROR, OnMessage := 'Roof 2 has an error!');
 
 Roof1WarningLog( Trigger := Roof1Status = StatusUndefined, Level := ADSLOG_MSGTYPE_WARN, OnMessage := 'The status of roof 1 is undefined!');
-Roof2WarningLog( Trigger := Roof1Status = StatusUndefined, Level := ADSLOG_MSGTYPE_WARN, OnMessage := 'The status of roof 1 is undefined!');
+Roof2WarningLog( Trigger := Roof2Status = StatusUndefined, Level := ADSLOG_MSGTYPE_WARN, OnMessage := 'The status of roof 2 is undefined!');
 
 LightLog(Trigger := Environment.LightBay, OnMessage := 'The light is on.', OffMessage := 'The light is off.');
 DehumidifierLog(Trigger := Environment.Dehumidifier, OnMessage := 'The dehumidifier is on.', OffMessage := 'The dehumidifier is off.');
+
+IF Roof1Status <> LastRoof1Status THEN
+	sPayloadPub := 'roof,location=roof1,host=CX-284792 ';
+	sPayloadPub := APPEND(sPayloadPub, 'Roof1Status=', RoofStatus_TO_String(Roof1Status));
+	
+	MQTTCommunication.fbMqttClient.Publish(	
+					sTopic:= 'STELLA/Telemetry', 
+					pPayload:= ADR(sPayloadPub), 
+					nPayloadSize:= LEN2(ADR(sPayloadPub)),
+					eQoS:= TcIotMqttQos.AtMostOnceDelivery,
+					bRetain:= FALSE, 
+					bQueue:= FALSE );
+	LastRoof1Status := Roof1Status;
+END_IF
+
+IF Roof2Status <> LastRoof2Status THEN
+	sPayloadPub := 'roof,location=roof1,host=CX-284792 ';
+	sPayloadPub := APPEND(sPayloadPub, 'Roof2Status=', RoofStatus_TO_String(Roof2Status));
+	
+	MQTTCommunication.fbMqttClient.Publish(	
+					sTopic:= 'STELLA/Telemetry', 
+					pPayload:= ADR(sPayloadPub), 
+					nPayloadSize:= LEN2(ADR(sPayloadPub)),
+					eQoS:= TcIotMqttQos.AtMostOnceDelivery,
+					bRetain:= FALSE, 
+					bQueue:= FALSE );
+	LastRoof2Status := Roof2Status;
+END_IF
 			
 IF nMode = RoofAutomatic THEN
 	IF OpenRoofAuto THEN
@@ -187,44 +222,44 @@ Environment.LightBay := (LightTimer.Q AND Environment.LightSwitch) OR
 	
 
 Dach1Control(   cmdRoofCommand := Roof1Command,
-				bOpenSwitch1 := GVL_Roof.IDach1auf,
-				bOpenSwitch2 := GVL_Roof.IDach1auf2,
+				bOpenSwitch1   := GVL_Roof.IDach1auf,
+				bOpenSwitch2   := GVL_Roof.IDach1auf2,
 				bClosedSwitch1 := GVL_Roof.IDach1zu,
 				bClosedSwitch2 := GVL_Roof.IDach1zu2,
-				bLocked1 := GVL_Roof.IRiegel11zu,
-				bUnlocked1 := GVL_Roof.IRiegel11auf,
-				bLocked2 := GVL_Roof.IRiegel21zu,
-				bUnlocked2 := GVL_Roof.IRiegel21auf,
-				bFastSwitch := GVL_Roof.IDach1Schnell,
-				bOpenLock1 => GVL_Roof.ORiegel11auf,
-				bCloseLock1 =>	GVL_Roof.ORiegel11zu,
-				bOpenLock2 =>GVL_Roof.ORiegel21auf,
-				bCloseLock2 =>GVL_Roof.ORiegel21zu,
-				bRoofOpen => GVL_Roof.ODach1auf,
-				bRoofClose =>GVL_Roof.ODach1zu,
-				bMotorFast =>GVL_Roof.ODach1Schnell,
-				RoofStatus => Roof1Status,
-				MotionAlarm => MotionAlarm1);
+				bLocked1       := GVL_Roof.IRiegel11zu,
+				bUnlocked1     := GVL_Roof.IRiegel11auf,
+				bLocked2       := GVL_Roof.IRiegel21zu,
+				bUnlocked2     := GVL_Roof.IRiegel21auf,
+				bFastSwitch    := GVL_Roof.IDach1Schnell,
+				bOpenLock1     => GVL_Roof.ORiegel11auf,
+				bCloseLock1    => GVL_Roof.ORiegel11zu,
+				bOpenLock2     => GVL_Roof.ORiegel21auf,
+				bCloseLock2    => GVL_Roof.ORiegel21zu,
+				bRoofOpen 	   => GVL_Roof.ODach1auf,
+				bRoofClose     => GVL_Roof.ODach1zu,
+				bMotorFast     => GVL_Roof.ODach1Schnell,
+				RoofStatus     => Roof1Status,
+				MotionAlarm    => MotionAlarm1);
 
 Dach2Control(   cmdRoofCommand := Roof2Command,
-				bOpenSwitch1 := GVL_Roof.IDach2auf,
-				bOpenSwitch2 := GVL_Roof.IDach2auf2,
+				bOpenSwitch1   := GVL_Roof.IDach2auf,
+				bOpenSwitch2   := GVL_Roof.IDach2auf2,
 				bClosedSwitch1 := GVL_Roof.IDach2zu,
 				bClosedSwitch2 := GVL_Roof.IDach2zu2,
-				bLocked1 := GVL_Roof.IRiegel12zu,
-				bUnlocked1 := GVL_Roof.IRiegel12auf,
-				bLocked2 := GVL_Roof.IRiegel22zu,
-				bUnlocked2 := GVL_Roof.IRiegel22auf,
-				bFastSwitch := GVL_Roof.IDach2Schnell,
-				bOpenLock1 => GVL_Roof.ORiegel12auf,
-				bCloseLock1 =>	GVL_Roof.ORiegel12zu,
-				bOpenLock2 =>GVL_Roof.ORiegel22auf,
-				bCloseLock2 =>GVL_Roof.ORiegel22zu,
-				bRoofOpen => GVL_Roof.ODach2auf,
-				bRoofClose =>GVL_Roof.ODach2zu,
-				bMotorFast =>GVL_Roof.ODach2Schnell,
-				RoofStatus => Roof2Status,
-				MotionAlarm => MotionAlarm2);
+				bLocked1       := GVL_Roof.IRiegel12zu,
+				bUnlocked1     := GVL_Roof.IRiegel12auf,
+				bLocked2       := GVL_Roof.IRiegel22zu,
+				bUnlocked2     := GVL_Roof.IRiegel22auf,
+				bFastSwitch    := GVL_Roof.IDach2Schnell,
+				bOpenLock1     => GVL_Roof.ORiegel12auf,
+				bCloseLock1    => GVL_Roof.ORiegel12zu,
+				bOpenLock2     => GVL_Roof.ORiegel22auf,
+				bCloseLock2    => GVL_Roof.ORiegel22zu,
+				bRoofOpen      => GVL_Roof.ODach2auf,
+				bRoofClose     => GVL_Roof.ODach2zu,
+				bMotorFast     => GVL_Roof.ODach2Schnell,
+				RoofStatus     => Roof2Status,
+				MotionAlarm    => MotionAlarm2);
 
 ConvertEnvironment();
 
@@ -236,6 +271,8 @@ Environment.Horn := WeatherAlarm OR MotionAlarm1 OR MotionAlarm2;		]]></ST>
     </Implementation>
     <LineIds Name="MAIN">
       <LineId Id="10" Count="4" />
+      <LineId Id="601" Count="0" />
+      <LineId Id="603" Count="0" />
       <LineId Id="461" Count="3" />
       <LineId Id="466" Count="3" />
       <LineId Id="465" Count="0" />
@@ -243,6 +280,7 @@ Environment.Horn := WeatherAlarm OR MotionAlarm1 OR MotionAlarm2;		]]></ST>
       <LineId Id="211" Count="0" />
       <LineId Id="213" Count="7" />
       <LineId Id="29" Count="0" />
+      <LineId Id="605" Count="0" />
       <LineId Id="531" Count="0" />
       <LineId Id="278" Count="0" />
       <LineId Id="532" Count="0" />
@@ -256,6 +294,15 @@ Environment.Horn := WeatherAlarm OR MotionAlarm1 OR MotionAlarm2;		]]></ST>
       <LineId Id="324" Count="0" />
       <LineId Id="326" Count="0" />
       <LineId Id="325" Count="0" />
+      <LineId Id="670" Count="1" />
+      <LineId Id="674" Count="1" />
+      <LineId Id="682" Count="7" />
+      <LineId Id="707" Count="0" />
+      <LineId Id="673" Count="0" />
+      <LineId Id="705" Count="0" />
+      <LineId Id="693" Count="10" />
+      <LineId Id="706" Count="0" />
+      <LineId Id="704" Count="0" />
       <LineId Id="30" Count="11" />
       <LineId Id="539" Count="0" />
       <LineId Id="534" Count="0" />

@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4022.12">
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
   <POU Name="ConvertEnvironment" Id="{03869fa8-1755-402e-a7ee-189c483e0438}" SpecialFunc="None">
     <Declaration><![CDATA[PROGRAM ConvertEnvironment
 VAR
@@ -33,6 +33,11 @@ VAR
 	MaximumWind1, MaximumWind2: REAL;
 	DustAvg,
 	WindAvg1, Windavg2: FB_TimeAverage;
+	
+	MQTTTimer : TON := (PT:=T#5S);
+	sPayloadPub: STRING(255) := '';
+
+
 END_VAR
 ]]></Declaration>
     <Implementation>
@@ -90,7 +95,7 @@ ELSIF Rain1Current >= 16 THEN
 END_IF
 Brightness :=		F_Y(Environment.rawBrightness, 		0, 32767,   0.0, 150000.0);
 IF Brightness < 1000.0 THEN 
-					F_Y(Environment.rawBrightnessLow, 	0, 32767,   0.000, 1000.0); // lux
+	Brightness :=	F_Y(Environment.rawBrightnessLow, 	0, 32767,   0.000, 1000.0); // lux
 END_IF
 
 Temperature_Electronics :=  F_Y(Environment.rawTemperature_Electronics, 	0, 32767, -30.0, 70.0); // °C
@@ -103,6 +108,91 @@ Windspeed_bay := 			F_Y(Environment.rawWindSpeedBay, 				0, 32767,   0.0, 40.0);
 DustAvg(IN := F_Y(Environment.rawDust, 			0, 32767,   0.0, 0.1), PT := T#2M, AVG => Dust); // m^3
 WindAvg1(IN := F_Y(Environment.rawWindSpeed1, 	0, 32767,   0.0, 50.0), PT := T#2M, MAXAVG=> MaximumWind1);
 WindAvg2(IN := F_Y(Environment.rawWindSpeed2, 	0, 32767,   0.0, 50.0), PT := T#2M, MAXAVG=> MaximumWind2);
+
+MQTTTimer(IN:=TRUE);
+IF MQTTTimer.Q THEN // publish new payload every second
+	MQTTTimer(IN:=FALSE);
+	sPayloadPub := 'environment,location=weatherstation1,host=CX-284792 ';
+	sPayloadPub := APPEND(sPayloadPub, 'EnvironmentTemperature1=', LREAL_TO_FMTSTR(Temperature1, 2, TRUE));
+	sPayloadPub := APPEND(sPayloadPub, ',EnvironmentHumidity1=', LREAL_TO_FMTSTR(Humidity1, 1, TRUE));		
+	sPayloadPub := APPEND(sPayloadPub, ',EnvironmentRain1=', LREAL_TO_FMTSTR(Rain_analogue1, 3, TRUE));		
+	sPayloadPub := APPEND(sPayloadPub, ',EnvironmentWindSpeed1=', LREAL_TO_FMTSTR(WindSpeed1, 2, TRUE));		
+	sPayloadPub := APPEND(sPayloadPub, ',EnvironmentWindDirection=', LREAL_TO_FMTSTR(WindDirection, 1, TRUE));		
+	sPayloadPub := APPEND(sPayloadPub, ',EnvironmentPressure=', LREAL_TO_FMTSTR(Pressure, 1, TRUE));		
+
+	IF MQTTCommunication.fbMqttClient.bConnected THEN
+		MQTTCommunication.fbMqttClient.Publish(	
+						sTopic:= 'STELLA/Telemetry', 
+						pPayload:= ADR(sPayloadPub), 
+						nPayloadSize:= LEN2(ADR(sPayloadPub)),
+						eQoS:= TcIotMqttQos.AtMostOnceDelivery,
+						bRetain:= FALSE, 
+						bQueue:= FALSE );
+	END_IF
+
+	sPayloadPub := 'environment,location=weatherstation2,host=CX-284792 ';
+	sPayloadPub := APPEND(sPayloadPub, 'EnvironmentTemperature2=', LREAL_TO_FMTSTR(Temperature2, 2, TRUE));
+	sPayloadPub := APPEND(sPayloadPub, ',EnvironmentHumidity2=', LREAL_TO_FMTSTR(Humidity2, 1, TRUE));		
+	sPayloadPub := APPEND(sPayloadPub, ',EnvironmentRain2=', LREAL_TO_FMTSTR(Rain_analogue2, 3, TRUE));		
+	sPayloadPub := APPEND(sPayloadPub, ',EnvironmentWindSpeed2=', LREAL_TO_FMTSTR(WindSpeed2, 2, TRUE));		
+	sPayloadPub := APPEND(sPayloadPub, ',EnvironmentBrightness=', LREAL_TO_FMTSTR(Brightness, 1, TRUE));		
+	sPayloadPub := APPEND(sPayloadPub, ',EnvironmentDust=', LREAL_TO_FMTSTR(Dust, 5, TRUE));		
+	
+	IF MQTTCommunication.fbMqttClient.bConnected THEN
+		MQTTCommunication.fbMqttClient.Publish(	
+						sTopic:= 'STELLA/Telemetry', 
+						pPayload:= ADR(sPayloadPub), 
+						nPayloadSize:= LEN2(ADR(sPayloadPub)),
+						eQoS:= TcIotMqttQos.AtMostOnceDelivery,
+						bRetain:= FALSE, 
+						bQueue:= FALSE );
+	END_IF
+
+	sPayloadPub := 'environment,location=base,host=CX-284792 ';
+	sPayloadPub := APPEND(sPayloadPub, 'ElectronicsTemperature=', LREAL_TO_FMTSTR(Temperature_Electronics, 2, TRUE));
+	sPayloadPub := APPEND(sPayloadPub, ',ElectronicsHumidity=', LREAL_TO_FMTSTR(Humidity_Electronics, 2, TRUE));		
+	
+	IF MQTTCommunication.fbMqttClient.bConnected THEN
+		MQTTCommunication.fbMqttClient.Publish(	
+						sTopic:= 'STELLA/Telemetry', 
+						pPayload:= ADR(sPayloadPub), 
+						nPayloadSize:= LEN2(ADR(sPayloadPub)),
+						eQoS:= TcIotMqttQos.AtMostOnceDelivery,
+						bRetain:= FALSE, 
+						bQueue:= FALSE );
+	END_IF
+
+	sPayloadPub := 'environment,location=bay,host=CX-284792 ';
+	sPayloadPub := APPEND(sPayloadPub, 'BayTemperature=', LREAL_TO_FMTSTR(TemperatureBay, 2, TRUE));
+	sPayloadPub := APPEND(sPayloadPub, ',BayHumidity=', LREAL_TO_FMTSTR(HumidityBay, 2, TRUE));		
+	sPayloadPub := APPEND(sPayloadPub, ',BayWindspeed=', LREAL_TO_FMTSTR(Windspeed_bay, 2, TRUE));		
+	
+	IF MQTTCommunication.fbMqttClient.bConnected THEN
+		MQTTCommunication.fbMqttClient.Publish(	
+						sTopic:= 'STELLA/Telemetry', 
+						pPayload:= ADR(sPayloadPub), 
+						nPayloadSize:= LEN2(ADR(sPayloadPub)),
+						eQoS:= TcIotMqttQos.AtMostOnceDelivery,
+						bRetain:= FALSE, 
+						bQueue:= FALSE );
+	END_IF
+
+	sPayloadPub := 'environment,location=spectrograph,host=CX-284792 ';
+	sPayloadPub := APPEND(sPayloadPub, 'SpectrographTemperature=', LREAL_TO_FMTSTR(Temperature_Spec, 2, TRUE));
+	sPayloadPub := APPEND(sPayloadPub, ',SpectrographHumidity=', LREAL_TO_FMTSTR(Humidity_Spec, 2, TRUE));		
+	
+	IF MQTTCommunication.fbMqttClient.bConnected THEN
+		MQTTCommunication.fbMqttClient.Publish(	
+						sTopic:= 'STELLA/Telemetry', 
+						pPayload:= ADR(sPayloadPub), 
+						nPayloadSize:= LEN2(ADR(sPayloadPub)),
+						eQoS:= TcIotMqttQos.AtMostOnceDelivery,
+						bRetain:= FALSE, 
+						bQueue:= FALSE );
+	END_IF
+
+	
+END_IF
 ]]></ST>
     </Implementation>
     <LineIds Name="ConvertEnvironment">
@@ -110,7 +200,31 @@ WindAvg2(IN := F_Y(Environment.rawWindSpeed2, 	0, 32767,   0.0, 50.0), PT := T#2
       <LineId Id="109" Count="0" />
       <LineId Id="69" Count="6" />
       <LineId Id="2" Count="0" />
-      <LineId Id="144" Count="2" />
+      <LineId Id="144" Count="1" />
+      <LineId Id="185" Count="2" />
+      <LineId Id="213" Count="0" />
+      <LineId Id="257" Count="2" />
+      <LineId Id="270" Count="1" />
+      <LineId Id="260" Count="0" />
+      <LineId Id="273" Count="0" />
+      <LineId Id="272" Count="0" />
+      <LineId Id="261" Count="8" />
+      <LineId Id="256" Count="0" />
+      <LineId Id="274" Count="3" />
+      <LineId Id="292" Count="0" />
+      <LineId Id="278" Count="2" />
+      <LineId Id="282" Count="9" />
+      <LineId Id="214" Count="12" />
+      <LineId Id="211" Count="0" />
+      <LineId Id="227" Count="2" />
+      <LineId Id="240" Count="0" />
+      <LineId Id="230" Count="9" />
+      <LineId Id="241" Count="3" />
+      <LineId Id="246" Count="9" />
+      <LineId Id="209" Count="0" />
+      <LineId Id="212" Count="0" />
+      <LineId Id="210" Count="0" />
+      <LineId Id="146" Count="0" />
     </LineIds>
   </POU>
 </TcPlcObject>
