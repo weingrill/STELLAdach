@@ -2,6 +2,13 @@
 <TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
   <POU Name="MAIN" Id="{a96e5090-a34b-4fcc-a0b3-91ecf58e0624}" SpecialFunc="None">
     <Declaration><![CDATA[PROGRAM MAIN
+VAR_INPUT
+	OpenRoofAuto,
+	CloseRoofAuto,
+	StopRoofAuto,
+	LightAuto: 		BOOL;
+END_VAR
+
 VAR
 	nMode:		    E_RoofMode;
 	Dach1Control,
@@ -22,11 +29,7 @@ VAR
 	CloseRoof2,
 	StopRoof1,
 	StopRoof2,
-	isRoofManual,
-	OpenRoofAuto,
-	CloseRoofAuto,
-	StopRoofAuto,
-	LightAuto: 		BOOL;
+	isRoofManual:	BOOL;
 	TrigManual: 	R_TRIG;
 	TrigAuto: 		F_TRIG;
 	LightTimer:		TP;
@@ -65,7 +68,7 @@ VAR CONSTANT
 	WindSpeedLimit:		REAL := 20.0;
 	WindSpeedBayLimit:	REAL :=	15.0;
 	DustLimit:			REAL := 0.01;
-	BrightnessLimit:	REAL := 10000.0;
+	BrightnessLimit:	REAL := 50000.0;
 END_VAR]]></Declaration>
     <Implementation>
       <ST><![CDATA[IF GVL_Panel.IManualSwitch THEN
@@ -74,31 +77,13 @@ ELSE
 	nMode := RoofAutomatic;
 END_IF
 
+// initialize MQTT Communication
 MQTTCommunication();
 
-OpenRoof1 := nMode = RoofManual AND GVL_Panel.ILeftOpenSwitch AND NOT GVL_Panel.ILeftCloseSwitch;
-CloseRoof1 := nMode = RoofManual AND GVL_Panel.ILeftCloseSwitch AND NOT GVL_Panel.ILeftOpenSwitch;
-StopRoof1 := nMode = RoofManual AND NOT (GVL_Panel.ILeftOpenSwitch XOR GVL_Panel.ILeftCloseSwitch);
+// collect weather data
+ConvertEnvironment();
 
-OpenRoof2 := nMode = RoofManual AND GVL_Panel.IRightOpenSwitch AND NOT GVL_Panel.IRightCloseSwitch;
-CloseRoof2 := nMode = RoofManual AND GVL_Panel.IRightCloseSwitch AND NOT GVL_Panel.IRightOpenSwitch;
-StopRoof2 := nMode = RoofManual AND NOT (GVL_Panel.IRightOpenSwitch XOR GVL_Panel.IRightCloseSwitch);
-
-(*
-RSOpenRoof1( SET := GVL_Panel.ILeftOpenSwitch AND nMode = RoofManual, 
-			 RESET1 := GVL_Panel.ILeftCloseSwitch OR nMode = RoofAutomatic, 
-			 Q1 => OpenRoof1);
-RSCloseRoof1(SET := GVL_Panel.ILeftCloseSwitch AND nMode = RoofManual, 
-			 RESET1 := GVL_Panel.ILeftOpenSwitch OR nMode = RoofAutomatic, 
-			 Q1 => CloseRoof1);
-		
-RSOpenRoof2( SET := GVL_Panel.IRightOpenSwitch AND nMode = RoofManual, 
-			 RESET1 := GVL_Panel.IRightCloseSwitch OR nMode = RoofAutomatic, 
-			 Q1 => OpenRoof2);
-RSCloseRoof2(SET := GVL_Panel.IRightCloseSwitch AND nMode = RoofManual, 
-			 RESET1 := GVL_Panel.IRightOpenSwitch OR nMode = RoofAutomatic, 
-			 Q1 => CloseRoof2);
-*)
+// define bad weather condition
 EnvironmentBad := ConvertEnvironment.Dust > DustLimit OR
 		ConvertEnvironment.Humidity1 > HumidityLimit OR
 		ConvertEnvironment.Humidity2 > HumidityLimit OR
@@ -112,60 +97,6 @@ EnvironmentBad := ConvertEnvironment.Dust > DustLimit OR
 
 EnvironmentBadTimer(IN := EnvironmentBad,
 					PT := T#30S);
-EnvironmentLog(	Trigger := EnvironmentBad, OnMessage := 'The weather is bad.', OffMessage := 'The weather is good.');
-DustLog(		Trigger := ConvertEnvironment.Dust > DustLimit, OnMessage := 'Dust is over limit', OffMessage := 'Dust is under limit');
-HumidityLog1(	Trigger := ConvertEnvironment.Humidity1 > HumidityLimit, OnMessage := 'Humidity 1 is over limit', OffMessage := 'Humidity 1 is under limit');
-HumidityLog2(	Trigger := ConvertEnvironment.Humidity2 > HumidityLimit, OnMessage := 'Humidity 2 is over limit', OffMessage := 'Humidity 2 is under limit');
-HumidityBayLog(	Trigger := ConvertEnvironment.HumidityBay > HumidityLimit, OnMessage := 'Humidity bay is over limit', OffMessage := 'Humidity Bay is under limit');
-WindSpeed1Log(	Trigger := ConvertEnvironment.WindSpeed1 > WindSpeedLimit, OnMessage := 'Wind speed 1 is over limit', OffMessage := 'Wind speed 1 is under limit');
-WindSpeed2Log(	Trigger := ConvertEnvironment.WindSpeed2 > WindSpeedLimit, OnMessage := 'Wind speed 2 is over limit', OffMessage := 'Wind speed 2 is under limit');
-WindSpeedBayLog(Trigger := ConvertEnvironment.Windspeed_bay > WindSpeedBayLimit, OnMessage := 'Wind speed in bay is over limit', OffMessage := 'Wind speed in bay is under limit');
-Rain1Log(		Trigger := NOT Environment.Rain_alarm1, OnMessage := 'Rain alarm 1 is on', OffMessage := 'Rain alarm 1 is off');
-Rain2Log(		Trigger := NOT Environment.Rain_alarm2, OnMessage := 'Rain alarm 2 is on', OffMessage := 'Rain alarm 2 is off');
-
-OpenRoof1Log( Trigger := Roof1Command = OpenRoof, OnMessage := 'Open roof 1');
-OpenRoof2Log( Trigger := Roof2Command = OpenRoof, OnMessage := 'Open roof 2');
-CloseRoof1Log( Trigger := Roof1Command = CloseRoof, OnMessage := 'Close roof 1');
-CloseRoof2Log( Trigger := Roof2Command = CloseRoof, OnMessage := 'Close roof 2');
-StopRoof1Log( Trigger := Roof1Command = StopRoof, OnMessage := 'Stop roof 1');
-StopRoof2Log( Trigger := Roof2Command = StopRoof, OnMessage := 'Stop roof 2');
-
-Roof1ErrorLog( Trigger := Roof1Status = StatusError, Level := ADSLOG_MSGTYPE_ERROR, OnMessage := 'Roof 1 has an error!');
-Roof2ErrorLog( Trigger := Roof2Status = StatusError, Level := ADSLOG_MSGTYPE_ERROR, OnMessage := 'Roof 2 has an error!');
-
-Roof1WarningLog( Trigger := Roof1Status = StatusUndefined, Level := ADSLOG_MSGTYPE_WARN, OnMessage := 'The status of roof 1 is undefined!');
-Roof2WarningLog( Trigger := Roof2Status = StatusUndefined, Level := ADSLOG_MSGTYPE_WARN, OnMessage := 'The status of roof 2 is undefined!');
-
-LightLog(Trigger := Environment.LightBay, OnMessage := 'The light is on.', OffMessage := 'The light is off.');
-DehumidifierLog(Trigger := Environment.Dehumidifier, OnMessage := 'The dehumidifier is on.', OffMessage := 'The dehumidifier is off.');
-
-IF Roof1Status <> LastRoof1Status THEN
-	sPayloadPub := 'roof,location=roof1,host=CX-284792 ';
-	sPayloadPub := APPEND(sPayloadPub, 'Roof1Status=', RoofStatus_TO_String(Roof1Status));
-	
-	MQTTCommunication.fbMqttClient.Publish(	
-					sTopic:= 'STELLA/Telemetry', 
-					pPayload:= ADR(sPayloadPub), 
-					nPayloadSize:= LEN2(ADR(sPayloadPub)),
-					eQoS:= TcIotMqttQos.AtMostOnceDelivery,
-					bRetain:= FALSE, 
-					bQueue:= FALSE );
-	LastRoof1Status := Roof1Status;
-END_IF
-
-IF Roof2Status <> LastRoof2Status THEN
-	sPayloadPub := 'roof,location=roof1,host=CX-284792 ';
-	sPayloadPub := APPEND(sPayloadPub, 'Roof2Status=', RoofStatus_TO_String(Roof2Status));
-	
-	MQTTCommunication.fbMqttClient.Publish(	
-					sTopic:= 'STELLA/Telemetry', 
-					pPayload:= ADR(sPayloadPub), 
-					nPayloadSize:= LEN2(ADR(sPayloadPub)),
-					eQoS:= TcIotMqttQos.AtMostOnceDelivery,
-					bRetain:= FALSE, 
-					bQueue:= FALSE );
-	LastRoof2Status := Roof2Status;
-END_IF
 			
 IF nMode = RoofAutomatic THEN
 	IF OpenRoofAuto THEN
@@ -194,6 +125,10 @@ IF nMode = RoofAutomatic THEN
 	END_IF
 			
 ELSE //	RoofManual
+	OpenRoof1 := GVL_Panel.ILeftOpenSwitch AND NOT GVL_Panel.ILeftCloseSwitch;
+	CloseRoof1 := GVL_Panel.ILeftCloseSwitch AND NOT GVL_Panel.ILeftOpenSwitch;
+	StopRoof1 := NOT (GVL_Panel.ILeftOpenSwitch XOR GVL_Panel.ILeftCloseSwitch);
+	
 	IF OpenRoof1 THEN
 		Roof1Command := OpenRoof;
 	ELSIF CloseRoof1 THEN
@@ -201,6 +136,10 @@ ELSE //	RoofManual
 	ELSE
 		Roof1Command := StopRoof;
 	END_IF
+
+	OpenRoof2 := GVL_Panel.IRightOpenSwitch AND NOT GVL_Panel.IRightCloseSwitch;
+	CloseRoof2 := GVL_Panel.IRightCloseSwitch AND NOT GVL_Panel.IRightOpenSwitch;
+	StopRoof2 := NOT (GVL_Panel.IRightOpenSwitch XOR GVL_Panel.IRightCloseSwitch);
 	
 	IF OpenRoof2 THEN
 		Roof2Command := OpenRoof;
@@ -214,12 +153,14 @@ ELSE //	RoofManual
 		
 END_IF
 
+// disable light after 1 hour if on automatic
 LightTimer( IN := Environment.LightSwitch AND nMode = RoofAutomatic,
 			PT := T#1H);
 Environment.LightBay := (LightTimer.Q AND Environment.LightSwitch) OR 
 						(nMode = RoofManual AND Environment.LightSwitch) OR
 						(nMode = RoofAutomatic AND LightAuto);	
-	
+
+(*** Control Section ***)	
 
 Dach1Control(   cmdRoofCommand := Roof1Command,
 				bOpenSwitch1   := GVL_Roof.IDach1auf,
@@ -261,22 +202,82 @@ Dach2Control(   cmdRoofCommand := Roof2Command,
 				RoofStatus     => Roof2Status,
 				MotionAlarm    => MotionAlarm2);
 
-ConvertEnvironment();
 
+// Set status lamps
 RoofStatusLamp1(RoofStatus := Roof1Status, RoofLamp => GVL_Panel.Roof1Lamp);
 RoofStatusLamp2(RoofStatus := Roof2Status, RoofLamp => GVL_Panel.Roof2Lamp);
 			
-		
-Environment.Horn := WeatherAlarm OR MotionAlarm1 OR MotionAlarm2;		]]></ST>
+// sound horn
+Environment.Horn := WeatherAlarm OR MotionAlarm1 OR MotionAlarm2;		
+
+(*** Logging Section ***)
+
+EnvironmentLog(	Trigger := EnvironmentBad, OnMessage := 'The weather is bad.', OffMessage := 'The weather is good.');
+DustLog(		Trigger := ConvertEnvironment.Dust > DustLimit, OnMessage := 'Dust is over limit', OffMessage := 'Dust is under limit');
+HumidityLog1(	Trigger := ConvertEnvironment.Humidity1 > HumidityLimit, OnMessage := 'Humidity 1 is over limit', OffMessage := 'Humidity 1 is under limit');
+HumidityLog2(	Trigger := ConvertEnvironment.Humidity2 > HumidityLimit, OnMessage := 'Humidity 2 is over limit', OffMessage := 'Humidity 2 is under limit');
+HumidityBayLog(	Trigger := ConvertEnvironment.HumidityBay > HumidityLimit, OnMessage := 'Humidity bay is over limit', OffMessage := 'Humidity Bay is under limit');
+WindSpeed1Log(	Trigger := ConvertEnvironment.WindSpeed1 > WindSpeedLimit, OnMessage := 'Wind speed 1 is over limit', OffMessage := 'Wind speed 1 is under limit');
+WindSpeed2Log(	Trigger := ConvertEnvironment.WindSpeed2 > WindSpeedLimit, OnMessage := 'Wind speed 2 is over limit', OffMessage := 'Wind speed 2 is under limit');
+WindSpeedBayLog(Trigger := ConvertEnvironment.Windspeed_bay > WindSpeedBayLimit, OnMessage := 'Wind speed in bay is over limit', OffMessage := 'Wind speed in bay is under limit');
+Rain1Log(		Trigger := NOT Environment.Rain_alarm1, OnMessage := 'Rain alarm 1 is on', OffMessage := 'Rain alarm 1 is off');
+Rain2Log(		Trigger := NOT Environment.Rain_alarm2, OnMessage := 'Rain alarm 2 is on', OffMessage := 'Rain alarm 2 is off');
+
+OpenRoof1Log( Trigger := Roof1Command = OpenRoof, OnMessage := 'Open roof 1');
+OpenRoof2Log( Trigger := Roof2Command = OpenRoof, OnMessage := 'Open roof 2');
+CloseRoof1Log( Trigger := Roof1Command = CloseRoof, OnMessage := 'Close roof 1');
+CloseRoof2Log( Trigger := Roof2Command = CloseRoof, OnMessage := 'Close roof 2');
+StopRoof1Log( Trigger := Roof1Command = StopRoof, OnMessage := 'Stop roof 1');
+StopRoof2Log( Trigger := Roof2Command = StopRoof, OnMessage := 'Stop roof 2');
+
+Roof1ErrorLog( Trigger := Roof1Status = StatusError, Level := ADSLOG_MSGTYPE_ERROR, OnMessage := 'Roof 1 has an error!');
+Roof2ErrorLog( Trigger := Roof2Status = StatusError, Level := ADSLOG_MSGTYPE_ERROR, OnMessage := 'Roof 2 has an error!');
+
+Roof1WarningLog( Trigger := Roof1Status = StatusUndefined, Level := ADSLOG_MSGTYPE_WARN, OnMessage := 'The status of roof 1 is undefined!');
+Roof2WarningLog( Trigger := Roof2Status = StatusUndefined, Level := ADSLOG_MSGTYPE_WARN, OnMessage := 'The status of roof 2 is undefined!');
+
+LightLog(Trigger := Environment.LightBay, OnMessage := 'The light is on.', OffMessage := 'The light is off.');
+DehumidifierLog(Trigger := Environment.Dehumidifier, OnMessage := 'The dehumidifier is on.', OffMessage := 'The dehumidifier is off.');
+
+(*** MQTT Section ***)
+IF Roof1Status <> LastRoof1Status THEN
+	sPayloadPub := 'roof,location=roof1,host=CX-284792 ';
+	sPayloadPub := APPEND(sPayloadPub, 'Roof1Status=', RoofStatus_TO_String(Roof1Status));
+	
+	MQTTCommunication.fbMqttClient.Publish(	
+					sTopic:= 'STELLA/Telemetry', 
+					pPayload:= ADR(sPayloadPub), 
+					nPayloadSize:= LEN2(ADR(sPayloadPub)),
+					eQoS:= TcIotMqttQos.AtMostOnceDelivery,
+					bRetain:= FALSE, 
+					bQueue:= FALSE );
+	LastRoof1Status := Roof1Status;
+END_IF
+
+IF Roof2Status <> LastRoof2Status THEN
+	sPayloadPub := 'roof,location=roof2,host=CX-284792 ';
+	sPayloadPub := APPEND(sPayloadPub, 'Roof2Status=', RoofStatus_TO_String(Roof2Status));
+	
+	MQTTCommunication.fbMqttClient.Publish(	
+					sTopic:= 'STELLA/Telemetry', 
+					pPayload:= ADR(sPayloadPub), 
+					nPayloadSize:= LEN2(ADR(sPayloadPub)),
+					eQoS:= TcIotMqttQos.AtMostOnceDelivery,
+					bRetain:= FALSE, 
+					bQueue:= FALSE );
+	LastRoof2Status := Roof2Status;
+END_IF
+]]></ST>
     </Implementation>
     <LineIds Name="MAIN">
       <LineId Id="10" Count="4" />
       <LineId Id="601" Count="0" />
+      <LineId Id="781" Count="0" />
       <LineId Id="603" Count="0" />
-      <LineId Id="461" Count="3" />
-      <LineId Id="466" Count="3" />
-      <LineId Id="465" Count="0" />
-      <LineId Id="15" Count="13" />
+      <LineId Id="783" Count="0" />
+      <LineId Id="785" Count="0" />
+      <LineId Id="784" Count="0" />
+      <LineId Id="782" Count="0" />
       <LineId Id="211" Count="0" />
       <LineId Id="213" Count="7" />
       <LineId Id="29" Count="0" />
@@ -284,25 +285,6 @@ Environment.Horn := WeatherAlarm OR MotionAlarm1 OR MotionAlarm2;		]]></ST>
       <LineId Id="531" Count="0" />
       <LineId Id="278" Count="0" />
       <LineId Id="532" Count="0" />
-      <LineId Id="291" Count="5" />
-      <LineId Id="298" Count="1" />
-      <LineId Id="223" Count="0" />
-      <LineId Id="300" Count="0" />
-      <LineId Id="316" Count="0" />
-      <LineId Id="308" Count="5" />
-      <LineId Id="317" Count="5" />
-      <LineId Id="324" Count="0" />
-      <LineId Id="326" Count="0" />
-      <LineId Id="325" Count="0" />
-      <LineId Id="670" Count="1" />
-      <LineId Id="674" Count="1" />
-      <LineId Id="682" Count="7" />
-      <LineId Id="707" Count="0" />
-      <LineId Id="673" Count="0" />
-      <LineId Id="705" Count="0" />
-      <LineId Id="693" Count="10" />
-      <LineId Id="706" Count="0" />
-      <LineId Id="704" Count="0" />
       <LineId Id="30" Count="11" />
       <LineId Id="539" Count="0" />
       <LineId Id="534" Count="0" />
@@ -310,14 +292,28 @@ Environment.Horn := WeatherAlarm OR MotionAlarm1 OR MotionAlarm2;		]]></ST>
       <LineId Id="537" Count="1" />
       <LineId Id="536" Count="0" />
       <LineId Id="42" Count="6" />
-      <LineId Id="61" Count="18" />
-      <LineId Id="88" Count="51" />
+      <LineId Id="61" Count="2" />
+      <LineId Id="769" Count="3" />
+      <LineId Id="64" Count="6" />
+      <LineId Id="777" Count="3" />
+      <LineId Id="71" Count="8" />
+      <LineId Id="88" Count="2" />
+      <LineId Id="768" Count="0" />
+      <LineId Id="91" Count="5" />
+      <LineId Id="767" Count="0" />
+      <LineId Id="97" Count="41" />
+      <LineId Id="786" Count="0" />
       <LineId Id="398" Count="0" />
       <LineId Id="140" Count="0" />
       <LineId Id="400" Count="0" />
       <LineId Id="399" Count="0" />
       <LineId Id="168" Count="0" />
       <LineId Id="2" Count="0" />
+      <LineId Id="766" Count="0" />
+      <LineId Id="709" Count="27" />
+      <LineId Id="765" Count="0" />
+      <LineId Id="737" Count="27" />
+      <LineId Id="708" Count="0" />
     </LineIds>
   </POU>
 </TcPlcObject>

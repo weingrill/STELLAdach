@@ -165,7 +165,7 @@ IF MQTTTimer.Q THEN // publish new payload every second
 	sPayloadPub := 'environment,location=bay,host=CX-284792 ';
 	sPayloadPub := APPEND(sPayloadPub, 'BayTemperature=', LREAL_TO_FMTSTR(TemperatureBay, 2, TRUE));
 	sPayloadPub := APPEND(sPayloadPub, ',BayHumidity=', LREAL_TO_FMTSTR(HumidityBay, 2, TRUE));		
-	sPayloadPub := APPEND(sPayloadPub, ',BayWindspeed=', LREAL_TO_FMTSTR(Windspeed_bay, 2, TRUE));		
+	sPayloadPub := APPEND(sPayloadPub, ',BayWindSpeed=', LREAL_TO_FMTSTR(Windspeed_bay, 2, TRUE));		
 	
 	IF MQTTCommunication.fbMqttClient.bConnected THEN
 		MQTTCommunication.fbMqttClient.Publish(	

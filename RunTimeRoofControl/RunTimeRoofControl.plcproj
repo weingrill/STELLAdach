@@ -67,6 +67,9 @@
     <Compile Include="POUs\F_Y.TcPOU">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="POUs\InfluxMessage.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="POUs\MAIN.TcPOU">
       <SubType>Code</SubType>
     </Compile>
