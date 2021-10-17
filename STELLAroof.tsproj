@@ -191,6 +191,7 @@
 						</Var>
 						<Var>
 							<Name>Environment.rawDust</Name>
+							<Comment><![CDATA[ Dust Sensor 4..20mA]]></Comment>
 							<Type>INT</Type>
 						</Var>
 						<Var>
@@ -200,22 +201,27 @@
 						</Var>
 						<Var>
 							<Name>GVL_Panel.IManualSwitch</Name>
+							<Comment><![CDATA[ switch between automatic and manul]]></Comment>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
 							<Name>GVL_Panel.ILeftOpenswitch</Name>
+							<Comment><![CDATA[ left open switch]]></Comment>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
 							<Name>GVL_Panel.ILeftCloseswitch</Name>
+							<Comment><![CDATA[ left close switch]]></Comment>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
 							<Name>GVL_Panel.IRightOpenSwitch</Name>
+							<Comment><![CDATA[ right open switch]]></Comment>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
 							<Name>GVL_Panel.IRightCloseSwitch</Name>
+							<Comment><![CDATA[ right close switch]]></Comment>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
@@ -265,27 +271,32 @@
 						</Var>
 						<Var>
 							<Name>GVL_Roof.IMotorschutz11</Name>
-							<Comment><![CDATA[MS1NC ... MS6NC]]></Comment>
+							<Comment><![CDATA[ MS1NC1]]></Comment>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
 							<Name>GVL_Roof.IMotorschutz12</Name>
+							<Comment><![CDATA[ MS2NC1]]></Comment>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
 							<Name>GVL_Roof.IMotorschutz13</Name>
+							<Comment><![CDATA[ MS3NC1]]></Comment>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
 							<Name>GVL_Roof.IMotorschutz14</Name>
+							<Comment><![CDATA[ MS4NC1]]></Comment>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
 							<Name>GVL_Roof.IMotorschutz15</Name>
+							<Comment><![CDATA[ MS5NC1]]></Comment>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
 							<Name>GVL_Roof.IMotorschutz16</Name>
+							<Comment><![CDATA[ MS6NC1]]></Comment>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
@@ -326,27 +337,32 @@
 						</Var>
 						<Var>
 							<Name>GVL_Roof.IMotorschutz21</Name>
-							<Comment><![CDATA[MS1NC ... MS6NC]]></Comment>
+							<Comment><![CDATA[MS1NC2]]></Comment>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
 							<Name>GVL_Roof.IMotorschutz22</Name>
+							<Comment><![CDATA[MS2NC2]]></Comment>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
 							<Name>GVL_Roof.IMotorschutz23</Name>
+							<Comment><![CDATA[MS3NC2]]></Comment>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
 							<Name>GVL_Roof.IMotorschutz24</Name>
+							<Comment><![CDATA[MS4NC2]]></Comment>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
 							<Name>GVL_Roof.IMotorschutz25</Name>
+							<Comment><![CDATA[MS5NC2]]></Comment>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
 							<Name>GVL_Roof.IMotorschutz26</Name>
+							<Comment><![CDATA[MS6NC2]]></Comment>
 							<Type>BOOL</Type>
 						</Var>
 					</Vars>
@@ -374,10 +390,12 @@
 						</Var>
 						<Var>
 							<Name>GVL_Panel.Roof1Lamp</Name>
+							<Comment><![CDATA[ roof status lamp 1	]]></Comment>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
 							<Name>GVL_Panel.Roof2Lamp</Name>
+							<Comment><![CDATA[ roof status lamp 2]]></Comment>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>

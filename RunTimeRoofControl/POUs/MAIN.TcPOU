@@ -28,12 +28,8 @@ VAR
 	OpenRoof2,
 	CloseRoof2,
 	StopRoof1,
-	StopRoof2,
-	isRoofManual:	BOOL;
-	TrigManual: 	R_TRIG;
-	TrigAuto: 		F_TRIG;
+	StopRoof2:	BOOL;
 	LightTimer:		TP;
-	LightPush:		RS;
 	EnvironmentLog,
 	DustLog,
 	HumidityLog1,
@@ -54,7 +50,8 @@ VAR
 	WeatherAlarm,
 	MotionAlarm1,
 	MotionAlarm2:	BOOL;
-	EnvironmentBad: BOOL;
+	EnvironmentBad,
+	EnvironmentAlarm: BOOL;
 	
 	EnvironmentBadTimer: TON;
 	sPayloadPub: STRING(255) := '';
@@ -83,7 +80,10 @@ MQTTCommunication();
 // collect weather data
 ConvertEnvironment();
 
-// define bad weather condition
+// Handle Auxiliary inputs and outputs
+Auxiliary();
+
+// define bad weather condition; rain is handled in EnvironmentAlarm
 EnvironmentBad := ConvertEnvironment.Dust > DustLimit OR
 		ConvertEnvironment.Humidity1 > HumidityLimit OR
 		ConvertEnvironment.Humidity2 > HumidityLimit OR
@@ -91,12 +91,12 @@ EnvironmentBad := ConvertEnvironment.Dust > DustLimit OR
 		ConvertEnvironment.WindSpeed1 > WindSpeedLimit OR
 		ConvertEnvironment.WindSpeed2 > WindSpeedLimit OR
 		ConvertEnvironment.Windspeed_bay > WindSpeedBayLimit OR
-		(NOT Environment.Rain_alarm1) OR
-		(NOT Environment.Rain_alarm2) OR
 		ConvertEnvironment.Brightness > BrightnessLimit;
 
 EnvironmentBadTimer(IN := EnvironmentBad,
 					PT := T#30S);
+					
+EnvironmentAlarm := EnvironmentBadTimer.Q OR ConvertEnvironment.RainMasterAlarm;
 			
 IF nMode = RoofAutomatic THEN
 	IF OpenRoofAuto THEN
@@ -111,7 +111,7 @@ IF nMode = RoofAutomatic THEN
 	END_IF
 
 	// overwrite previous command if the weather is bad for xx seconds
-	IF EnvironmentBadTimer.Q THEN
+	IF EnvironmentAlarm THEN
 		Roof1Command := CloseRoof;
 		Roof2Command := CloseRoof;
 	END_IF
@@ -149,7 +149,7 @@ ELSE //	RoofManual
 		Roof2Command := StopRoof;
 	END_IF
 	Weatheralarm := ((Roof1Status = StatusOpened) OR (Roof2Status = StatusOpened))
-					AND EnvironmentBad;
+					AND EnvironmentAlarm;
 		
 END_IF
 
@@ -212,7 +212,7 @@ Environment.Horn := WeatherAlarm OR MotionAlarm1 OR MotionAlarm2;
 
 (*** Logging Section ***)
 
-EnvironmentLog(	Trigger := EnvironmentBad, OnMessage := 'The weather is bad.', OffMessage := 'The weather is good.');
+EnvironmentLog(	Trigger := EnvironmentAlarm, OnMessage := 'The weather is bad.', OffMessage := 'The weather is good.');
 DustLog(		Trigger := ConvertEnvironment.Dust > DustLimit, OnMessage := 'Dust is over limit', OffMessage := 'Dust is under limit');
 HumidityLog1(	Trigger := ConvertEnvironment.Humidity1 > HumidityLimit, OnMessage := 'Humidity 1 is over limit', OffMessage := 'Humidity 1 is under limit');
 HumidityLog2(	Trigger := ConvertEnvironment.Humidity2 > HumidityLimit, OnMessage := 'Humidity 2 is over limit', OffMessage := 'Humidity 2 is under limit');
@@ -277,14 +277,16 @@ END_IF
       <LineId Id="783" Count="0" />
       <LineId Id="785" Count="0" />
       <LineId Id="784" Count="0" />
+      <LineId Id="798" Count="2" />
       <LineId Id="782" Count="0" />
       <LineId Id="211" Count="0" />
-      <LineId Id="213" Count="7" />
-      <LineId Id="29" Count="0" />
+      <LineId Id="213" Count="6" />
       <LineId Id="605" Count="0" />
       <LineId Id="531" Count="0" />
       <LineId Id="278" Count="0" />
       <LineId Id="532" Count="0" />
+      <LineId Id="797" Count="0" />
+      <LineId Id="796" Count="0" />
       <LineId Id="30" Count="11" />
       <LineId Id="539" Count="0" />
       <LineId Id="534" Count="0" />

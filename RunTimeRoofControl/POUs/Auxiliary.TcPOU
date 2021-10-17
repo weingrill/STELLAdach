@@ -1,0 +1,55 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <POU Name="Auxiliary" Id="{a907bdeb-2c1f-4367-a549-80574cf0054a}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM Auxiliary
+VAR_INPUT
+	RoofPower:	BOOL;
+END_VAR
+VAR
+	MS1NC1,
+	MS2NC1,
+	MS3NC1,
+	MS4NC1,
+	MS5NC1,
+	MS6NC1:	BOOL;
+
+	MS1NC2,
+	MS2NC2,
+	MS3NC2,
+	MS4NC2,
+	MS5NC2,
+	MS6NC2:	BOOL;
+
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[Environment.RoofPower := RoofPower;
+
+MS1NC1 := NOT GVL_Roof.IMotorschutz11;
+MS2NC1 := NOT GVL_Roof.IMotorschutz12;
+MS3NC1 := NOT GVL_Roof.IMotorschutz13;
+MS4NC1 := NOT GVL_Roof.IMotorschutz14;
+MS5NC1 := NOT GVL_Roof.IMotorschutz15;
+MS6NC1 := NOT GVL_Roof.IMotorschutz16;
+
+MS1NC2 := NOT GVL_Roof.IMotorschutz21;
+MS2NC2 := NOT GVL_Roof.IMotorschutz22;
+MS3NC2 := NOT GVL_Roof.IMotorschutz23;
+MS4NC2 := NOT GVL_Roof.IMotorschutz24;
+MS5NC2 := NOT GVL_Roof.IMotorschutz25;
+MS6NC2 := NOT GVL_Roof.IMotorschutz26;
+
+]]></ST>
+    </Implementation>
+    <LineIds Name="Auxiliary">
+      <LineId Id="5" Count="0" />
+      <LineId Id="16" Count="0" />
+      <LineId Id="15" Count="0" />
+      <LineId Id="18" Count="4" />
+      <LineId Id="31" Count="0" />
+      <LineId Id="33" Count="5" />
+      <LineId Id="32" Count="0" />
+      <LineId Id="17" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

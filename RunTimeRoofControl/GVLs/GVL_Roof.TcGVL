@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4020.3">
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
   <GVL Name="GVL_Roof" Id="{1ca3503c-d25f-4a66-95f4-1ea052b7cb33}">
     <Declaration><![CDATA[{attribute 'qualified_only'}
 VAR_GLOBAL
@@ -21,12 +21,17 @@ VAR_GLOBAL
 	IRiegel21zu		AT%I*:	BOOL;
 	//KDach1schnell
 	IDach1Schnell	AT%I*:	BOOL;
-	//MS1NC ... MS6NC
-	IMotorschutz11,
-	IMotorschutz12,
-	IMotorschutz13,
-	IMotorschutz14,
-	IMotorschutz15,
+	// MS1NC1
+	IMotorschutz11	AT%I*:	BOOL;
+	// MS2NC1
+	IMotorschutz12	AT%I*:	BOOL;
+	// MS3NC1
+	IMotorschutz13	AT%I*:	BOOL;
+	// MS4NC1
+	IMotorschutz14	AT%I*:	BOOL;
+	// MS5NC1
+	IMotorschutz15	AT%I*:	BOOL;
+	// MS6NC1
 	IMotorschutz16	AT%I*:	BOOL;
 
 	IDach2auf		AT%I*:	BOOL;
@@ -38,12 +43,17 @@ VAR_GLOBAL
 	IRiegel12zu		AT%I*:	BOOL;
 	IRiegel22zu		AT%I*:	BOOL;
 	IDach2Schnell	AT%I*:	BOOL;
-	//MS1NC ... MS6NC
-	IMotorschutz21,
-	IMotorschutz22,
-	IMotorschutz23,
-	IMotorschutz24,
-	IMotorschutz25,
+	//MS1NC2
+	IMotorschutz21	AT%I*:	BOOL;
+	//MS2NC2
+	IMotorschutz22	AT%I*:	BOOL;
+	//MS3NC2
+	IMotorschutz23	AT%I*:	BOOL;
+	//MS4NC2
+	IMotorschutz24	AT%I*:	BOOL;
+	//MS5NC2
+	IMotorschutz25	AT%I*:	BOOL;
+	//MS6NC2
 	IMotorschutz26	AT%I*:	BOOL;
 	
 	// Dig. Output

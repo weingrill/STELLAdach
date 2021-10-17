@@ -40,6 +40,7 @@ VAR_GLOBAL
 	
 	// Bay
 	rawWindSpeedBay				AT%I*:	INT;
+	// Dust Sensor 4..20mA
 	rawDust						AT%I*:	INT;
 
 	// Horn für Warnung beim Öffnen und Schliessen

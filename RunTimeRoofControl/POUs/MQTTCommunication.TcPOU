@@ -79,6 +79,8 @@ IF fbMessageQueue.nQueuedMessages > 0 THEN
 					MAIN.StopRoofAuto := STRING_TO_BOOL(value);
 				ELSIF parameter = 'LightAuto' THEN
 					MAIN.LightAuto := STRING_TO_BOOL(value);
+				ELSIF parameter = 'RoofPower' THEN
+					Auxiliary.RoofPower := STRING_TO_BOOL(value);
 				END_IF
 			END_IF
 		END_IF
@@ -108,7 +110,7 @@ END_IF
       <LineId Id="147" Count="0" />
       <LineId Id="201" Count="4" />
       <LineId Id="207" Count="0" />
-      <LineId Id="209" Count="5" />
+      <LineId Id="209" Count="7" />
       <LineId Id="208" Count="0" />
       <LineId Id="206" Count="0" />
       <LineId Id="125" Count="0" />

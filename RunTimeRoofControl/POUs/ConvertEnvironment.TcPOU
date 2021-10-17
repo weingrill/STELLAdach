@@ -30,6 +30,14 @@ VAR
 	Rain1Current,
 	Rain2Current: REAL;
 	
+	RainAlarm1,
+	RainAlarm2,
+	RainMasterAlarm:	BOOL;
+	
+	RainTimer1,
+	RainTimer2,
+	RainMasterTimer: TON;
+	
 	MaximumWind1, MaximumWind2: REAL;
 	DustAvg,
 	WindAvg1, Windavg2: FB_TimeAverage;
@@ -64,7 +72,15 @@ ELSIF Rain1Current >= 16 THEN
 	Rain_analogue1 := 2.25*Rain1Current - 35;
 END_IF
 
-WindDirection := 	F_Y(Environment.rawWindDirection,	0, 32767,   0.0, 360.0); // m/s
+RainAlarm1 := NOT Environment.Rain_alarm1;
+RainAlarm2 := NOT Environment.Rain_alarm2;
+
+RainTimer1(IN := RainAlarm1, PT := T#10S);
+RainTimer2(IN := RainAlarm2, PT := T#10S);
+RainMasterTimer(IN := RainAlarm1 AND RainAlarm2, PT := T#5S);
+RainMasterAlarm := RainTimer1.Q OR RainTimer2.Q OR RainMasterTimer.Q;
+
+WindDirection := 	F_Y(Environment.rawWindDirection,	0, 32767,   0.0, 360.0); // degrees
 Pressure := 		(Environment.rawPressure / 32767.0) * 10.0 * 92.0 + 600.0; // mBar
 
 (*	
@@ -93,7 +109,7 @@ ELSIF Rain1Current >= 12 AND Rain2Current < 16 THEN
 ELSIF Rain1Current >= 16 THEN
 	Rain_analogue2 := 2.25*Rain2Current - 35;
 END_IF
-Brightness :=		F_Y(Environment.rawBrightness, 		0, 32767,   0.0, 150000.0);
+Brightness :=		F_Y(Environment.rawBrightness, 		0, 32767,   0.0, 150000.0); // lux
 IF Brightness < 1000.0 THEN 
 	Brightness :=	F_Y(Environment.rawBrightnessLow, 	0, 32767,   0.000, 1000.0); // lux
 END_IF
@@ -119,6 +135,7 @@ IF MQTTTimer.Q THEN // publish new payload every second
 	sPayloadPub := APPEND(sPayloadPub, ',EnvironmentWindSpeed1=', LREAL_TO_FMTSTR(WindSpeed1, 2, TRUE));		
 	sPayloadPub := APPEND(sPayloadPub, ',EnvironmentWindDirection=', LREAL_TO_FMTSTR(WindDirection, 1, TRUE));		
 	sPayloadPub := APPEND(sPayloadPub, ',EnvironmentPressure=', LREAL_TO_FMTSTR(Pressure, 1, TRUE));		
+	sPayloadPub := APPEND(sPayloadPub, ',EnvironmentRainAlarm1=', BOOL_TO_STRING(RainAlarm1));		
 
 	IF MQTTCommunication.fbMqttClient.bConnected THEN
 		MQTTCommunication.fbMqttClient.Publish(	
@@ -135,8 +152,9 @@ IF MQTTTimer.Q THEN // publish new payload every second
 	sPayloadPub := APPEND(sPayloadPub, ',EnvironmentHumidity2=', LREAL_TO_FMTSTR(Humidity2, 1, TRUE));		
 	sPayloadPub := APPEND(sPayloadPub, ',EnvironmentRain2=', LREAL_TO_FMTSTR(Rain_analogue2, 3, TRUE));		
 	sPayloadPub := APPEND(sPayloadPub, ',EnvironmentWindSpeed2=', LREAL_TO_FMTSTR(WindSpeed2, 2, TRUE));		
-	sPayloadPub := APPEND(sPayloadPub, ',EnvironmentBrightness=', LREAL_TO_FMTSTR(Brightness, 1, TRUE));		
+	sPayloadPub := APPEND(sPayloadPub, ',EnvironmentBrightness=', LREAL_TO_FMTSTR(Brightness, 2, TRUE));		
 	sPayloadPub := APPEND(sPayloadPub, ',EnvironmentDust=', LREAL_TO_FMTSTR(Dust, 5, TRUE));		
+	sPayloadPub := APPEND(sPayloadPub, ',EnvironmentRainAlarm2=', BOOL_TO_STRING(RainAlarm2));		
 	
 	IF MQTTCommunication.fbMqttClient.bConnected THEN
 		MQTTCommunication.fbMqttClient.Publish(	
@@ -196,7 +214,12 @@ END_IF
 ]]></ST>
     </Implementation>
     <LineIds Name="ConvertEnvironment">
-      <LineId Id="3" Count="55" />
+      <LineId Id="3" Count="21" />
+      <LineId Id="335" Count="0" />
+      <LineId Id="334" Count="0" />
+      <LineId Id="336" Count="0" />
+      <LineId Id="344" Count="4" />
+      <LineId Id="25" Count="33" />
       <LineId Id="109" Count="0" />
       <LineId Id="69" Count="6" />
       <LineId Id="2" Count="0" />
@@ -207,12 +230,15 @@ END_IF
       <LineId Id="270" Count="1" />
       <LineId Id="260" Count="0" />
       <LineId Id="273" Count="0" />
+      <LineId Id="337" Count="0" />
       <LineId Id="272" Count="0" />
       <LineId Id="261" Count="8" />
       <LineId Id="256" Count="0" />
       <LineId Id="274" Count="3" />
       <LineId Id="292" Count="0" />
-      <LineId Id="278" Count="2" />
+      <LineId Id="278" Count="1" />
+      <LineId Id="338" Count="0" />
+      <LineId Id="280" Count="0" />
       <LineId Id="282" Count="9" />
       <LineId Id="214" Count="12" />
       <LineId Id="211" Count="0" />

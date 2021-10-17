@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4022.12">
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
   <POU Name="FB_RoofControl" Id="{546c1819-695d-4313-af97-53791c50f345}" SpecialFunc="None">
     <Declaration><![CDATA[FUNCTION_BLOCK FB_RoofControl
 VAR_INPUT
@@ -22,16 +22,25 @@ VAR_OUTPUT
 	bRoofOpen:		BOOL;	// Dach1auf
 	bRoofClose:		BOOL;	// Dach1zu
 	bMotorFast:		BOOL;	// Dach1schnell 
-	RoofStatus:		E_RoofStatus;
+	RoofStatus:		E_RoofStatus := StatusUndefined;
 	MotionAlarm:	BOOL;	
 END_VAR
 VAR
+	// new status of the roof
 	nStatus:			E_RoofStatus;
+	// both locks engaged
 	isBothLocked:		BOOL;
+	// both locks open
 	isBothUnlocked:		BOOL;
+	// one lock engaged
 	isOneLocked:		BOOL;
+	// one lock open
 	isOneUnlocked:		BOOL;
+	// roof is closed
 	isClosed:			BOOL;
+	// on limit switch reports closed
+	isOneClosed:		BOOL;
+	// roof is open
 	isOpen:				BOOL;
 	isMotorFast:		BOOL;
 	RoofOpenDelayed,
@@ -50,13 +59,14 @@ END_VAR
 ]]></Declaration>
     <Implementation>
       <ST><![CDATA[(* open_roof_command or close_roof_command may change state immediatly *)
+nStatus := StatusUndefined;
 
 // Helper variables
 isOneLocked := bLocked1 OR bLocked2;
 isOneUnlocked := bUnlocked1 OR bUnlocked2;
 isBothLocked := bLocked1 AND bLocked2; 
 isBothUnlocked := bUnlocked1 AND bUnlocked2;
-//isClosed := bClosedSwitch1 OR bClosedSwitch2;
+isOneClosed := bClosedSwitch1 OR bClosedSwitch2;
 isClosedDelay(IN := bClosedSwitch1 OR bClosedSwitch2, PT := T#2S, Q => isClosed);
 isOpen:= bOpenSwitch1 OR bOpenSwitch2;
 isMotorFast := (NOT bFastSwitch); 
@@ -128,12 +138,12 @@ ELSE // Stop the Roof
 	MotorFastDelayed := FALSE; 
 	
 	// stopped Roof States
-	IF NOT isOpen AND NOT isClosed THEN nStatus := StatusUndefined; END_IF
+	//IF NOT isOpen AND NOT isOneClosed THEN nStatus := StatusUndefined; END_IF
 
 END_IF
 
 // generic States:
-IF isClosed THEN
+IF isOneClosed THEN
 	IF isBothUnlocked THEN
 		nStatus := StatusClosed;
 	END_IF
@@ -149,7 +159,7 @@ IF isOpen AND isClosed THEN
 	lastError := E_ErrorFlag.ErrorOpenClose;
 END_IF
 // if roof is open and is Locked
-IF (NOT isClosed) AND isOneLocked THEN
+IF (NOT isOneClosed) AND isOneLocked THEN
 	nStatus := StatusError;
 	lastError := E_ErrorFlag.ErrorOpenLocked;
 END_IF
@@ -188,7 +198,9 @@ RoofStatus := nStatus;
 ]]></ST>
     </Implementation>
     <LineIds Name="FB_RoofControl">
-      <LineId Id="3" Count="7" />
+      <LineId Id="3" Count="1" />
+      <LineId Id="240" Count="0" />
+      <LineId Id="5" Count="5" />
       <LineId Id="184" Count="0" />
       <LineId Id="11" Count="126" />
       <LineId Id="2" Count="0" />
