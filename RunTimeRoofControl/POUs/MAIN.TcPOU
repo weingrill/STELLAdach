@@ -3,15 +3,22 @@
   <POU Name="MAIN" Id="{a96e5090-a34b-4fcc-a0b3-91ecf58e0624}" SpecialFunc="None">
     <Declaration><![CDATA[PROGRAM MAIN
 VAR_INPUT
-	OpenRoofAuto,
-	CloseRoofAuto,
-	StopRoofAuto,
+	// open the roof remotely
+	OpenRoofAuto: 	BOOL;
+	// close the roof remotely
+	CloseRoofAuto: 	BOOL;
+	// stop the roof remotely (unused?)
+	StopRoofAuto: 	BOOL;
+	// turn on the light remotely
 	LightAuto: 		BOOL;
 END_VAR
 
 VAR
+	// RoofManual or RoofAutomatic
 	nMode:		    E_RoofMode;
-	Dach1Control,
+	// DachControl roof1
+	Dach1Control:	FB_RoofControl;
+	// DachControl roof 2
 	Dach2Control:	FB_RoofControl;
 	Roof1Command,
 	Roof2Command:	E_RoofCommand;
@@ -29,7 +36,11 @@ VAR
 	CloseRoof2,
 	StopRoof1,
 	StopRoof2:	BOOL;
+	// report manual operation of the dome to TCS
+	isRoofManual: BOOL;
+	// Timer for Dome Light
 	LightTimer:		TP;
+	// Logging voriables
 	EnvironmentLog,
 	DustLog,
 	HumidityLog1,
@@ -50,10 +61,13 @@ VAR
 	WeatherAlarm,
 	MotionAlarm1,
 	MotionAlarm2:	BOOL;
+	// indicates at least on environment signal is bad
 	EnvironmentBad,
+	// environment signal is bad for n seconds
 	EnvironmentAlarm: BOOL;
-	
+	// time function block for Environment signal
 	EnvironmentBadTimer: TON;
+	// MQTT payload string for publishing
 	sPayloadPub: STRING(255) := '';
 	
 END_VAR
@@ -73,6 +87,7 @@ END_VAR]]></Declaration>
 ELSE
 	nMode := RoofAutomatic;
 END_IF
+isRoofManual := GVL_Panel.IManualSwitch;
 
 // initialize MQTT Communication
 MQTTCommunication();
@@ -272,6 +287,7 @@ END_IF
     <LineIds Name="MAIN">
       <LineId Id="10" Count="4" />
       <LineId Id="601" Count="0" />
+      <LineId Id="870" Count="0" />
       <LineId Id="781" Count="0" />
       <LineId Id="603" Count="0" />
       <LineId Id="783" Count="0" />
