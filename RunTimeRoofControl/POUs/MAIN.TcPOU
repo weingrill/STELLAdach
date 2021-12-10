@@ -38,6 +38,8 @@ VAR
 	StopRoof2:	BOOL;
 	// report manual operation of the dome to TCS
 	isRoofManual: BOOL;
+	// indicates an error in the dust sensor
+	DustSensorError: BOOL;
 	// Timer for Dome Light
 	LightTimer:		TP;
 	// Logging voriables
@@ -89,6 +91,8 @@ ELSE
 END_IF
 isRoofManual := GVL_Panel.IManualSwitch;
 
+DustSensorError := Environment.DustSensorError;
+
 // initialize MQTT Communication
 MQTTCommunication();
 
@@ -99,7 +103,7 @@ ConvertEnvironment();
 Auxiliary();
 
 // define bad weather condition; rain is handled in EnvironmentAlarm
-EnvironmentBad := ConvertEnvironment.Dust > DustLimit OR
+EnvironmentBad := (ConvertEnvironment.Dust > DustLimit AND NOT DustSensorError) OR
 		ConvertEnvironment.Humidity1 > HumidityLimit OR
 		ConvertEnvironment.Humidity2 > HumidityLimit OR
 		ConvertEnvironment.HumidityBay > HumidityLimit OR
@@ -287,7 +291,9 @@ END_IF
     <LineIds Name="MAIN">
       <LineId Id="10" Count="4" />
       <LineId Id="601" Count="0" />
+      <LineId Id="952" Count="0" />
       <LineId Id="870" Count="0" />
+      <LineId Id="953" Count="0" />
       <LineId Id="781" Count="0" />
       <LineId Id="603" Count="0" />
       <LineId Id="783" Count="0" />

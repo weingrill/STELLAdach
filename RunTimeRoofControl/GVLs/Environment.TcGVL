@@ -55,6 +55,8 @@ VAR_GLOBAL
 	// Lichtschalter in der Kuppel
 	LightSwitch					AT%I*:	BOOL;
 	
+	// sensor error
+	DustSensorError				AT%I*:	BOOL;
 END_VAR]]></Declaration>
   </GVL>
 </TcPlcObject>

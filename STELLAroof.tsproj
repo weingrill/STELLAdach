@@ -94,10 +94,6 @@
 					<Vars VarGrpType="1">
 						<Name>PlcTask Inputs</Name>
 						<Var>
-							<Name>Environment.Rain_alarm1</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
 							<Name>Environment.rawWindSpeed1</Name>
 							<Comment><![CDATA[ Weather Station 1]]></Comment>
 							<Type>INT</Type>
@@ -115,16 +111,16 @@
 							<Type>INT</Type>
 						</Var>
 						<Var>
-							<Name>Environment.rawWindDirection</Name>
-							<Type>INT</Type>
+							<Name>Environment.Rain_alarm1</Name>
+							<Type>BOOL</Type>
 						</Var>
 						<Var>
 							<Name>Environment.Overcorrect_status1</Name>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>Environment.Rain_alarm2</Name>
-							<Type>BOOL</Type>
+							<Name>Environment.rawWindDirection</Name>
+							<Type>INT</Type>
 						</Var>
 						<Var>
 							<Name>Environment.rawPressure</Name>
@@ -148,16 +144,20 @@
 							<Type>INT</Type>
 						</Var>
 						<Var>
+							<Name>Environment.Rain_alarm2</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Environment.Overcorrect_status2</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
 							<Name>Environment.rawBrightness</Name>
 							<Type>INT</Type>
 						</Var>
 						<Var>
 							<Name>Environment.rawBrightnessLow</Name>
 							<Type>INT</Type>
-						</Var>
-						<Var>
-							<Name>Environment.Overcorrect_status2</Name>
-							<Type>BOOL</Type>
 						</Var>
 						<Var>
 							<Name>Environment.rawTemperature_Electronics</Name>
@@ -363,6 +363,11 @@
 						<Var>
 							<Name>GVL_Roof.IMotorschutz26</Name>
 							<Comment><![CDATA[MS6NC2]]></Comment>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Environment.DustSensorError</Name>
+							<Comment><![CDATA[ sensor error]]></Comment>
 							<Type>BOOL</Type>
 						</Var>
 					</Vars>
@@ -1342,25 +1347,25 @@ Bit1: Value bigger/equal Limit2]]></Comment>
 							<BootStrapData>0010f400f410f400</BootStrapData>
 							<Pdo Name="AI Standard Channel 1" Index="#x1a00" Flags="#x0010" SyncMan="3">
 								<ExcludePdo>#x1a01</ExcludePdo>
-								<Entry Name="Status__Underrange" Index="#x6000" Sub="#x01">
+								<Entry Name="Status__Underrange" Index="#x6000" Sub="#x01" Flags="#x00008020">
 									<Type>BIT</Type>
 									<Comment><![CDATA[Underrange event active]]></Comment>
 								</Entry>
-								<Entry Name="Status__Overrange" Index="#x6000" Sub="#x02">
+								<Entry Name="Status__Overrange" Index="#x6000" Sub="#x02" Flags="#x00008020">
 									<Type>BIT</Type>
 									<Comment><![CDATA[Overrange event active]]></Comment>
 								</Entry>
-								<Entry Name="Status__Limit 1" Index="#x6000" Sub="#x03">
+								<Entry Name="Status__Limit 1" Index="#x6000" Sub="#x03" Flags="#x00008020">
 									<Type>BIT2</Type>
 									<Comment><![CDATA[Bit0: Value smaller/equal Limit1
 Bit1: Value bigger/equal Limit1]]></Comment>
 								</Entry>
-								<Entry Name="Status__Limit 2" Index="#x6000" Sub="#x05">
+								<Entry Name="Status__Limit 2" Index="#x6000" Sub="#x05" Flags="#x00008020">
 									<Type>BIT2</Type>
 									<Comment><![CDATA[Bit0: Value smaller/equal Limit2
 Bit1: Value bigger/equal Limit2]]></Comment>
 								</Entry>
-								<Entry Name="Status__Error" Index="#x6000" Sub="#x07">
+								<Entry Name="Status__Error" Index="#x6000" Sub="#x07" Flags="#x00008020">
 									<Type>BIT</Type>
 									<Comment><![CDATA[Bit set when Over- or Underrange]]></Comment>
 								</Entry>
@@ -2890,6 +2895,7 @@ Bit1: Value bigger/equal Limit2]]></Comment>
 				<Link VarA="PlcTask Inputs^Environment.LightSwitch" VarB="Channel 1^LightSwitch"/>
 			</OwnerB>
 			<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1200)^Modul11 (EL3024)">
+				<Link VarA="PlcTask Inputs^Environment.DustSensorError" VarB="AI Standard Channel 1^Status^Error"/>
 				<Link VarA="PlcTask Inputs^Environment.rawDust" VarB="AI Standard Channel 1^Dust"/>
 			</OwnerB>
 			<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1200)^Modul2 (EL1008)">
