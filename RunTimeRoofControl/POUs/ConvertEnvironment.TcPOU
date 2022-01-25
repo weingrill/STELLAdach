@@ -3,81 +3,79 @@
   <POU Name="ConvertEnvironment" Id="{03869fa8-1755-402e-a7ee-189c483e0438}" SpecialFunc="None">
     <Declaration><![CDATA[PROGRAM ConvertEnvironment
 VAR
-	WindSpeed1,
-	Temperature1,
-	Humidity1,
-	Rain_analogue1,
-	WindDirection,
-	Pressure,
+	WindSpeed1:		REAL;
+	Temperature1:	REAL;
+	Humidity1:		REAL;
+	Rain_analogue1:	REAL;
+	WindDirection:	REAL;
+	Pressure:		REAL;
 	
-	WindSpeed2,
-	Temperature2,
-	Humidity2,
-	Rain_analogue2,
-	Brightness,
+	WindSpeed2:		REAL;
+	Temperature2:	REAL;
+	Humidity2:		REAL;
+	Rain_analogue2:	REAL;
+	Brightness:		REAL;
 	
-	Temperature_Electronics,
-	Humidity_Electronics,
-	
-	TemperatureBay,
-	HumidityBay,
-
-	Temperature_Spec,
-	Humidity_Spec,
-	Windspeed_bay,
-	Dust:	REAL;
-	
-	Rain1Current,
-	Rain2Current: REAL;
-	
-	RainAlarm1,
-	RainAlarm2,
+	// electronics room temperature
+	Temperature_Electronics:	REAL;
+	// electronics room humidity
+	Humidity_Electronics:		REAL;
+	// telescope bay temperature
+	TemperatureBay:	REAL;
+	// telescope bay humidity
+	HumidityBay:	REAL;
+	// SES Spectrograph temperature
+	Temperature_Spec:	REAL;
+	// SES spectrograph humidity
+	Humidity_Spec:		REAL;
+	// wind speed at bay
+	Windspeed_bay:		REAL;
+	// analog dust sensor
+	Dust:				REAL;
+	// raw rain current (helper variable)
+	Rain1Current:		REAL;
+	// raw rain current (helper variable)
+	Rain2Current:		REAL;
+	// digital rain sensor
+	RainAlarm1:			BOOL;
+	// digital rain sensor
+	RainAlarm2:			BOOL;
+	// combination of rain sensors
 	RainMasterAlarm:	BOOL;
+	// delay timer for digital rain signal 1
+	RainTimer1:			TON;
+	// delay timer for digital rain signal 2
+	RainTimer2:			TON;
+	// delay timer for combined rain signals
+	RainMasterTimer:	TON;
+	// maximum wind speed 1
+	MaximumWind1: REAL;
+	MaximumWind2: REAL;
+	DustAvg:	FB_TimeAverage;
+	WindAvg1:	FB_TimeAverage; 
+	Windavg2:	FB_TimeAverage;
 	
-	RainTimer1,
-	RainTimer2,
-	RainMasterTimer: TON;
-	
-	MaximumWind1, MaximumWind2: REAL;
-	DustAvg,
-	WindAvg1, Windavg2: FB_TimeAverage;
-	Dust1,
-	Dust2:			REAL;
-	Dust11Average,
-	Dust12Average,
-	Dust21Average,
-	Dust22Average,
-	DustAverage: FB_TimeAverage;
-
+	Dust11Average:	FB_TimeAverage;
+	Dust12Average:	FB_TimeAverage;
+	Dust21Average:	FB_TimeAverage;
+	Dust22Average:	FB_TimeAverage;
+	DigitalDust1:			REAL;
+	DigitalDust2:			REAL;
+	// MQTT timer
 	MQTTTimer : TON := (PT:=T#5S);
+	// MQTT payload string
 	sPayloadPub: STRING(255) := '';
-
-
 END_VAR
 ]]></Declaration>
     <Implementation>
       <ST><![CDATA[(* convert raw Sensor values to real values *)
-
-(*	rawWindSpeed1				AT%I*:	INT;
-	rawTemperature1				AT%I*:	INT;
-	rawHumidity1				AT%I*:	INT;
-	rawRain_analogue1			AT%I*:	INT;
-	rawWindDirection			AT%I*:	INT;
-	rawPressure 				AT%I*:	INT;
-*) 
+(* Weather Station 1 *)
 WindSpeed1 := 		F_Y(Environment.rawWindSpeed1, 		0, 32767,   0.0, 50.0); // m/s
 Temperature1 :=  	F_Y(Environment.rawTemperature1, 	0, 32767, -30.0, 70.0); // °C
 Humidity1 :=		F_Y(Environment.rawHumidity1, 		0, 32767,   0.0, 100.0); // %
 Rain1Current := 	F_Y(Environment.rawRain_analogue1,	0, 32767,	4.0, 20.0); // mA --> mm/min
-IF Rain1Current < 8 THEN
-	Rain_analogue1 := 0.0025*Rain1Current - 0.01;
-ELSIF Rain1Current >= 8 AND Rain1Current < 12 THEN
-	Rain_analogue1 := 0.0225*Rain1Current - 0.17;
-ELSIF Rain1Current >= 12 AND Rain1Current < 16 THEN
-	Rain_analogue1 := 0.225*Rain1Current - 2.6;
-ELSIF Rain1Current >= 16 THEN
-	Rain_analogue1 := 2.25*Rain1Current - 35;
-END_IF
+
+Rain_analogue1 := F_RainConversion(Rain1Current);
 
 RainAlarm1 := NOT Environment.Rain_alarm1;
 RainAlarm2 := NOT Environment.Rain_alarm2;
@@ -90,36 +88,23 @@ RainMasterAlarm := RainTimer1.Q OR RainTimer2.Q OR RainMasterTimer.Q;
 WindDirection := 	F_Y(Environment.rawWindDirection,	0, 32767,   0.0, 360.0); // degrees
 Pressure := 		(Environment.rawPressure / 32767.0) * 10.0 * 92.0 + 600.0; // mBar
 
-(*	
-	// Weather Station 2
-	rawWindSpeed2				AT%I*:	INT;
-	rawTemperature2				AT%I*:	INT;
-	rawHumidity2				AT%I*:	INT;
-	rawRain_analogue2			AT%I*:	INT;
-	Rain_alarm2					AT%I*:	BOOL;
-	rawBrightness				AT%I*:	INT;
-	rawBrightnessLow			AT%I*:	INT;
-	Overcorrect_status2			AT%I*:	BOOL;
-
-*)
+(*  Weather Station 2 *)
 
 WindSpeed2 := 		F_Y(Environment.rawWindSpeed2, 		0, 32767,   0.0, 50.0); // m/s
 Temperature2 :=  	F_Y(Environment.rawTemperature2, 	0, 32767, -30.0, 70.0); // °C
 Humidity2 :=		F_Y(Environment.rawHumidity2, 		0, 32767,   0.0, 100.0); // %
 Rain2Current := 	F_Y(Environment.rawRain_analogue2,	0, 32767,	4.0, 20.0); // mA --> mm/min
-IF Rain1Current < 8 THEN
-	Rain_analogue2 := 0.0025*Rain2Current - 0.01;
-ELSIF Rain1Current >= 8 AND Rain2Current < 12 THEN
-	Rain_analogue2 := 0.0225*Rain2Current - 0.17;
-ELSIF Rain1Current >= 12 AND Rain2Current < 16 THEN
-	Rain_analogue2 := 0.225*Rain2Current - 2.6;
-ELSIF Rain1Current >= 16 THEN
-	Rain_analogue2 := 2.25*Rain2Current - 35;
-END_IF
+
+Rain_analogue2 := F_RainConversion(Rain2Current);
+
 Brightness :=		F_Y(Environment.rawBrightness, 		0, 32767,   0.0, 150000.0); // lux
 IF Brightness < 1000.0 THEN 
 	Brightness :=	F_Y(Environment.rawBrightnessLow, 	0, 32767,   0.000, 1000.0); // lux
 END_IF
+
+Dust := F_Y(Environment.rawDust, 0, 32767,   0.0, 0.1);
+
+(* Indoor environment *)
 
 Temperature_Electronics :=  F_Y(Environment.rawTemperature_Electronics, 	0, 32767, -30.0, 70.0); // °C
 Humidity_Electronics :=		F_Y(Environment.rawHumidity_Electronics, 		0, 32767,   0.0, 100.0); // %
@@ -128,18 +113,26 @@ HumidityBay := 				F_Y(Environment.rawHumidityBay, 				0, 32767,   0.0, 100.0); 
 Temperature_Spec :=  		F_Y(Environment.rawTemperature_Spec, 			0, 32767, -30.0, 70.0); // °C
 Humidity_Spec := 			F_Y(Environment.rawHumidity_Spec, 				0, 32767,   0.0, 100.0); // %
 Windspeed_bay := 			F_Y(Environment.rawWindSpeedBay, 				0, 32767,   0.0, 40.0); // m/s
-DustAvg(IN := F_Y(Environment.rawDust, 			0, 32767,   0.0, 0.1), PT := T#2M, AVG => Dust); // m^3
-WindAvg1(IN := F_Y(Environment.rawWindSpeed1, 	0, 32767,   0.0, 50.0), PT := T#2M, MAXAVG=> MaximumWind1);
-WindAvg2(IN := F_Y(Environment.rawWindSpeed2, 	0, 32767,   0.0, 50.0), PT := T#2M, MAXAVG=> MaximumWind2);
+DustAvg(IN := Dust, PT := T#2M); // m^3
+WindAvg1(IN := WindSpeed1, PT := T#2M, MAXAVG=> MaximumWind1);
+WindAvg2(IN := WindSpeed2, PT := T#2M, MAXAVG=> MaximumWind2);
 
 // digital dust sensor
 Dust11Average(IN := 1.0 - BOOL_TO_REAL(Environment.rawDust11), PT := T#30S); 
 Dust12Average(IN := 1.0 - BOOL_TO_REAL(Environment.rawDust12), PT := T#30S);
 Dust21Average(IN := 1.0 - BOOL_TO_REAL(Environment.rawDust21), PT := T#30S);
 Dust22Average(IN := 1.0 - BOOL_TO_REAL(Environment.rawDust22), PT := T#30S);
-Dust1 := 10.0 * MAX(Dust11Average.AVG, Dust21Average.AVG); //mg/m³
-Dust2 := 10.0 * MAX(Dust12Average.AVG, Dust22Average.AVG); //mg/m³
-DustAverage(IN := 0.5*Dust1 + 0.5*Dust2, PT := T#5M);
+
+IF Dust11Average.MAXAVG < 1.0 AND Dust12Average.MAXAVG < 1.0 THEN
+	DigitalDust1 := 10.0 * MAX(Dust11Average.AVG, Dust21Average.AVG); //mg/m³
+ELSE
+	DigitalDust1 := 0.0;
+END_IF
+IF Dust21Average.MAXAVG < 1.0 AND Dust22Average.MAXAVG < 1.0 THEN
+	DigitalDust2 := 10.0 * MAX(Dust12Average.AVG, Dust22Average.AVG); //mg/m³
+ELSE
+	DigitalDust2 := 0.0;
+END_IF
 
 (* MQTT Section *)
 
@@ -202,6 +195,7 @@ IF MQTTTimer.Q THEN // publish new payload every second
 	sPayloadPub := APPEND(sPayloadPub, 'BayTemperature=', LREAL_TO_FMTSTR(TemperatureBay, 2, TRUE));
 	sPayloadPub := APPEND(sPayloadPub, ',BayHumidity=', LREAL_TO_FMTSTR(HumidityBay, 2, TRUE));		
 	sPayloadPub := APPEND(sPayloadPub, ',BayWindSpeed=', LREAL_TO_FMTSTR(Windspeed_bay, 2, TRUE));		
+	sPayloadPub := APPEND(sPayloadPub, ',EnvironmentDustDigital=', LREAL_TO_FMTSTR(DigitalDust1, 5, TRUE));		
 	
 	IF MQTTCommunication.fbMqttClient.bConnected THEN
 		MQTTCommunication.fbMqttClient.Publish(	
@@ -232,48 +226,27 @@ END_IF
 ]]></ST>
     </Implementation>
     <LineIds Name="ConvertEnvironment">
-      <LineId Id="3" Count="21" />
-      <LineId Id="335" Count="0" />
-      <LineId Id="334" Count="0" />
-      <LineId Id="336" Count="0" />
-      <LineId Id="344" Count="4" />
-      <LineId Id="25" Count="33" />
-      <LineId Id="109" Count="0" />
-      <LineId Id="69" Count="6" />
-      <LineId Id="2" Count="0" />
-      <LineId Id="144" Count="1" />
-      <LineId Id="412" Count="0" />
-      <LineId Id="402" Count="0" />
-      <LineId Id="404" Count="6" />
-      <LineId Id="413" Count="0" />
-      <LineId Id="185" Count="0" />
-      <LineId Id="414" Count="0" />
-      <LineId Id="186" Count="1" />
-      <LineId Id="213" Count="0" />
-      <LineId Id="257" Count="2" />
-      <LineId Id="270" Count="1" />
-      <LineId Id="260" Count="0" />
-      <LineId Id="273" Count="0" />
-      <LineId Id="337" Count="0" />
-      <LineId Id="272" Count="0" />
-      <LineId Id="261" Count="8" />
-      <LineId Id="256" Count="0" />
-      <LineId Id="274" Count="3" />
-      <LineId Id="292" Count="0" />
-      <LineId Id="278" Count="1" />
-      <LineId Id="338" Count="0" />
-      <LineId Id="280" Count="0" />
-      <LineId Id="282" Count="9" />
-      <LineId Id="214" Count="12" />
-      <LineId Id="211" Count="0" />
-      <LineId Id="227" Count="2" />
-      <LineId Id="240" Count="0" />
-      <LineId Id="230" Count="9" />
-      <LineId Id="241" Count="3" />
-      <LineId Id="246" Count="9" />
-      <LineId Id="209" Count="0" />
-      <LineId Id="212" Count="0" />
-      <LineId Id="210" Count="0" />
+      <LineId Id="707" Count="5" />
+      <LineId Id="877" Count="0" />
+      <LineId Id="876" Count="0" />
+      <LineId Id="722" Count="17" />
+      <LineId Id="874" Count="1" />
+      <LineId Id="748" Count="4" />
+      <LineId Id="889" Count="1" />
+      <LineId Id="753" Count="18" />
+      <LineId Id="882" Count="0" />
+      <LineId Id="878" Count="0" />
+      <LineId Id="881" Count="0" />
+      <LineId Id="885" Count="1" />
+      <LineId Id="880" Count="0" />
+      <LineId Id="883" Count="0" />
+      <LineId Id="773" Count="0" />
+      <LineId Id="887" Count="1" />
+      <LineId Id="884" Count="0" />
+      <LineId Id="775" Count="12" />
+      <LineId Id="789" Count="48" />
+      <LineId Id="866" Count="0" />
+      <LineId Id="838" Count="26" />
       <LineId Id="146" Count="0" />
     </LineIds>
   </POU>

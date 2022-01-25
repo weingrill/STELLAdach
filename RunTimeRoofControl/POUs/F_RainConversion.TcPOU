@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <POU Name="F_RainConversion" Id="{a0879d4a-93fb-4232-a769-6eacc66fdf85}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION F_RainConversion : REAL
+VAR_INPUT
+	// RainCurrent in 4 to 20 mA
+	RainCurrent: REAL;
+END_VAR
+VAR
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[F_RainConversion := 0.0;
+
+IF RainCurrent < 8 THEN
+	F_RainConversion := 0.0025*RainCurrent - 0.01;
+ELSIF RainCurrent >= 8 AND RainCurrent < 12 THEN
+	F_RainConversion := 0.0225*RainCurrent - 0.17;
+ELSIF RainCurrent >= 12 AND RainCurrent < 16 THEN
+	F_RainConversion := 0.225*RainCurrent - 2.6;
+ELSIF RainCurrent >= 16 THEN
+	F_RainConversion := 2.25*RainCurrent - 35;
+END_IF]]></ST>
+    </Implementation>
+    <LineIds Name="F_RainConversion">
+      <LineId Id="23" Count="1" />
+      <LineId Id="8" Count="7" />
+      <LineId Id="7" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

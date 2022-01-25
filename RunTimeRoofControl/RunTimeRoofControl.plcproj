@@ -64,7 +64,7 @@
     <Compile Include="POUs\FB_TimeAverage.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="POUs\FUN_AVG.TcPOU">
+    <Compile Include="POUs\F_RainConversion.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="POUs\F_Y.TcPOU">
