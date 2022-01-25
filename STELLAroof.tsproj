@@ -371,6 +371,22 @@
 							<Comment><![CDATA[MS6NC2]]></Comment>
 							<Type>BOOL</Type>
 						</Var>
+						<Var>
+							<Name>Environment.rawDust11</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Environment.rawDust12</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Environment.rawDust21</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Environment.rawDust22</Name>
+							<Type>BOOL</Type>
+						</Var>
 					</Vars>
 					<Vars VarGrpType="2" AreaNo="1">
 						<Name>PlcTask Outputs</Name>
@@ -3044,6 +3060,12 @@ Bit1: Value bigger/equal Limit2]]></Comment>
 			</OwnerB>
 			<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1200)^Term 36 (EK1521)^WeatherStation2 (EK1501)^Term 40 (EL3024)">
 				<Link VarA="PlcTask Inputs^Environment.rawRain_analogue2" VarB="AI Standard Channel 1^Rainanalog"/>
+			</OwnerB>
+			<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1200)^Term 48 (EL1124)">
+				<Link VarA="PlcTask Inputs^Environment.rawDust11" VarB="Channel 1^Input"/>
+				<Link VarA="PlcTask Inputs^Environment.rawDust12" VarB="Channel 2^Input"/>
+				<Link VarA="PlcTask Inputs^Environment.rawDust21" VarB="Channel 3^Input"/>
+				<Link VarA="PlcTask Inputs^Environment.rawDust22" VarB="Channel 4^Input"/>
 			</OwnerB>
 		</OwnerA>
 	</Mappings>

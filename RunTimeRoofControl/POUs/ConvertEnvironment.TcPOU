@@ -41,7 +41,14 @@ VAR
 	MaximumWind1, MaximumWind2: REAL;
 	DustAvg,
 	WindAvg1, Windavg2: FB_TimeAverage;
-	
+	Dust1,
+	Dust2:			REAL;
+	Dust11Average,
+	Dust12Average,
+	Dust21Average,
+	Dust22Average,
+	DustAverage: FB_TimeAverage;
+
 	MQTTTimer : TON := (PT:=T#5S);
 	sPayloadPub: STRING(255) := '';
 
@@ -124,6 +131,17 @@ Windspeed_bay := 			F_Y(Environment.rawWindSpeedBay, 				0, 32767,   0.0, 40.0);
 DustAvg(IN := F_Y(Environment.rawDust, 			0, 32767,   0.0, 0.1), PT := T#2M, AVG => Dust); // m^3
 WindAvg1(IN := F_Y(Environment.rawWindSpeed1, 	0, 32767,   0.0, 50.0), PT := T#2M, MAXAVG=> MaximumWind1);
 WindAvg2(IN := F_Y(Environment.rawWindSpeed2, 	0, 32767,   0.0, 50.0), PT := T#2M, MAXAVG=> MaximumWind2);
+
+// digital dust sensor
+Dust11Average(IN := 1.0 - BOOL_TO_REAL(Environment.rawDust11), PT := T#30S); 
+Dust12Average(IN := 1.0 - BOOL_TO_REAL(Environment.rawDust12), PT := T#30S);
+Dust21Average(IN := 1.0 - BOOL_TO_REAL(Environment.rawDust21), PT := T#30S);
+Dust22Average(IN := 1.0 - BOOL_TO_REAL(Environment.rawDust22), PT := T#30S);
+Dust1 := 10.0 * MAX(Dust11Average.AVG, Dust21Average.AVG); //mg/m³
+Dust2 := 10.0 * MAX(Dust12Average.AVG, Dust22Average.AVG); //mg/m³
+DustAverage(IN := 0.5*Dust1 + 0.5*Dust2, PT := T#5M);
+
+(* MQTT Section *)
 
 MQTTTimer(IN:=TRUE);
 IF MQTTTimer.Q THEN // publish new payload every second
@@ -224,7 +242,13 @@ END_IF
       <LineId Id="69" Count="6" />
       <LineId Id="2" Count="0" />
       <LineId Id="144" Count="1" />
-      <LineId Id="185" Count="2" />
+      <LineId Id="412" Count="0" />
+      <LineId Id="402" Count="0" />
+      <LineId Id="404" Count="6" />
+      <LineId Id="413" Count="0" />
+      <LineId Id="185" Count="0" />
+      <LineId Id="414" Count="0" />
+      <LineId Id="186" Count="1" />
       <LineId Id="213" Count="0" />
       <LineId Id="257" Count="2" />
       <LineId Id="270" Count="1" />

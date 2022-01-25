@@ -57,6 +57,12 @@ VAR_GLOBAL
 	
 	// sensor error
 	DustSensorError				AT%I*:	BOOL;
+	rawDust11					AT%I*:	BOOL;
+	rawDust12					AT%I*:	BOOL;
+	rawDust21					AT%I*:	BOOL;
+	rawDust22					AT%I*:	BOOL;
+	
+	//rawDust22: INT;
 END_VAR]]></Declaration>
   </GVL>
 </TcPlcObject>
