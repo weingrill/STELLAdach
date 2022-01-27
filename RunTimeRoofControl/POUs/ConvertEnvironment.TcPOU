@@ -54,6 +54,7 @@ VAR
 	DustAvg:	FB_TimeAverage;
 	WindAvg1:	FB_TimeAverage; 
 	Windavg2:	FB_TimeAverage;
+	PressureAverage:	FB_TimeAverage;
 	
 	Dust11Average:	FB_TimeAverage;
 	Dust12Average:	FB_TimeAverage;
@@ -116,6 +117,7 @@ Windspeed_bay := 			F_Y(Environment.rawWindSpeedBay, 				0, 32767,   0.0, 40.0);
 DustAvg(IN := Dust, PT := T#2M); // m^3
 WindAvg1(IN := WindSpeed1, PT := T#2M, MAXAVG=> MaximumWind1);
 WindAvg2(IN := WindSpeed2, PT := T#2M, MAXAVG=> MaximumWind2);
+PressureAverage(IN := Pressure, PT := T#1M);
 
 // digital dust sensor
 Dust11Average(IN := 1.0 - BOOL_TO_REAL(Environment.rawDust11), PT := T#30S); 
@@ -142,10 +144,10 @@ IF MQTTTimer.Q THEN // publish new payload every second
 	sPayloadPub := 'environment,location=weatherstation1,host=CX-284792 ';
 	sPayloadPub := APPEND(sPayloadPub, 'EnvironmentTemperature1=', LREAL_TO_FMTSTR(Temperature1, 2, TRUE));
 	sPayloadPub := APPEND(sPayloadPub, ',EnvironmentHumidity1=', LREAL_TO_FMTSTR(Humidity1, 1, TRUE));		
-	sPayloadPub := APPEND(sPayloadPub, ',EnvironmentRain1=', LREAL_TO_FMTSTR(Rain_analogue1, 3, TRUE));		
+	sPayloadPub := APPEND(sPayloadPub, ',EnvironmentRain1=', LREAL_TO_FMTSTR(Rain_analogue1, 5, TRUE));		
 	sPayloadPub := APPEND(sPayloadPub, ',EnvironmentWindSpeed1=', LREAL_TO_FMTSTR(WindSpeed1, 2, TRUE));		
 	sPayloadPub := APPEND(sPayloadPub, ',EnvironmentWindDirection=', LREAL_TO_FMTSTR(WindDirection, 1, TRUE));		
-	sPayloadPub := APPEND(sPayloadPub, ',EnvironmentPressure=', LREAL_TO_FMTSTR(Pressure, 1, TRUE));		
+	sPayloadPub := APPEND(sPayloadPub, ',EnvironmentPressure=', LREAL_TO_FMTSTR(PressureAverage.AVG, 2, TRUE));		
 	sPayloadPub := APPEND(sPayloadPub, ',EnvironmentRainAlarm1=', BOOL_TO_STRING(RainAlarm1));		
 
 	IF MQTTCommunication.fbMqttClient.bConnected THEN
@@ -161,7 +163,7 @@ IF MQTTTimer.Q THEN // publish new payload every second
 	sPayloadPub := 'environment,location=weatherstation2,host=CX-284792 ';
 	sPayloadPub := APPEND(sPayloadPub, 'EnvironmentTemperature2=', LREAL_TO_FMTSTR(Temperature2, 2, TRUE));
 	sPayloadPub := APPEND(sPayloadPub, ',EnvironmentHumidity2=', LREAL_TO_FMTSTR(Humidity2, 1, TRUE));		
-	sPayloadPub := APPEND(sPayloadPub, ',EnvironmentRain2=', LREAL_TO_FMTSTR(Rain_analogue2, 3, TRUE));		
+	sPayloadPub := APPEND(sPayloadPub, ',EnvironmentRain2=', LREAL_TO_FMTSTR(Rain_analogue2, 5, TRUE));		
 	sPayloadPub := APPEND(sPayloadPub, ',EnvironmentWindSpeed2=', LREAL_TO_FMTSTR(WindSpeed2, 2, TRUE));		
 	sPayloadPub := APPEND(sPayloadPub, ',EnvironmentBrightness=', LREAL_TO_FMTSTR(Brightness, 2, TRUE));		
 	sPayloadPub := APPEND(sPayloadPub, ',EnvironmentDust=', LREAL_TO_FMTSTR(Dust, 5, TRUE));		
@@ -233,7 +235,9 @@ END_IF
       <LineId Id="874" Count="1" />
       <LineId Id="748" Count="4" />
       <LineId Id="889" Count="1" />
-      <LineId Id="753" Count="18" />
+      <LineId Id="753" Count="12" />
+      <LineId Id="892" Count="0" />
+      <LineId Id="766" Count="5" />
       <LineId Id="882" Count="0" />
       <LineId Id="878" Count="0" />
       <LineId Id="881" Count="0" />
