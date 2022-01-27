@@ -49,6 +49,9 @@
     <Compile Include="POUs\Auxiliary.TcPOU">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="POUs\DehumidifierControl.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="POUs\FB_BLINK.TcPOU">
       <SubType>Code</SubType>
     </Compile>

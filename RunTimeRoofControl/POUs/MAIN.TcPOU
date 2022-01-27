@@ -57,7 +57,7 @@ VAR
 	OpenRoof2Log, CloseRoof2Log, StopRoof2Log,
 	Roof1ErrorLog, Roof2ErrorLog,
 	Roof1WarningLog, Roof2WarningLog,
-	LightLog, DehumidifierLog: FB_EventLog;
+	LightLog: FB_EventLog;
 	RoofStatusLamp1,
 	RoofStatusLamp2: FB_StatusLamp;
 	WeatherAlarm,
@@ -75,8 +75,8 @@ VAR
 END_VAR
 VAR CONSTANT
 	HumidityLimit:		REAL := 80.0;
-	HumidityBayLow:		REAL := 55.0;
-	HumidityBayHigh:	REAL := 70.0;
+//	HumidityBayLow:		REAL := 55.0;
+//	HumidityBayHigh:	REAL := 70.0;
 	
 	WindSpeedLimit:		REAL := 20.0;
 	WindSpeedBayLimit:	REAL :=	15.0;
@@ -101,6 +101,9 @@ ConvertEnvironment();
 
 // Handle Auxiliary inputs and outputs
 Auxiliary();
+
+// Control Logic for Dehumidifier
+DehumidifierControl(Enable := nMode = RoofAutomatic AND Roof1Status = StatusLocked AND Roof2Status = StatusLocked);
 
 // define bad weather condition; rain is handled in EnvironmentAlarm
 EnvironmentBad := (ConvertEnvironment.Dust > DustLimit AND NOT DustSensorError) OR
@@ -134,15 +137,7 @@ IF nMode = RoofAutomatic THEN
 		Roof1Command := CloseRoof;
 		Roof2Command := CloseRoof;
 	END_IF
-	
-	IF ConvertEnvironment.HumidityBay > HumidityBayHigh AND
-		Roof1Status = StatusLocked AND
-		Roof2Status = StatusLocked THEN
-		Environment.Dehumidifier := TRUE;
-	ELSIF ConvertEnvironment.HumidityBay < HumidityBayLow THEN
-		Environment.Dehumidifier := FALSE;
-	END_IF
-			
+				
 ELSE //	RoofManual
 	OpenRoof1 := GVL_Panel.ILeftOpenSwitch AND NOT GVL_Panel.ILeftCloseSwitch;
 	CloseRoof1 := GVL_Panel.ILeftCloseSwitch AND NOT GVL_Panel.ILeftOpenSwitch;
@@ -256,7 +251,6 @@ Roof1WarningLog( Trigger := Roof1Status = StatusUndefined, Level := ADSLOG_MSGTY
 Roof2WarningLog( Trigger := Roof2Status = StatusUndefined, Level := ADSLOG_MSGTYPE_WARN, OnMessage := 'The status of roof 2 is undefined!');
 
 LightLog(Trigger := Environment.LightBay, OnMessage := 'The light is on.', OffMessage := 'The light is off.');
-DehumidifierLog(Trigger := Environment.Dehumidifier, OnMessage := 'The dehumidifier is on.', OffMessage := 'The dehumidifier is off.');
 
 (*** MQTT Section ***)
 IF Roof1Status <> LastRoof1Status THEN
@@ -300,6 +294,7 @@ END_IF
       <LineId Id="785" Count="0" />
       <LineId Id="784" Count="0" />
       <LineId Id="798" Count="2" />
+      <LineId Id="1035" Count="2" />
       <LineId Id="782" Count="0" />
       <LineId Id="211" Count="0" />
       <LineId Id="213" Count="6" />
@@ -315,8 +310,8 @@ END_IF
       <LineId Id="533" Count="0" />
       <LineId Id="537" Count="1" />
       <LineId Id="536" Count="0" />
-      <LineId Id="42" Count="6" />
-      <LineId Id="61" Count="2" />
+      <LineId Id="42" Count="0" />
+      <LineId Id="63" Count="0" />
       <LineId Id="769" Count="3" />
       <LineId Id="64" Count="6" />
       <LineId Id="777" Count="3" />
@@ -334,7 +329,7 @@ END_IF
       <LineId Id="168" Count="0" />
       <LineId Id="2" Count="0" />
       <LineId Id="766" Count="0" />
-      <LineId Id="709" Count="27" />
+      <LineId Id="709" Count="26" />
       <LineId Id="765" Count="0" />
       <LineId Id="737" Count="27" />
       <LineId Id="708" Count="0" />

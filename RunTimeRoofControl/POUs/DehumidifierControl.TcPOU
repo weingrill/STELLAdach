@@ -1,0 +1,61 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <POU Name="DehumidifierControl" Id="{a196ab05-b1bb-47c7-be4b-4d1ebd710b0e}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM DehumidifierControl
+VAR_INPUT
+	// enable signal for der Dehumidifier
+	Enable:	BOOL;
+END_VAR
+VAR
+	// run dehumidifer at last for n seconds to avoid fast switching cycles
+	RunDelay : TOF := (PT:=T#30S);
+	// classic event log
+	DehumidifierLog: FB_EventLog;
+	// MQTT payload string for publishing
+	sPayloadPub: STRING(255) := '';
+	OnTrigger:	R_TRIG;
+	OffTrigger:	F_TRIG;
+END_VAR
+VAR CONSTANT
+	HumidityBayLow:		REAL := 55.0;
+	HumidityBayHigh:	REAL := 70.0;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[IF ConvertEnvironment.HumidityBay > HumidityBayHigh THEN
+	RunDelay.IN := TRUE;
+ELSIF ConvertEnvironment.HumidityBay < HumidityBayLow THEN
+	RunDelay.IN := FALSE;
+END_IF
+
+Environment.Dehumidifier := RunDelay.Q;
+
+DehumidifierLog(Trigger := Environment.Dehumidifier, OnMessage := 'The dehumidifier is on.', OffMessage := 'The dehumidifier is off.');
+
+(*** MQTT Section ***)
+OnTrigger(CLK := Environment.Dehumidifier);
+OffTrigger(CLK := Environment.Dehumidifier);
+IF OnTrigger.Q OR OffTrigger.Q THEN
+	sPayloadPub := 'bay,location=bay,host=CX-284792 ';
+	sPayloadPub := APPEND(sPayloadPub, 'Dehumidifier=', BOOL_TO_STRING(Environment.Dehumidifier));
+	
+	MQTTCommunication.fbMqttClient.Publish(	
+					sTopic:= 'STELLA/Telemetry', 
+					pPayload:= ADR(sPayloadPub), 
+					nPayloadSize:= LEN2(ADR(sPayloadPub)),
+					eQoS:= TcIotMqttQos.AtMostOnceDelivery,
+					bRetain:= FALSE, 
+					bQueue:= FALSE );
+END_IF]]></ST>
+    </Implementation>
+    <LineIds Name="DehumidifierControl">
+      <LineId Id="14" Count="4" />
+      <LineId Id="30" Count="0" />
+      <LineId Id="5" Count="0" />
+      <LineId Id="32" Count="1" />
+      <LineId Id="36" Count="1" />
+      <LineId Id="56" Count="1" />
+      <LineId Id="38" Count="10" />
+      <LineId Id="31" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>
