@@ -55,6 +55,9 @@
     <Compile Include="POUs\FB_BLINK.TcPOU">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="POUs\FB_Dust.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="POUs\FB_EventLog.TcPOU">
       <SubType>Code</SubType>
     </Compile>

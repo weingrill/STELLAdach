@@ -56,12 +56,8 @@ VAR
 	Windavg2:	FB_TimeAverage;
 	PressureAverage:	FB_TimeAverage;
 	
-	Dust11Average:	FB_TimeAverage;
-	Dust12Average:	FB_TimeAverage;
-	Dust21Average:	FB_TimeAverage;
-	Dust22Average:	FB_TimeAverage;
-	DigitalDust1:			REAL;
-	DigitalDust2:			REAL;
+	DigitalDust1:	FB_Dust;
+	DigitalDust2:	FB_Dust;
 	// MQTT timer
 	MQTTTimer : TON := (PT:=T#5S);
 	// MQTT payload string
@@ -120,21 +116,8 @@ WindAvg2(IN := WindSpeed2, PT := T#2M, MAXAVG=> MaximumWind2);
 PressureAverage(IN := Pressure, PT := T#1M);
 
 // digital dust sensor
-Dust11Average(IN := 1.0 - BOOL_TO_REAL(Environment.rawDust11), PT := T#30S); 
-Dust12Average(IN := 1.0 - BOOL_TO_REAL(Environment.rawDust12), PT := T#30S);
-Dust21Average(IN := 1.0 - BOOL_TO_REAL(Environment.rawDust21), PT := T#30S);
-Dust22Average(IN := 1.0 - BOOL_TO_REAL(Environment.rawDust22), PT := T#30S);
-
-IF Dust11Average.MAXAVG < 1.0 AND Dust12Average.MAXAVG < 1.0 THEN
-	DigitalDust1 := 10.0 * MAX(Dust11Average.AVG, Dust21Average.AVG); //mg/m³
-ELSE
-	DigitalDust1 := 0.0;
-END_IF
-IF Dust21Average.MAXAVG < 1.0 AND Dust22Average.MAXAVG < 1.0 THEN
-	DigitalDust2 := 10.0 * MAX(Dust12Average.AVG, Dust22Average.AVG); //mg/m³
-ELSE
-	DigitalDust2 := 0.0;
-END_IF
+DigitalDust1(pwm1 := Environment.rawDust11, pwm2 := Environment.rawDust12);
+DigitalDust2(pwm1 := Environment.rawDust21, pwm2 := Environment.rawDust22);
 
 (* MQTT Section *)
 
@@ -197,7 +180,8 @@ IF MQTTTimer.Q THEN // publish new payload every second
 	sPayloadPub := APPEND(sPayloadPub, 'BayTemperature=', LREAL_TO_FMTSTR(TemperatureBay, 2, TRUE));
 	sPayloadPub := APPEND(sPayloadPub, ',BayHumidity=', LREAL_TO_FMTSTR(HumidityBay, 2, TRUE));		
 	sPayloadPub := APPEND(sPayloadPub, ',BayWindSpeed=', LREAL_TO_FMTSTR(Windspeed_bay, 2, TRUE));		
-	sPayloadPub := APPEND(sPayloadPub, ',EnvironmentDustDigital=', LREAL_TO_FMTSTR(DigitalDust1, 5, TRUE));		
+	sPayloadPub := APPEND(sPayloadPub, ',EnvironmentDustPM1=', LREAL_TO_FMTSTR(DigitalDust1.concentration1, 5, TRUE));		
+	sPayloadPub := APPEND(sPayloadPub, ',EnvironmentDustPM25=', LREAL_TO_FMTSTR(DigitalDust1.concentration2, 5, TRUE));		
 	
 	IF MQTTCommunication.fbMqttClient.bConnected THEN
 		MQTTCommunication.fbMqttClient.Publish(	
@@ -237,19 +221,12 @@ END_IF
       <LineId Id="889" Count="1" />
       <LineId Id="753" Count="12" />
       <LineId Id="892" Count="0" />
-      <LineId Id="766" Count="5" />
+      <LineId Id="766" Count="2" />
+      <LineId Id="895" Count="0" />
       <LineId Id="882" Count="0" />
-      <LineId Id="878" Count="0" />
-      <LineId Id="881" Count="0" />
-      <LineId Id="885" Count="1" />
-      <LineId Id="880" Count="0" />
-      <LineId Id="883" Count="0" />
-      <LineId Id="773" Count="0" />
-      <LineId Id="887" Count="1" />
-      <LineId Id="884" Count="0" />
-      <LineId Id="775" Count="12" />
+      <LineId Id="776" Count="11" />
       <LineId Id="789" Count="48" />
-      <LineId Id="866" Count="0" />
+      <LineId Id="897" Count="1" />
       <LineId Id="838" Count="26" />
       <LineId Id="146" Count="0" />
     </LineIds>

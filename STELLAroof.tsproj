@@ -95,10 +95,6 @@
 					<Vars VarGrpType="1">
 						<Name>PlcTask Inputs</Name>
 						<Var>
-							<Name>Environment.Rain_alarm1</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
 							<Name>Environment.rawWindSpeed1</Name>
 							<Comment><![CDATA[ Weather Station 1]]></Comment>
 							<Type>INT</Type>
@@ -116,16 +112,16 @@
 							<Type>INT</Type>
 						</Var>
 						<Var>
-							<Name>Environment.rawWindDirection</Name>
-							<Type>INT</Type>
+							<Name>Environment.Rain_alarm1</Name>
+							<Type>BOOL</Type>
 						</Var>
 						<Var>
 							<Name>Environment.Overcorrect_status1</Name>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>Environment.Rain_alarm2</Name>
-							<Type>BOOL</Type>
+							<Name>Environment.rawWindDirection</Name>
+							<Type>INT</Type>
 						</Var>
 						<Var>
 							<Name>Environment.rawPressure</Name>
@@ -149,16 +145,20 @@
 							<Type>INT</Type>
 						</Var>
 						<Var>
+							<Name>Environment.Rain_alarm2</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Environment.Overcorrect_status2</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
 							<Name>Environment.rawBrightness</Name>
 							<Type>INT</Type>
 						</Var>
 						<Var>
 							<Name>Environment.rawBrightnessLow</Name>
 							<Type>INT</Type>
-						</Var>
-						<Var>
-							<Name>Environment.Overcorrect_status2</Name>
-							<Type>BOOL</Type>
 						</Var>
 						<Var>
 							<Name>Environment.rawTemperature_Electronics</Name>
@@ -203,6 +203,22 @@
 						<Var>
 							<Name>Environment.DustSensorError</Name>
 							<Comment><![CDATA[ sensor error]]></Comment>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Environment.rawDust11</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Environment.rawDust12</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Environment.rawDust21</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Environment.rawDust22</Name>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
@@ -369,22 +385,6 @@
 						<Var>
 							<Name>GVL_Roof.IMotorschutz26</Name>
 							<Comment><![CDATA[MS6NC2]]></Comment>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>Environment.rawDust11</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>Environment.rawDust12</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>Environment.rawDust21</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>Environment.rawDust22</Name>
 							<Type>BOOL</Type>
 						</Var>
 					</Vars>
@@ -827,27 +827,27 @@
 							<SyncMan>001001000000010004000000000000000100001000010000</SyncMan>
 							<Fmmu>0000000000000000001000010100000002000000000000000000000000000000</Fmmu>
 							<Pdo Name="Channel 1" Index="#x1a00" Flags="#x0011" SyncMan="0">
-								<Entry Name="Input" Index="#x6000" Sub="#x01">
+								<Entry Name="GVL_Panel.IManualSwitch" Index="#x6000" Sub="#x01">
 									<Type>BIT</Type>
 								</Entry>
 							</Pdo>
 							<Pdo Name="Channel 2" Index="#x1a01" Flags="#x0011" SyncMan="0">
-								<Entry Name="Input" Index="#x6010" Sub="#x01">
+								<Entry Name="GVL_Panel.ILeftOpenswitch" Index="#x6010" Sub="#x01">
 									<Type>BIT</Type>
 								</Entry>
 							</Pdo>
 							<Pdo Name="Channel 3" Index="#x1a02" Flags="#x0011" SyncMan="0">
-								<Entry Name="Input" Index="#x6020" Sub="#x01">
+								<Entry Name="GVL_Panel.ILeftCloseswitch" Index="#x6020" Sub="#x01">
 									<Type>BIT</Type>
 								</Entry>
 							</Pdo>
 							<Pdo Name="Channel 4" Index="#x1a03" Flags="#x0011" SyncMan="0">
-								<Entry Name="Input" Index="#x6030" Sub="#x01">
+								<Entry Name="GVL_Panel.IRightOpenSwitch" Index="#x6030" Sub="#x01">
 									<Type>BIT</Type>
 								</Entry>
 							</Pdo>
 							<Pdo Name="Channel 5" Index="#x1a04" Flags="#x0011" SyncMan="0">
-								<Entry Name="Input" Index="#x6040" Sub="#x01">
+								<Entry Name="GVL_Panel.IRightCloseSwitch" Index="#x6040" Sub="#x01">
 									<Type>BIT</Type>
 								</Entry>
 							</Pdo>
@@ -2914,22 +2914,22 @@ Bit1: Value bigger/equal Limit2]]></Comment>
 							<SyncMan>001001000000010004000000000000000100001000010000</SyncMan>
 							<Fmmu>0000000000000000001000010100000002000000000000000000000000000000</Fmmu>
 							<Pdo Name="Channel 1" Index="#x1a00" Flags="#x0011" SyncMan="0">
-								<Entry Name="Input" Index="#x6000" Sub="#x01">
+								<Entry Name="Environment.rawDust11" Index="#x6000" Sub="#x01">
 									<Type>BIT</Type>
 								</Entry>
 							</Pdo>
 							<Pdo Name="Channel 2" Index="#x1a01" Flags="#x0011" SyncMan="0">
-								<Entry Name="Input" Index="#x6010" Sub="#x01">
+								<Entry Name="Environment.rawDust12" Index="#x6010" Sub="#x01">
 									<Type>BIT</Type>
 								</Entry>
 							</Pdo>
 							<Pdo Name="Channel 3" Index="#x1a02" Flags="#x0011" SyncMan="0">
-								<Entry Name="Input" Index="#x6020" Sub="#x01">
+								<Entry Name="Environment.rawDust21" Index="#x6020" Sub="#x01">
 									<Type>BIT</Type>
 								</Entry>
 							</Pdo>
 							<Pdo Name="Channel 4" Index="#x1a03" Flags="#x0011" SyncMan="0">
-								<Entry Name="Input" Index="#x6030" Sub="#x01">
+								<Entry Name="Environment.rawDust22" Index="#x6030" Sub="#x01">
 									<Type>BIT</Type>
 								</Entry>
 							</Pdo>
@@ -3012,11 +3012,11 @@ Bit1: Value bigger/equal Limit2]]></Comment>
 				<Link VarA="PlcTask Inputs^GVL_Roof.IMotorschutz26" VarB="Channel 6^MS6NC"/>
 			</OwnerB>
 			<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1200)^Modul7 (EL1008)">
-				<Link VarA="PlcTask Inputs^GVL_Panel.ILeftCloseswitch" VarB="Channel 3^Input"/>
-				<Link VarA="PlcTask Inputs^GVL_Panel.ILeftOpenswitch" VarB="Channel 2^Input"/>
-				<Link VarA="PlcTask Inputs^GVL_Panel.IManualSwitch" VarB="Channel 1^Input"/>
-				<Link VarA="PlcTask Inputs^GVL_Panel.IRightCloseSwitch" VarB="Channel 5^Input"/>
-				<Link VarA="PlcTask Inputs^GVL_Panel.IRightOpenSwitch" VarB="Channel 4^Input"/>
+				<Link VarA="PlcTask Inputs^GVL_Panel.ILeftCloseswitch" VarB="Channel 3^GVL_Panel.ILeftCloseswitch"/>
+				<Link VarA="PlcTask Inputs^GVL_Panel.ILeftOpenswitch" VarB="Channel 2^GVL_Panel.ILeftOpenswitch"/>
+				<Link VarA="PlcTask Inputs^GVL_Panel.IManualSwitch" VarB="Channel 1^GVL_Panel.IManualSwitch"/>
+				<Link VarA="PlcTask Inputs^GVL_Panel.IRightCloseSwitch" VarB="Channel 5^GVL_Panel.IRightCloseSwitch"/>
+				<Link VarA="PlcTask Inputs^GVL_Panel.IRightOpenSwitch" VarB="Channel 4^GVL_Panel.IRightOpenSwitch"/>
 			</OwnerB>
 			<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1200)^Modul8 (EL3068)">
 				<Link VarA="PlcTask Inputs^Environment.rawHumidityBay" VarB="AI Standard Channel 4^HumidityBay"/>
@@ -3062,10 +3062,10 @@ Bit1: Value bigger/equal Limit2]]></Comment>
 				<Link VarA="PlcTask Inputs^Environment.rawRain_analogue2" VarB="AI Standard Channel 1^Rainanalog"/>
 			</OwnerB>
 			<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1200)^Term 48 (EL1124)">
-				<Link VarA="PlcTask Inputs^Environment.rawDust11" VarB="Channel 1^Input"/>
-				<Link VarA="PlcTask Inputs^Environment.rawDust12" VarB="Channel 2^Input"/>
-				<Link VarA="PlcTask Inputs^Environment.rawDust21" VarB="Channel 3^Input"/>
-				<Link VarA="PlcTask Inputs^Environment.rawDust22" VarB="Channel 4^Input"/>
+				<Link VarA="PlcTask Inputs^Environment.rawDust11" VarB="Channel 1^Environment.rawDust11"/>
+				<Link VarA="PlcTask Inputs^Environment.rawDust12" VarB="Channel 2^Environment.rawDust12"/>
+				<Link VarA="PlcTask Inputs^Environment.rawDust21" VarB="Channel 3^Environment.rawDust21"/>
+				<Link VarA="PlcTask Inputs^Environment.rawDust22" VarB="Channel 4^Environment.rawDust22"/>
 			</OwnerB>
 		</OwnerA>
 	</Mappings>

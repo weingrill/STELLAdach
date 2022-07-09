@@ -226,16 +226,16 @@ Environment.Horn := WeatherAlarm OR MotionAlarm1 OR MotionAlarm2;
 
 (*** Logging Section ***)
 
-EnvironmentLog(	Trigger := EnvironmentAlarm, OnMessage := 'The weather is bad.', OffMessage := 'The weather is good.');
-DustLog(		Trigger := ConvertEnvironment.Dust > DustLimit, OnMessage := 'Dust is over limit', OffMessage := 'Dust is under limit');
-HumidityLog1(	Trigger := ConvertEnvironment.Humidity1 > HumidityLimit, OnMessage := 'Humidity 1 is over limit', OffMessage := 'Humidity 1 is under limit');
-HumidityLog2(	Trigger := ConvertEnvironment.Humidity2 > HumidityLimit, OnMessage := 'Humidity 2 is over limit', OffMessage := 'Humidity 2 is under limit');
-HumidityBayLog(	Trigger := ConvertEnvironment.HumidityBay > HumidityLimit, OnMessage := 'Humidity bay is over limit', OffMessage := 'Humidity Bay is under limit');
-WindSpeed1Log(	Trigger := ConvertEnvironment.WindSpeed1 > WindSpeedLimit, OnMessage := 'Wind speed 1 is over limit', OffMessage := 'Wind speed 1 is under limit');
-WindSpeed2Log(	Trigger := ConvertEnvironment.WindSpeed2 > WindSpeedLimit, OnMessage := 'Wind speed 2 is over limit', OffMessage := 'Wind speed 2 is under limit');
-WindSpeedBayLog(Trigger := ConvertEnvironment.Windspeed_bay > WindSpeedBayLimit, OnMessage := 'Wind speed in bay is over limit', OffMessage := 'Wind speed in bay is under limit');
-Rain1Log(		Trigger := NOT Environment.Rain_alarm1, OnMessage := 'Rain alarm 1 is on', OffMessage := 'Rain alarm 1 is off');
-Rain2Log(		Trigger := NOT Environment.Rain_alarm2, OnMessage := 'Rain alarm 2 is on', OffMessage := 'Rain alarm 2 is off');
+EnvironmentLog(	Trigger := EnvironmentAlarm, Level := ADSLOG_MSGTYPE_WARN, OnMessage := 'The weather is bad.', OffMessage := 'The weather is good.');
+DustLog(		Trigger := ConvertEnvironment.Dust > DustLimit, Level := ADSLOG_MSGTYPE_WARN, OnMessage := 'Dust is over limit');
+HumidityLog1(	Trigger := ConvertEnvironment.Humidity1 > HumidityLimit, Level := ADSLOG_MSGTYPE_WARN, OnMessage := 'Humidity 1 is over limit');
+HumidityLog2(	Trigger := ConvertEnvironment.Humidity2 > HumidityLimit, Level := ADSLOG_MSGTYPE_WARN, OnMessage := 'Humidity 2 is over limit');
+HumidityBayLog(	Trigger := ConvertEnvironment.HumidityBay > HumidityLimit, Level := ADSLOG_MSGTYPE_WARN, OnMessage := 'Humidity bay is over limit');
+WindSpeed1Log(	Trigger := ConvertEnvironment.WindSpeed1 > WindSpeedLimit, Level := ADSLOG_MSGTYPE_WARN, OnMessage := 'Wind speed 1 is over limit');
+WindSpeed2Log(	Trigger := ConvertEnvironment.WindSpeed2 > WindSpeedLimit, Level := ADSLOG_MSGTYPE_WARN, OnMessage := 'Wind speed 2 is over limit');
+WindSpeedBayLog(Trigger := ConvertEnvironment.Windspeed_bay > WindSpeedBayLimit, Level := ADSLOG_MSGTYPE_WARN, OnMessage := 'Wind speed in bay is over limit');
+Rain1Log(		Trigger := NOT Environment.Rain_alarm1, Level := ADSLOG_MSGTYPE_WARN, OnMessage := 'Rain alarm 1 is on');
+Rain2Log(		Trigger := NOT Environment.Rain_alarm2, Level := ADSLOG_MSGTYPE_WARN, OnMessage := 'Rain alarm 2 is on');
 
 OpenRoof1Log( Trigger := Roof1Command = OpenRoof, OnMessage := 'Open roof 1');
 OpenRoof2Log( Trigger := Roof2Command = OpenRoof, OnMessage := 'Open roof 2');
@@ -253,20 +253,23 @@ Roof2WarningLog( Trigger := Roof2Status = StatusUndefined, Level := ADSLOG_MSGTY
 LightLog(Trigger := Environment.LightBay, OnMessage := 'The light is on.', OffMessage := 'The light is off.');
 
 (*** MQTT Section ***)
-IF Roof1Status <> LastRoof1Status THEN
-	sPayloadPub := 'roof,location=roof1,host=CX-284792 ';
+IF Roof1Status <> LastRoof1Status OR Roof2Status <> LastRoof2Status THEN
+	sPayloadPub := 'roof,location=roof,host=CX-284792 ';
 	sPayloadPub := APPEND(sPayloadPub, 'Roof1Status=', RoofStatus_TO_String(Roof1Status));
+	sPayloadPub := APPEND(sPayloadPub, ',Roof2Status=', RoofStatus_TO_String(Roof2Status));
 	
 	MQTTCommunication.fbMqttClient.Publish(	
 					sTopic:= 'STELLA/Telemetry', 
 					pPayload:= ADR(sPayloadPub), 
 					nPayloadSize:= LEN2(ADR(sPayloadPub)),
 					eQoS:= TcIotMqttQos.AtMostOnceDelivery,
-					bRetain:= FALSE, 
+					bRetain:= TRUE, 
 					bQueue:= FALSE );
 	LastRoof1Status := Roof1Status;
+	LastRoof2Status := Roof2Status;
 END_IF
 
+(*
 IF Roof2Status <> LastRoof2Status THEN
 	sPayloadPub := 'roof,location=roof2,host=CX-284792 ';
 	sPayloadPub := APPEND(sPayloadPub, 'Roof2Status=', RoofStatus_TO_String(Roof2Status));
@@ -276,10 +279,11 @@ IF Roof2Status <> LastRoof2Status THEN
 					pPayload:= ADR(sPayloadPub), 
 					nPayloadSize:= LEN2(ADR(sPayloadPub)),
 					eQoS:= TcIotMqttQos.AtMostOnceDelivery,
-					bRetain:= FALSE, 
+					bRetain:= TRUE, 
 					bQueue:= FALSE );
 	LastRoof2Status := Roof2Status;
 END_IF
+*)
 ]]></ST>
     </Implementation>
     <LineIds Name="MAIN">
@@ -331,8 +335,15 @@ END_IF
       <LineId Id="766" Count="0" />
       <LineId Id="709" Count="26" />
       <LineId Id="765" Count="0" />
-      <LineId Id="737" Count="27" />
+      <LineId Id="737" Count="4" />
+      <LineId Id="1119" Count="0" />
+      <LineId Id="742" Count="7" />
+      <LineId Id="1122" Count="0" />
+      <LineId Id="750" Count="0" />
+      <LineId Id="1120" Count="0" />
+      <LineId Id="751" Count="13" />
       <LineId Id="708" Count="0" />
+      <LineId Id="1121" Count="0" />
     </LineIds>
   </POU>
 </TcPlcObject>
