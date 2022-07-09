@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4022.12">
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
   <POU Name="FB_TimeAverage" Id="{ff6c1fff-8a09-4318-a1a5-cf396845e9f1}" SpecialFunc="None">
     <Declaration><![CDATA[FUNCTION_BLOCK FB_TimeAverage
 VAR_INPUT
@@ -13,7 +13,7 @@ VAR_OUTPUT
 END_VAR
 VAR
 	fbCycle	:TON;
-	buffer:	ARRAY[0..10000] OF REAL;
+	buffer:	ARRAY[0..32000] OF REAL;
 	index:	INT := 0;
 	number:	INT := 0;
 	i:		INT;
@@ -28,7 +28,7 @@ END_VAR
 buffer[index] := IN;
 
 // increase the index
-IF index < 10000 THEN
+IF index < 32000 THEN
 	index := index + 1;
 END_IF
 
