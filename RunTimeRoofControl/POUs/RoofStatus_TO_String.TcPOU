@@ -28,33 +28,33 @@ END_VAR
 
 *)
 IF RoofStatus = StatusError THEN
-	RoofStatus_TO_String := 'Error';
+	RoofStatus_TO_String := '"Error"';
 ELSIF RoofStatus = StatusClosed THEN
-	RoofStatus_TO_String := 'Closed';
+	RoofStatus_TO_String := '"Closed"';
 ELSIF RoofStatus = StatusLocking THEN
-	RoofStatus_TO_String := 'Locking';
+	RoofStatus_TO_String := '"Locking"';
 ELSIF RoofStatus = StatusLocked THEN
-	RoofStatus_TO_String := 'Locked';
+	RoofStatus_TO_String := '"Locked"';
 ELSIF RoofStatus = StatusUnlocking THEN
-	RoofStatus_TO_String := 'Unlocking';
+	RoofStatus_TO_String := '"Unlocking"';
 ELSIF RoofStatus = StatusUnlocked THEN
-	RoofStatus_TO_String := 'Unlocked';
+	RoofStatus_TO_String := '"Unlocked"';
 ELSIF RoofStatus = StatusStartOpening THEN
-	RoofStatus_TO_String := 'StartOpening';
+	RoofStatus_TO_String := '"StartOpening"';
 ELSIF RoofStatus = StatusOpening THEN
-	RoofStatus_TO_String := 'Opening';
+	RoofStatus_TO_String := '"Opening"';
 ELSIF RoofStatus = StatusEndOpening THEN
-	RoofStatus_TO_String := 'EndOpening';
+	RoofStatus_TO_String := '"EndOpening"';
 ELSIF RoofStatus = StatusOpened THEN
-	RoofStatus_TO_String := 'Opened';
+	RoofStatus_TO_String := '"Opened"';
 ELSIF RoofStatus = StatusStartClosing THEN
-	RoofStatus_TO_String := 'StartClosing';
+	RoofStatus_TO_String := '"StartClosing"';
 ELSIF RoofStatus = StatusClosing THEN
-	RoofStatus_TO_String := 'Closing';
+	RoofStatus_TO_String := '"Closing"';
 ELSIF RoofStatus = StatusEndClosing THEN
-	RoofStatus_TO_String := 'EndClosing';
+	RoofStatus_TO_String := '"EndClosing"';
 ELSE
-	RoofStatus_TO_String := 'Undefined';
+	RoofStatus_TO_String := '"Undefined"';
 END_IF]]></ST>
     </Implementation>
     <LineIds Name="RoofStatus_TO_String">
