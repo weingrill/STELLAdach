@@ -1,0 +1,45 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <POU Name="FB_Dust" Id="{16b3d348-f494-4ceb-aa12-87fed7e10e58}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_Dust
+VAR_INPUT
+	pwm1:	BOOL;
+	pwm2:	BOOL;
+END_VAR
+VAR_OUTPUT
+	// particle concentration in mg/m³ for PM1.0
+	concentration1:	REAL;
+	// particle concentration in mg/m³ for PM2.5
+	concentration2:	REAL;
+END_VAR
+VAR
+	pwm1Average:	FB_TimeAverage;
+	pwm2Average:	FB_TimeAverage;
+	ratio1:			REAL;
+	ratio2:			REAL;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[(* Conversion routine for the Shinyei PPD42NS dust sensor *)
+
+pwm1Average(IN := 1.0 - BOOL_TO_REAL(pwm1), PT := T#300S);
+pwm2Average(IN := 1.0 - BOOL_TO_REAL(pwm2), PT := T#300S);
+// calculate ratios in percent
+ratio1 := 100.0 * pwm1Average.AVG; 
+ratio2 := 100.0 * pwm2Average.AVG;
+//calculate concentrations per ml as a polyfit from datasheet
+concentration1 := LREAL_TO_REAL(0.0429116*EXPT(ratio1,3) -0.25124529*EXPT(ratio1,2) + 19.05310848*ratio1);
+concentration2 := LREAL_TO_REAL(0.0429116*EXPT(ratio2,3) -0.25124529*EXPT(ratio2,2) + 19.05310848*ratio2);
+]]></ST>
+    </Implementation>
+    <LineIds Name="FB_Dust">
+      <LineId Id="30" Count="1" />
+      <LineId Id="20" Count="2" />
+      <LineId Id="14" Count="1" />
+      <LineId Id="29" Count="0" />
+      <LineId Id="9" Count="0" />
+      <LineId Id="28" Count="0" />
+      <LineId Id="27" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>
