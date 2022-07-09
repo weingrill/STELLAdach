@@ -22,7 +22,7 @@ VAR CONSTANT
 END_VAR]]></Declaration>
     <Implementation>
       <ST><![CDATA[IF ConvertEnvironment.HumidityBay > HumidityBayHigh THEN
-	RunDelay.IN := TRUE;
+	RunDelay.IN := Enable;
 ELSIF ConvertEnvironment.HumidityBay < HumidityBayLow THEN
 	RunDelay.IN := FALSE;
 END_IF
