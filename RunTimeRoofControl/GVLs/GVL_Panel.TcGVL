@@ -18,6 +18,10 @@ VAR_GLOBAL
 	Roof1Lamp			AT%Q*:	BOOL;
 	// roof status lamp 2
 	Roof2Lamp			AT%Q*:	BOOL;
+	//EL9410 status US
+	Us_Undervoltage		AT%I*:	BOOL;
+	//EL9410 status Up
+	Up_Undervoltage		AT%I*:	BOOL;
 END_VAR]]></Declaration>
   </GVL>
 </TcPlcObject>

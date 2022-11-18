@@ -20,6 +20,11 @@ VAR
 	MS5NC2,
 	MS6NC2:	BOOL;
 
+	NC1Status: WORD;
+	LastNC1Status: WORD := 16#FFFF;
+	
+	NC2Status: WORD;
+	LastNC2Status: WORD := 16#FFFF;
 END_VAR
 ]]></Declaration>
     <Implementation>
@@ -39,7 +44,29 @@ MS4NC2 := NOT GVL_Roof.IMotorschutz24;
 MS5NC2 := NOT GVL_Roof.IMotorschutz25;
 MS6NC2 := NOT GVL_Roof.IMotorschutz26;
 
-]]></ST>
+NC1Status.0 := MS1NC1;
+NC1Status.1 := MS2NC1;
+NC1Status.2 := MS3NC1;
+NC1Status.3 := MS4NC1;
+NC1Status.4 := MS5NC1;
+NC1Status.5 := MS6NC1;
+
+IF NC1Status <> LastNc1Status THEN
+	MAIN.MQTTClient.Publish('roof', 'roof1', 'NC1Status', WORD_TO_STRING(NC1Status));
+	LastNc1Status := NC1Status;
+END_IF
+
+NC2Status.0 := MS1NC2;
+NC2Status.1 := MS2NC2;
+NC2Status.2 := MS3NC2;
+NC2Status.3 := MS4NC2;
+NC2Status.4 := MS5NC2;
+NC2Status.5 := MS6NC2;
+
+IF NC2Status <> LastNc2Status THEN
+	MAIN.MQTTClient.Publish('roof', 'roof2', 'NC2Status', WORD_TO_STRING(NC2Status));
+	LastNc2Status := NC2Status;
+END_IF]]></ST>
     </Implementation>
     <LineIds Name="Auxiliary">
       <LineId Id="5" Count="0" />
@@ -48,8 +75,16 @@ MS6NC2 := NOT GVL_Roof.IMotorschutz26;
       <LineId Id="18" Count="4" />
       <LineId Id="31" Count="0" />
       <LineId Id="33" Count="5" />
+      <LineId Id="63" Count="0" />
+      <LineId Id="62" Count="0" />
+      <LineId Id="64" Count="4" />
       <LineId Id="32" Count="0" />
       <LineId Id="17" Count="0" />
+      <LineId Id="70" Count="0" />
+      <LineId Id="72" Count="0" />
+      <LineId Id="71" Count="0" />
+      <LineId Id="74" Count="10" />
+      <LineId Id="73" Count="0" />
     </LineIds>
   </POU>
 </TcPlcObject>

@@ -1,0 +1,59 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <POU Name="Logging" Id="{c7fc7173-d1e1-4504-b50d-ca5e93deabf1}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM Logging
+VAR
+	// Logging voriables
+	EnvironmentLog,
+	DustLog,
+	HumidityLog1,
+	HumidityLog2,
+	HumidityBayLog,
+	WindSpeed1Log,
+	WindSpeed2Log,
+	WindSpeedBayLog,
+	Rain1Log,
+	Rain2Log,
+	OpenRoof1Log, CloseRoof1Log, StopRoof1Log,
+	OpenRoof2Log, CloseRoof2Log, StopRoof2Log,
+	Roof1ErrorLog, Roof2ErrorLog,
+	Roof1WarningLog, Roof2WarningLog,
+	LightLog: FB_EventLog;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[(*** Logging Section ***)
+
+EnvironmentLog(	Trigger := MAIN.EnvironmentAlarm, Level := ADSLOG_MSGTYPE_WARN, OnMessage := 'The weather is bad.', OffMessage := 'The weather is good.');
+DustLog(		Trigger := ConvertEnvironment.Dust > MAIN.DustLimit, Level := ADSLOG_MSGTYPE_WARN, OnMessage := 'Dust is over limit');
+HumidityLog1(	Trigger := ConvertEnvironment.Humidity1 > MAIN.HumidityLimit, Level := ADSLOG_MSGTYPE_WARN, OnMessage := 'Humidity 1 is over limit');
+HumidityLog2(	Trigger := ConvertEnvironment.Humidity2 > MAIN.HumidityLimit, Level := ADSLOG_MSGTYPE_WARN, OnMessage := 'Humidity 2 is over limit');
+HumidityBayLog(	Trigger := ConvertEnvironment.HumidityBay > MAIN.HumidityLimit, Level := ADSLOG_MSGTYPE_WARN, OnMessage := 'Humidity bay is over limit');
+WindSpeed1Log(	Trigger := ConvertEnvironment.WindSpeed1 > MAIN.WindSpeedLimit, Level := ADSLOG_MSGTYPE_WARN, OnMessage := 'Wind speed 1 is over limit');
+WindSpeed2Log(	Trigger := ConvertEnvironment.WindSpeed2 > MAIN.WindSpeedLimit, Level := ADSLOG_MSGTYPE_WARN, OnMessage := 'Wind speed 2 is over limit');
+WindSpeedBayLog(Trigger := ConvertEnvironment.Windspeed_bay > MAIN.WindSpeedBayLimit, Level := ADSLOG_MSGTYPE_WARN, OnMessage := 'Wind speed in bay is over limit');
+Rain1Log(		Trigger := NOT Environment.Rain_alarm1, Level := ADSLOG_MSGTYPE_WARN, OnMessage := 'Rain alarm 1 is on');
+Rain2Log(		Trigger := NOT Environment.Rain_alarm2, Level := ADSLOG_MSGTYPE_WARN, OnMessage := 'Rain alarm 2 is on');
+
+OpenRoof1Log( Trigger := MAIN.Roof1Command = OpenRoof, OnMessage := 'Open roof 1');
+OpenRoof2Log( Trigger := MAIN.Roof2Command = OpenRoof, OnMessage := 'Open roof 2');
+CloseRoof1Log( Trigger := MAIN.Roof1Command = CloseRoof, OnMessage := 'Close roof 1');
+CloseRoof2Log( Trigger := MAIN.Roof2Command = CloseRoof, OnMessage := 'Close roof 2');
+StopRoof1Log( Trigger := MAIN.Roof1Command = StopRoof, OnMessage := 'Stop roof 1');
+StopRoof2Log( Trigger := MAIN.Roof2Command = StopRoof, OnMessage := 'Stop roof 2');
+
+Roof1ErrorLog( Trigger := MAIN.Roof1Status = StatusError, Level := ADSLOG_MSGTYPE_ERROR, OnMessage := 'Roof 1 has an error!');
+Roof2ErrorLog( Trigger := MAIN.Roof2Status = StatusError, Level := ADSLOG_MSGTYPE_ERROR, OnMessage := 'Roof 2 has an error!');
+
+Roof1WarningLog( Trigger := MAIN.Roof1Status = StatusUndefined, Level := ADSLOG_MSGTYPE_WARN, OnMessage := 'The status of roof 1 is undefined!');
+Roof2WarningLog( Trigger := MAIN.Roof2Status = StatusUndefined, Level := ADSLOG_MSGTYPE_WARN, OnMessage := 'The status of roof 2 is undefined!');
+
+LightLog(Trigger := Environment.LightBay, OnMessage := 'The light is on.', OffMessage := 'The light is off.');
+]]></ST>
+    </Implementation>
+    <LineIds Name="Logging">
+      <LineId Id="22" Count="26" />
+      <LineId Id="5" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

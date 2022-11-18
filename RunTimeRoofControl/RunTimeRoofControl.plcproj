@@ -43,40 +43,49 @@
     <Compile Include="PlcTask.TcTTO">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="POUs\APPEND.TcPOU">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="POUs\Auxiliary.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="POUs\DehumidifierControl.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="POUs\FB_BLINK.TcPOU">
+    <Compile Include="POUs\Function Blocks\FB_BLINK.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="POUs\FB_Dust.TcPOU">
+    <Compile Include="POUs\Function Blocks\FB_Dust.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="POUs\FB_EventLog.TcPOU">
+    <Compile Include="POUs\Function Blocks\FB_EventLog.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="POUs\FB_RoofControl.TcPOU">
+    <Compile Include="POUs\Function Blocks\FB_MQTTCommunication.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="POUs\FB_StatusLamp.TcPOU">
+    <Compile Include="POUs\Function Blocks\FB_RoofControl.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="POUs\FB_TimeAverage.TcPOU">
+    <Compile Include="POUs\Function Blocks\FB_StatusLamp.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="POUs\F_RainConversion.TcPOU">
+    <Compile Include="POUs\Function Blocks\FB_TimeAverage.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="POUs\F_Y.TcPOU">
+    <Compile Include="POUs\Function Blocks\InfluxMessage.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="POUs\InfluxMessage.TcPOU">
+    <Compile Include="POUs\Functions\APPEND.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\Functions\F_RainConversion.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\Functions\F_Y.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\Functions\RoofStatus_TO_String.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\Logging.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="POUs\MAIN.TcPOU">
@@ -85,16 +94,12 @@
     <Compile Include="POUs\ConvertEnvironment.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="POUs\MQTTCommunication.TcPOU">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="POUs\RoofStatus_TO_String.TcPOU">
-      <SubType>Code</SubType>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="DUTs" />
     <Folder Include="GVLs" />
+    <Folder Include="POUs\Function Blocks" />
+    <Folder Include="POUs\Functions" />
     <Folder Include="VISUs" />
     <Folder Include="POUs" />
   </ItemGroup>

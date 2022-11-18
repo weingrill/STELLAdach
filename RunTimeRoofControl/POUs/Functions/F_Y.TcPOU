@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4018.5">
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
   <POU Name="F_Y" Id="{afff79a1-5502-41d7-aa35-a4d2761c9eb4}" SpecialFunc="None">
     <Declaration><![CDATA[FUNCTION F_Y : REAL
 VAR_INPUT
@@ -48,5 +48,9 @@ IF (fXmax - fXmin) <> 0 THEN
 END_IF
 ]]></ST>
     </Implementation>
+    <LineIds Name="F_Y">
+      <LineId Id="3" Count="32" />
+      <LineId Id="2" Count="0" />
+    </LineIds>
   </POU>
 </TcPlcObject>

@@ -11,8 +11,7 @@ VAR
 	RunDelay : TOF := (PT:=T#30S);
 	// classic event log
 	DehumidifierLog: FB_EventLog;
-	// MQTT payload string for publishing
-	sPayloadPub: STRING(255) := '';
+	
 	OnTrigger:	R_TRIG;
 	OffTrigger:	F_TRIG;
 END_VAR
@@ -35,16 +34,7 @@ DehumidifierLog(Trigger := Environment.Dehumidifier, OnMessage := 'The dehumidif
 OnTrigger(CLK := Environment.Dehumidifier);
 OffTrigger(CLK := Environment.Dehumidifier);
 IF OnTrigger.Q OR OffTrigger.Q THEN
-	sPayloadPub := 'bay,location=bay,host=CX-284792 ';
-	sPayloadPub := APPEND(sPayloadPub, 'Dehumidifier=', BOOL_TO_STRING(Environment.Dehumidifier));
-	
-	MQTTCommunication.fbMqttClient.Publish(	
-					sTopic:= 'STELLA/Telemetry', 
-					pPayload:= ADR(sPayloadPub), 
-					nPayloadSize:= LEN2(ADR(sPayloadPub)),
-					eQoS:= TcIotMqttQos.AtMostOnceDelivery,
-					bRetain:= FALSE, 
-					bQueue:= FALSE );
+	MAIN.MQTTClient.Publish('bay', 'bay', 'Dehumidifier', BOOL_TO_STRING(Environment.Dehumidifier));
 END_IF]]></ST>
     </Implementation>
     <LineIds Name="DehumidifierControl">
@@ -54,7 +44,7 @@ END_IF]]></ST>
       <LineId Id="32" Count="1" />
       <LineId Id="36" Count="1" />
       <LineId Id="56" Count="1" />
-      <LineId Id="38" Count="10" />
+      <LineId Id="38" Count="1" />
       <LineId Id="31" Count="0" />
     </LineIds>
   </POU>

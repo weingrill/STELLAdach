@@ -42,22 +42,7 @@ VAR
 	DustSensorError: BOOL;
 	// Timer for Dome Light
 	LightTimer:		TP;
-	// Logging voriables
-	EnvironmentLog,
-	DustLog,
-	HumidityLog1,
-	HumidityLog2,
-	HumidityBayLog,
-	WindSpeed1Log,
-	WindSpeed2Log,
-	WindSpeedBayLog,
-	Rain1Log,
-	Rain2Log,
-	OpenRoof1Log, CloseRoof1Log, StopRoof1Log,
-	OpenRoof2Log, CloseRoof2Log, StopRoof2Log,
-	Roof1ErrorLog, Roof2ErrorLog,
-	Roof1WarningLog, Roof2WarningLog,
-	LightLog: FB_EventLog;
+
 	RoofStatusLamp1,
 	RoofStatusLamp2: FB_StatusLamp;
 	WeatherAlarm,
@@ -69,19 +54,17 @@ VAR
 	EnvironmentAlarm: BOOL;
 	// time function block for Environment signal
 	EnvironmentBadTimer: TON;
-	// MQTT payload string for publishing
-	sPayloadPub: STRING(255) := '';
-	
+	MQTTTimer : TON := (PT:=T#5S);
+	// MQTT class for publishing
+	MQTTClient:		FB_MQTTCommunication;
 END_VAR
 VAR CONSTANT
 	HumidityLimit:		REAL := 80.0;
-//	HumidityBayLow:		REAL := 55.0;
-//	HumidityBayHigh:	REAL := 70.0;
 	
 	WindSpeedLimit:		REAL := 20.0;
 	WindSpeedBayLimit:	REAL :=	15.0;
 	DustLimit:			REAL := 0.01;
-	BrightnessLimit:	REAL := 50000.0;
+	BrightnessLimit:	REAL := 40000.0;
 END_VAR]]></Declaration>
     <Implementation>
       <ST><![CDATA[IF GVL_Panel.IManualSwitch THEN
@@ -94,13 +77,16 @@ isRoofManual := GVL_Panel.IManualSwitch;
 DustSensorError := Environment.DustSensorError;
 
 // initialize MQTT Communication
-MQTTCommunication();
+MQTTClient();
 
 // collect weather data
 ConvertEnvironment();
 
 // Handle Auxiliary inputs and outputs
 Auxiliary();
+
+// Handle Logging
+Logging();
 
 // Control Logic for Dehumidifier
 DehumidifierControl(Enable := nMode = RoofAutomatic AND Roof1Status = StatusLocked AND Roof2Status = StatusLocked);
@@ -224,66 +210,16 @@ RoofStatusLamp2(RoofStatus := Roof2Status, RoofLamp => GVL_Panel.Roof2Lamp);
 // sound horn
 Environment.Horn := WeatherAlarm OR MotionAlarm1 OR MotionAlarm2;		
 
-(*** Logging Section ***)
-
-EnvironmentLog(	Trigger := EnvironmentAlarm, Level := ADSLOG_MSGTYPE_WARN, OnMessage := 'The weather is bad.', OffMessage := 'The weather is good.');
-DustLog(		Trigger := ConvertEnvironment.Dust > DustLimit, Level := ADSLOG_MSGTYPE_WARN, OnMessage := 'Dust is over limit');
-HumidityLog1(	Trigger := ConvertEnvironment.Humidity1 > HumidityLimit, Level := ADSLOG_MSGTYPE_WARN, OnMessage := 'Humidity 1 is over limit');
-HumidityLog2(	Trigger := ConvertEnvironment.Humidity2 > HumidityLimit, Level := ADSLOG_MSGTYPE_WARN, OnMessage := 'Humidity 2 is over limit');
-HumidityBayLog(	Trigger := ConvertEnvironment.HumidityBay > HumidityLimit, Level := ADSLOG_MSGTYPE_WARN, OnMessage := 'Humidity bay is over limit');
-WindSpeed1Log(	Trigger := ConvertEnvironment.WindSpeed1 > WindSpeedLimit, Level := ADSLOG_MSGTYPE_WARN, OnMessage := 'Wind speed 1 is over limit');
-WindSpeed2Log(	Trigger := ConvertEnvironment.WindSpeed2 > WindSpeedLimit, Level := ADSLOG_MSGTYPE_WARN, OnMessage := 'Wind speed 2 is over limit');
-WindSpeedBayLog(Trigger := ConvertEnvironment.Windspeed_bay > WindSpeedBayLimit, Level := ADSLOG_MSGTYPE_WARN, OnMessage := 'Wind speed in bay is over limit');
-Rain1Log(		Trigger := NOT Environment.Rain_alarm1, Level := ADSLOG_MSGTYPE_WARN, OnMessage := 'Rain alarm 1 is on');
-Rain2Log(		Trigger := NOT Environment.Rain_alarm2, Level := ADSLOG_MSGTYPE_WARN, OnMessage := 'Rain alarm 2 is on');
-
-OpenRoof1Log( Trigger := Roof1Command = OpenRoof, OnMessage := 'Open roof 1');
-OpenRoof2Log( Trigger := Roof2Command = OpenRoof, OnMessage := 'Open roof 2');
-CloseRoof1Log( Trigger := Roof1Command = CloseRoof, OnMessage := 'Close roof 1');
-CloseRoof2Log( Trigger := Roof2Command = CloseRoof, OnMessage := 'Close roof 2');
-StopRoof1Log( Trigger := Roof1Command = StopRoof, OnMessage := 'Stop roof 1');
-StopRoof2Log( Trigger := Roof2Command = StopRoof, OnMessage := 'Stop roof 2');
-
-Roof1ErrorLog( Trigger := Roof1Status = StatusError, Level := ADSLOG_MSGTYPE_ERROR, OnMessage := 'Roof 1 has an error!');
-Roof2ErrorLog( Trigger := Roof2Status = StatusError, Level := ADSLOG_MSGTYPE_ERROR, OnMessage := 'Roof 2 has an error!');
-
-Roof1WarningLog( Trigger := Roof1Status = StatusUndefined, Level := ADSLOG_MSGTYPE_WARN, OnMessage := 'The status of roof 1 is undefined!');
-Roof2WarningLog( Trigger := Roof2Status = StatusUndefined, Level := ADSLOG_MSGTYPE_WARN, OnMessage := 'The status of roof 2 is undefined!');
-
-LightLog(Trigger := Environment.LightBay, OnMessage := 'The light is on.', OffMessage := 'The light is off.');
 
 (*** MQTT Section ***)
-IF Roof1Status <> LastRoof1Status OR Roof2Status <> LastRoof2Status THEN
-	sPayloadPub := 'roof,location=roof,host=CX-284792 ';
-	sPayloadPub := APPEND(sPayloadPub, 'Roof1Status=', RoofStatus_TO_String(Roof1Status));
-	sPayloadPub := APPEND(sPayloadPub, ',Roof2Status=', RoofStatus_TO_String(Roof2Status));
-	
-	MQTTCommunication.fbMqttClient.Publish(	
-					sTopic:= 'STELLA/Telemetry', 
-					pPayload:= ADR(sPayloadPub), 
-					nPayloadSize:= LEN2(ADR(sPayloadPub)),
-					eQoS:= TcIotMqttQos.AtMostOnceDelivery,
-					bRetain:= TRUE, 
-					bQueue:= FALSE );
+MQTTTimer(IN:=TRUE);
+IF MQTTTimer.Q OR Roof1Status <> LastRoof1Status OR Roof2Status <> LastRoof2Status THEN
+	MQTTClient.Publish('roof', 'roof1', 'Roof1Status', RoofStatus_TO_String(Roof1Status));
+	MQTTClient.Publish('roof', 'roof2', 'Roof2Status', RoofStatus_TO_String(Roof2Status));
+	MQTTTimer(IN:=FALSE);
 	LastRoof1Status := Roof1Status;
 	LastRoof2Status := Roof2Status;
 END_IF
-
-(*
-IF Roof2Status <> LastRoof2Status THEN
-	sPayloadPub := 'roof,location=roof2,host=CX-284792 ';
-	sPayloadPub := APPEND(sPayloadPub, 'Roof2Status=', RoofStatus_TO_String(Roof2Status));
-	
-	MQTTCommunication.fbMqttClient.Publish(	
-					sTopic:= 'STELLA/Telemetry', 
-					pPayload:= ADR(sPayloadPub), 
-					nPayloadSize:= LEN2(ADR(sPayloadPub)),
-					eQoS:= TcIotMqttQos.AtMostOnceDelivery,
-					bRetain:= TRUE, 
-					bQueue:= FALSE );
-	LastRoof2Status := Roof2Status;
-END_IF
-*)
 ]]></ST>
     </Implementation>
     <LineIds Name="MAIN">
@@ -298,6 +234,7 @@ END_IF
       <LineId Id="785" Count="0" />
       <LineId Id="784" Count="0" />
       <LineId Id="798" Count="2" />
+      <LineId Id="1207" Count="2" />
       <LineId Id="1035" Count="2" />
       <LineId Id="782" Count="0" />
       <LineId Id="211" Count="0" />
@@ -333,16 +270,14 @@ END_IF
       <LineId Id="168" Count="0" />
       <LineId Id="2" Count="0" />
       <LineId Id="766" Count="0" />
-      <LineId Id="709" Count="26" />
       <LineId Id="765" Count="0" />
-      <LineId Id="737" Count="4" />
-      <LineId Id="1119" Count="0" />
-      <LineId Id="742" Count="7" />
+      <LineId Id="737" Count="0" />
+      <LineId Id="1206" Count="0" />
+      <LineId Id="738" Count="1" />
+      <LineId Id="741" Count="0" />
+      <LineId Id="748" Count="1" />
       <LineId Id="1122" Count="0" />
       <LineId Id="750" Count="0" />
-      <LineId Id="1120" Count="0" />
-      <LineId Id="751" Count="13" />
-      <LineId Id="708" Count="0" />
       <LineId Id="1121" Count="0" />
     </LineIds>
   </POU>
