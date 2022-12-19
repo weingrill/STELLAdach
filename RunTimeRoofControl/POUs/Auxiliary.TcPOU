@@ -28,7 +28,7 @@ VAR
 END_VAR
 ]]></Declaration>
     <Implementation>
-      <ST><![CDATA[Environment.RoofPower := RoofPower;
+      <ST><![CDATA[GVL_Environment.RoofPower := RoofPower;
 
 MS1NC1 := NOT GVL_Roof.IMotorschutz11;
 MS2NC1 := NOT GVL_Roof.IMotorschutz12;

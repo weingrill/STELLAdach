@@ -31,7 +31,7 @@
     <Compile Include="DUTs\E_RoofStatus.TcDUT">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="GVLs\Environment.TcGVL">
+    <Compile Include="GVLs\GVL_Environment.TcGVL">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="GVLs\GVL_Panel.TcGVL">
@@ -73,6 +73,12 @@
     <Compile Include="POUs\Function Blocks\InfluxMessage.TcPOU">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="POUs\Function Blocks\LIGHT_BUTTON.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\Function Blocks\TIMER.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="POUs\Functions\APPEND.TcPOU">
       <SubType>Code</SubType>
     </Compile>
@@ -91,7 +97,7 @@
     <Compile Include="POUs\MAIN.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="POUs\ConvertEnvironment.TcPOU">
+    <Compile Include="POUs\Environment.TcPOU">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>

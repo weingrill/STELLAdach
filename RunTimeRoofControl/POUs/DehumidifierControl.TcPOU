@@ -20,21 +20,21 @@ VAR CONSTANT
 	HumidityBayHigh:	REAL := 70.0;
 END_VAR]]></Declaration>
     <Implementation>
-      <ST><![CDATA[IF ConvertEnvironment.HumidityBay > HumidityBayHigh THEN
+      <ST><![CDATA[IF Environment.HumidityBay > HumidityBayHigh THEN
 	RunDelay.IN := Enable;
-ELSIF ConvertEnvironment.HumidityBay < HumidityBayLow THEN
+ELSIF Environment.HumidityBay < HumidityBayLow THEN
 	RunDelay.IN := FALSE;
 END_IF
 
-Environment.Dehumidifier := RunDelay.Q;
+GVL_Environment.Dehumidifier := RunDelay.Q;
 
-DehumidifierLog(Trigger := Environment.Dehumidifier, OnMessage := 'The dehumidifier is on.', OffMessage := 'The dehumidifier is off.');
+DehumidifierLog(Trigger := GVL_Environment.Dehumidifier, OnMessage := 'The dehumidifier is on.', OffMessage := 'The dehumidifier is off.');
 
 (*** MQTT Section ***)
-OnTrigger(CLK := Environment.Dehumidifier);
-OffTrigger(CLK := Environment.Dehumidifier);
+OnTrigger(CLK := GVL_Environment.Dehumidifier);
+OffTrigger(CLK := GVL_Environment.Dehumidifier);
 IF OnTrigger.Q OR OffTrigger.Q THEN
-	MAIN.MQTTClient.Publish('bay', 'bay', 'Dehumidifier', BOOL_TO_STRING(Environment.Dehumidifier));
+	MAIN.MQTTClient.Publish('bay', 'bay', 'Dehumidifier', BOOL_TO_STRING(GVL_Environment.Dehumidifier));
 END_IF]]></ST>
     </Implementation>
     <LineIds Name="DehumidifierControl">

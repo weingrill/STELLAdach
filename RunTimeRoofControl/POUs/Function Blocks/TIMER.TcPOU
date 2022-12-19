@@ -1,0 +1,38 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <POU Name="TIMER" Id="{7a6416e5-cc61-4d14-8bf3-453395375baf}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK TIMER
+VAR_INPUT
+	bStart : BOOL := TRUE;
+END_VAR
+VAR_OUTPUT
+	tDifference : TIME;
+END_VAR
+VAR
+	tTimeReturn1:	TIME;
+	tTimeReturn2:	TIME;
+	fbTrigger1:		R_TRIG;
+	fbTrigger2:		F_TRIG;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[fbTrigger1(CLK := bStart);
+fbTrigger2(CLK := bStart);
+
+IF fbTrigger1.Q THEN
+	tTimeReturn1 := TIME();
+END_IF
+
+IF bStart OR fbTrigger2.Q THEN
+	tTimeReturn2 := TIME();
+END_IF
+
+tDifference := tTimeReturn2 - tTimeReturn1;
+]]></ST>
+    </Implementation>
+    <LineIds Name="TIMER">
+      <LineId Id="10" Count="11" />
+      <LineId Id="9" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

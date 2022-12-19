@@ -6,11 +6,10 @@ VAR
 	// Logging voriables
 	EnvironmentLog,
 	DustLog,
-	HumidityLog1,
-	HumidityLog2,
+	HumidityLog,
+	HumidityErrorLog,
 	HumidityBayLog,
-	WindSpeed1Log,
-	WindSpeed2Log,
+	WindSpeedLog,
 	WindSpeedBayLog,
 	Rain1Log,
 	Rain2Log,
@@ -18,22 +17,34 @@ VAR
 	OpenRoof2Log, CloseRoof2Log, StopRoof2Log,
 	Roof1ErrorLog, Roof2ErrorLog,
 	Roof1WarningLog, Roof2WarningLog,
-	LightLog: FB_EventLog;
+	LightLog,
+	ManualLog: FB_EventLog;
+	
+	ElectronicsTemperatureLog,
+	ElectronicsHumidityLog,
+	SpectrographTemperatureLog,
+	SpectrographHumidityLog,
+	UsUndervoltageLog,
+	UpUndervoltageLog,
+	MotorProtection1Log,
+	MotorProtection2Log: FB_EventLog;
+	
+	RoofOpenTimeoutLog,
+	RoofCloseTimeoutLog: FB_EventLog;
 END_VAR
 ]]></Declaration>
     <Implementation>
       <ST><![CDATA[(*** Logging Section ***)
 
-EnvironmentLog(	Trigger := MAIN.EnvironmentAlarm, Level := ADSLOG_MSGTYPE_WARN, OnMessage := 'The weather is bad.', OffMessage := 'The weather is good.');
-DustLog(		Trigger := ConvertEnvironment.Dust > MAIN.DustLimit, Level := ADSLOG_MSGTYPE_WARN, OnMessage := 'Dust is over limit');
-HumidityLog1(	Trigger := ConvertEnvironment.Humidity1 > MAIN.HumidityLimit, Level := ADSLOG_MSGTYPE_WARN, OnMessage := 'Humidity 1 is over limit');
-HumidityLog2(	Trigger := ConvertEnvironment.Humidity2 > MAIN.HumidityLimit, Level := ADSLOG_MSGTYPE_WARN, OnMessage := 'Humidity 2 is over limit');
-HumidityBayLog(	Trigger := ConvertEnvironment.HumidityBay > MAIN.HumidityLimit, Level := ADSLOG_MSGTYPE_WARN, OnMessage := 'Humidity bay is over limit');
-WindSpeed1Log(	Trigger := ConvertEnvironment.WindSpeed1 > MAIN.WindSpeedLimit, Level := ADSLOG_MSGTYPE_WARN, OnMessage := 'Wind speed 1 is over limit');
-WindSpeed2Log(	Trigger := ConvertEnvironment.WindSpeed2 > MAIN.WindSpeedLimit, Level := ADSLOG_MSGTYPE_WARN, OnMessage := 'Wind speed 2 is over limit');
-WindSpeedBayLog(Trigger := ConvertEnvironment.Windspeed_bay > MAIN.WindSpeedBayLimit, Level := ADSLOG_MSGTYPE_WARN, OnMessage := 'Wind speed in bay is over limit');
-Rain1Log(		Trigger := NOT Environment.Rain_alarm1, Level := ADSLOG_MSGTYPE_WARN, OnMessage := 'Rain alarm 1 is on');
-Rain2Log(		Trigger := NOT Environment.Rain_alarm2, Level := ADSLOG_MSGTYPE_WARN, OnMessage := 'Rain alarm 2 is on');
+EnvironmentLog(	Trigger := MAIN.EnvironmentAlarm, Level := ADSLOG_MSGTYPE_WARN, OnMessage := 'The weather is bad!', OffMessage := 'The weather is good.');
+DustLog(		Trigger := Environment.DustAvg.AVG > MAIN.DustLimit, Level := ADSLOG_MSGTYPE_WARN, OnMessage := 'Dust is over limit!');
+HumidityLog(	Trigger := Main.HumidityTrigger.Q1, Level := ADSLOG_MSGTYPE_WARN, OnMessage := 'Humidity is over limit!');
+HumidityErrorLog(	Trigger := Environment.HumidityBay > 85.0, Level := ADSLOG_MSGTYPE_ERROR, OnMessage := 'Bay humidity is high! Dehumidifier failure!');
+HumidityBayLog(	Trigger := Environment.BayHumidityTrigger.Q1, Level := ADSLOG_MSGTYPE_WARN, OnMessage := 'Bay humidity bay is over limit', OffMessage := 'Bay humidity is nominal.');
+WindSpeedLog(	Trigger := Environment.WindSpeed > MAIN.WindSpeedLimit, Level := ADSLOG_MSGTYPE_WARN, OnMessage := 'Wind speed is over limit!');
+WindSpeedBayLog(Trigger := Environment.Windspeed_bay > MAIN.WindSpeedBayLimit, Level := ADSLOG_MSGTYPE_WARN, OnMessage := 'Wind speed in bay is over limit');
+Rain1Log(		Trigger := NOT GVL_Environment.Rain_alarm1, Level := ADSLOG_MSGTYPE_WARN, OnMessage := 'Rain alarm 1 is on!');
+Rain2Log(		Trigger := NOT GVL_Environment.Rain_alarm2, Level := ADSLOG_MSGTYPE_WARN, OnMessage := 'Rain alarm 2 is on!');
 
 OpenRoof1Log( Trigger := MAIN.Roof1Command = OpenRoof, OnMessage := 'Open roof 1');
 OpenRoof2Log( Trigger := MAIN.Roof2Command = OpenRoof, OnMessage := 'Open roof 2');
@@ -48,12 +59,61 @@ Roof2ErrorLog( Trigger := MAIN.Roof2Status = StatusError, Level := ADSLOG_MSGTYP
 Roof1WarningLog( Trigger := MAIN.Roof1Status = StatusUndefined, Level := ADSLOG_MSGTYPE_WARN, OnMessage := 'The status of roof 1 is undefined!');
 Roof2WarningLog( Trigger := MAIN.Roof2Status = StatusUndefined, Level := ADSLOG_MSGTYPE_WARN, OnMessage := 'The status of roof 2 is undefined!');
 
-LightLog(Trigger := Environment.LightBay, OnMessage := 'The light is on.', OffMessage := 'The light is off.');
+LightLog(Trigger := GVL_Environment.LightBay, OnMessage := 'The light is on.', OffMessage := 'The light is off.');
+ManualLog(Trigger := MAIN.isRoofManual, Level := ADSLOG_MSGTYPE_WARN, OnMessage := 'Roof is in manual mode.', OffMessage := 'Roof is in automatic mode.');
+
+ElectronicsTemperatureLog( Trigger := Environment.ElectronicsTemperatureTrigger.Q1 , 
+							Level := ADSLOG_MSGTYPE_ERROR, 
+							OnMessage := 'Electronics temperature is over limit!');
+
+ElectronicsHumidityLog( Trigger := Environment.ElectronicsHumidityTrigger.Q1 , 
+							Level := ADSLOG_MSGTYPE_ERROR, 
+							OnMessage := 'Electronics humidity is over limit!');
+
+SpectrographTemperatureLog( Trigger := Environment.SpectrographTemperatureTrigger.Q1 , 
+							Level := ADSLOG_MSGTYPE_ERROR, 
+							OnMessage := 'Spectrograph temperature is over limit!');
+
+SpectrographHumidityLog( Trigger := Environment.SpectrographHumidityTrigger.Q1 , 
+							Level := ADSLOG_MSGTYPE_ERROR, 
+							OnMessage := 'Spectrograph humidity is over limit!');
+UsUndervoltageLog( Trigger := GVL_Panel.Us_Undervoltage, 
+							Level := ADSLOG_MSGTYPE_ERROR, 
+							OnMessage := 'Us undervoltage!');
+UpUndervoltageLog( Trigger := GVL_Panel.Up_Undervoltage, 
+							Level := ADSLOG_MSGTYPE_ERROR, 
+							OnMessage := 'Up undervoltage! / EMERGENCY STOP!');
+MotorProtection1Log( Trigger := Auxiliary.NC1Status <> 0, 
+							Level := ADSLOG_MSGTYPE_ERROR, 
+							OnMessage := 'Roof1 motor protection fault!');
+MotorProtection2Log( Trigger := Auxiliary.NC2Status <> 0, 
+							Level := ADSLOG_MSGTYPE_ERROR, 
+							OnMessage := 'Roof2 motor protection fault!');
+							
+RoofOpenTimeoutLog( Trigger := MAIN.Roof1OpenTimeOut.Q OR MAIN.Roof2OpenTimeOut.Q, Level := ADSLOG_MSGTYPE_ERROR, OnMessage := 'Roof time out error while opening!');
+RoofCloseTimeoutLog( Trigger := MAIN.Roof1CloseTimeOut.Q OR MAIN.Roof2CloseTimeOut.Q, Level := ADSLOG_MSGTYPE_ERROR, OnMessage := 'Roof timeout error while closing!');
 ]]></ST>
     </Implementation>
     <LineIds Name="Logging">
-      <LineId Id="22" Count="26" />
+      <LineId Id="22" Count="4" />
+      <LineId Id="50" Count="0" />
+      <LineId Id="28" Count="1" />
+      <LineId Id="31" Count="17" />
       <LineId Id="5" Count="0" />
+      <LineId Id="58" Count="0" />
+      <LineId Id="57" Count="0" />
+      <LineId Id="59" Count="1" />
+      <LineId Id="62" Count="11" />
+      <LineId Id="77" Count="1" />
+      <LineId Id="61" Count="0" />
+      <LineId Id="80" Count="1" />
+      <LineId Id="79" Count="0" />
+      <LineId Id="87" Count="2" />
+      <LineId Id="91" Count="1" />
+      <LineId Id="90" Count="0" />
+      <LineId Id="124" Count="0" />
+      <LineId Id="126" Count="1" />
+      <LineId Id="125" Count="0" />
     </LineIds>
   </POU>
 </TcPlcObject>

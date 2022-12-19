@@ -1,0 +1,40 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <POU Name="LIGHT_BUTTON" Id="{eab917a3-f40f-4b6d-adea-b31d953eea6e}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK LIGHT_BUTTON
+VAR_INPUT
+	IN:	BOOL;
+	PT: TIME := T#1H;
+END_VAR
+VAR_OUTPUT
+	Q: BOOL;
+	Q1: BOOL;
+END_VAR
+VAR
+	lighttimer: TP;
+	pulse1:	TP;
+	pulse2: TP;
+	pulse3: TP;
+	pulse1delay: TON;
+	pulse2delay: TON;
+	pulse3delay: TON;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[lighttimer(IN := IN, PT := PT);
+pulse1delay(IN:= lighttimer.Q, PT := PT - T#20S);
+pulse1(IN := pulse1delay.Q, PT := T#250MS);
+pulse2delay(IN:= lighttimer.Q, PT := PT - T#10S);
+pulse2(IN := pulse2delay.Q, PT := T#250MS);
+pulse3delay(IN:= lighttimer.Q, PT := PT - T#10S + T#500MS);
+pulse3(IN := pulse3delay.Q, PT := T#250MS);
+
+Q := lighttimer.Q AND NOT pulse1.Q AND NOT pulse2.Q AND NOT pulse3.Q;
+Q1 := lighttimer.Q;]]></ST>
+    </Implementation>
+    <LineIds Name="LIGHT_BUTTON">
+      <LineId Id="10" Count="8" />
+      <LineId Id="9" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

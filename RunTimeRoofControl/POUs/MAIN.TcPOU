@@ -30,6 +30,7 @@ VAR
 	RSCloseRoof1,
 	RSOpenRoof2,
 	RSCloseRoof2: 	RS;
+	OpenRoofAutoPending: BOOL;
 	OpenRoof1,
 	CloseRoof1,
 	OpenRoof2,
@@ -41,7 +42,7 @@ VAR
 	// indicates an error in the dust sensor
 	DustSensorError: BOOL;
 	// Timer for Dome Light
-	LightTimer:		TP;
+	LightTimer:		LIGHT_BUTTON;
 
 	RoofStatusLamp1,
 	RoofStatusLamp2: FB_StatusLamp;
@@ -57,9 +58,20 @@ VAR
 	MQTTTimer : TON := (PT:=T#5S);
 	// MQTT class for publishing
 	MQTTClient:		FB_MQTTCommunication;
+	// Humidity Trigger
+	HumidityTrigger:	SR;
+	Roof1OpenTimer,
+	Roof2OpenTimer,
+	Roof1CloseTimer,
+	Roof2CloseTimer:	TIMER;
+	Roof1OpenTimeOut,
+	Roof2OpenTimeOut,
+	Roof1CloseTimeOut,
+	Roof2CloseTimeOut:	TON;
 END_VAR
 VAR CONSTANT
-	HumidityLimit:		REAL := 80.0;
+	HumidityLimitHigh:		REAL := 80.0;
+	HumidityLimitLow:		REAL := 65.0;
 	
 	WindSpeedLimit:		REAL := 20.0;
 	WindSpeedBayLimit:	REAL :=	15.0;
@@ -74,13 +86,13 @@ ELSE
 END_IF
 isRoofManual := GVL_Panel.IManualSwitch;
 
-DustSensorError := Environment.DustSensorError;
+DustSensorError := GVL_Environment.DustSensorError;
 
 // initialize MQTT Communication
 MQTTClient();
 
 // collect weather data
-ConvertEnvironment();
+Environment();
 
 // Handle Auxiliary inputs and outputs
 Auxiliary();
@@ -91,22 +103,37 @@ Logging();
 // Control Logic for Dehumidifier
 DehumidifierControl(Enable := nMode = RoofAutomatic AND Roof1Status = StatusLocked AND Roof2Status = StatusLocked);
 
+HumidityTrigger(SET1 := Environment.Humidity >= HumidityLimitHigh,
+				RESET := Environment.Humidity < HumidityLimitLow);
+						
 // define bad weather condition; rain is handled in EnvironmentAlarm
-EnvironmentBad := (ConvertEnvironment.Dust > DustLimit AND NOT DustSensorError) OR
-		ConvertEnvironment.Humidity1 > HumidityLimit OR
-		ConvertEnvironment.Humidity2 > HumidityLimit OR
-		ConvertEnvironment.HumidityBay > HumidityLimit OR
-		ConvertEnvironment.WindSpeed1 > WindSpeedLimit OR
-		ConvertEnvironment.WindSpeed2 > WindSpeedLimit OR
-		ConvertEnvironment.Windspeed_bay > WindSpeedBayLimit OR
-		ConvertEnvironment.Brightness > BrightnessLimit;
+EnvironmentBad := (Environment.Dust > DustLimit AND NOT DustSensorError) OR
+		HumidityTrigger.Q1 OR
+		Environment.WindSpeed1 > WindSpeedLimit OR
+		Environment.WindSpeed2 > WindSpeedLimit OR
+		Environment.Windspeed_bay > WindSpeedBayLimit; // OR
+		//ConvertEnvironment.Brightness > BrightnessLimit;
 
 EnvironmentBadTimer(IN := EnvironmentBad,
-					PT := T#30S);
+					PT := T#125S);
 					
-EnvironmentAlarm := EnvironmentBadTimer.Q OR ConvertEnvironment.RainMasterAlarm;
-			
+EnvironmentAlarm := EnvironmentBadTimer.Q OR Environment.RainMasterAlarm;
+
 IF nMode = RoofAutomatic THEN
+	// if we get the open comand during bad weather, postpone the signal
+	IF OpenRoofAuto AND EnvironmentAlarm THEN
+		OpenRoofAutoPending := TRUE;
+		OpenRoofAuto := FALSE;
+	// if we get the close command cancle the signal
+	ELSIF CloseRoofAuto THEN
+		OpenRoofAutoPending := FALSE;
+	END_IF
+	// if weather is good, execute the pending signal
+	IF NOT EnvironmentAlarm AND OpenRoofAutoPending THEN
+		OpenRoofAuto := TRUE;
+		OpenRoofAutoPending := FALSE;
+	END_IF			
+
 	IF OpenRoofAuto THEN
 		Roof1Command := OpenRoof;
 		Roof2Command := OpenRoof;
@@ -120,8 +147,12 @@ IF nMode = RoofAutomatic THEN
 
 	// overwrite previous command if the weather is bad for xx seconds
 	IF EnvironmentAlarm THEN
-		Roof1Command := CloseRoof;
-		Roof2Command := CloseRoof;
+		IF NOT (Roof1Status = StatusLocked) THEN
+			Roof1Command := CloseRoof;	
+		END_IF
+		IF NOT (Roof2Status = StatusLocked) THEN
+			Roof2Command := CloseRoof;	
+		END_IF
 	END_IF
 				
 ELSE //	RoofManual
@@ -153,12 +184,27 @@ ELSE //	RoofManual
 		
 END_IF
 
+Roof1OpenTimer(bStart := (Roof1Command = OpenRoof) AND NOT (Roof1Status = StatusOpened));
+Roof2OpenTimer(bStart := (Roof2Command = OpenRoof) AND NOT (Roof2Status = StatusOpened));
+Roof1CloseTimer(bStart := (Roof1Command = CloseRoof) AND NOT (Roof1Status = StatusLocked));
+Roof2CloseTimer(bStart := (Roof2Command = CloseRoof) AND NOT (Roof2Status = StatusLocked));
+
+Roof1OpenTimeOut(IN := (Roof1Command = OpenRoof) AND NOT (Roof1Status = StatusOpened), PT := T#130S);
+Roof2OpenTimeOut(IN := (Roof2Command = OpenRoof) AND NOT (Roof2Status = StatusOpened), PT := T#130S);
+Roof1CloseTimeOut(IN := (Roof1Command = CloseRoof) AND NOT (Roof1Status = StatusLocked), PT := T#130S);
+Roof2CloseTimeOut(IN := (Roof1Command = CloseRoof) AND NOT (Roof2Status = StatusLocked), PT := T#130S);
+
+	
 // disable light after 1 hour if on automatic
-LightTimer( IN := Environment.LightSwitch AND nMode = RoofAutomatic,
+LightTimer( IN := GVL_Environment.LightSwitch AND nMode = RoofAutomatic,
 			PT := T#1H);
-Environment.LightBay := (LightTimer.Q AND Environment.LightSwitch) OR 
-						(nMode = RoofManual AND Environment.LightSwitch) OR
+GVL_Environment.LightBay := (LightTimer.Q AND GVL_Environment.LightSwitch) OR 
+						(nMode = RoofManual AND GVL_Environment.LightSwitch) OR
 						(nMode = RoofAutomatic AND LightAuto);	
+
+IF nMode = RoofAutomatic AND LightAuto AND NOT LightTimer.Q1 THEN
+	LightAuto := FALSE;
+END_IF
 
 (*** Control Section ***)	
 
@@ -208,7 +254,12 @@ RoofStatusLamp1(RoofStatus := Roof1Status, RoofLamp => GVL_Panel.Roof1Lamp);
 RoofStatusLamp2(RoofStatus := Roof2Status, RoofLamp => GVL_Panel.Roof2Lamp);
 			
 // sound horn
-Environment.Horn := WeatherAlarm OR MotionAlarm1 OR MotionAlarm2;		
+GVL_Environment.Horn := WeatherAlarm OR MotionAlarm1 OR MotionAlarm2;		
+
+IF GVL_Panel.Us_Undervoltage OR GVL_Panel.Up_Undervoltage THEN
+	Roof1Status := StatusError;
+	Roof2Status := StatusError;
+END_IF
 
 
 (*** MQTT Section ***)
@@ -216,6 +267,9 @@ MQTTTimer(IN:=TRUE);
 IF MQTTTimer.Q OR Roof1Status <> LastRoof1Status OR Roof2Status <> LastRoof2Status THEN
 	MQTTClient.Publish('roof', 'roof1', 'Roof1Status', RoofStatus_TO_String(Roof1Status));
 	MQTTClient.Publish('roof', 'roof2', 'Roof2Status', RoofStatus_TO_String(Roof2Status));
+	MAIN.MQTTClient.Publish('environment', 'weatherstation', 'WeatherBad',	BOOL_TO_STRING(EnvironmentAlarm));		
+	MAIN.MQTTClient.Publish('roof', 'main', 'isRoofManual',	BOOL_TO_STRING(isRoofManual));		
+	
 	MQTTTimer(IN:=FALSE);
 	LastRoof1Status := Roof1Status;
 	LastRoof2Status := Roof2Status;
@@ -236,20 +290,36 @@ END_IF
       <LineId Id="798" Count="2" />
       <LineId Id="1207" Count="2" />
       <LineId Id="1035" Count="2" />
-      <LineId Id="782" Count="0" />
+      <LineId Id="1216" Count="3" />
       <LineId Id="211" Count="0" />
-      <LineId Id="213" Count="6" />
+      <LineId Id="213" Count="0" />
+      <LineId Id="1220" Count="0" />
+      <LineId Id="216" Count="0" />
+      <LineId Id="218" Count="1" />
       <LineId Id="605" Count="0" />
       <LineId Id="531" Count="0" />
       <LineId Id="278" Count="0" />
       <LineId Id="532" Count="0" />
       <LineId Id="797" Count="0" />
       <LineId Id="796" Count="0" />
-      <LineId Id="30" Count="11" />
+      <LineId Id="1333" Count="0" />
+      <LineId Id="31" Count="0" />
+      <LineId Id="1347" Count="0" />
+      <LineId Id="1340" Count="1" />
+      <LineId Id="1349" Count="0" />
+      <LineId Id="1348" Count="0" />
+      <LineId Id="1343" Count="1" />
+      <LineId Id="1342" Count="0" />
+      <LineId Id="1350" Count="0" />
+      <LineId Id="1334" Count="0" />
+      <LineId Id="1346" Count="0" />
+      <LineId Id="1354" Count="0" />
+      <LineId Id="1336" Count="1" />
+      <LineId Id="32" Count="9" />
       <LineId Id="539" Count="0" />
       <LineId Id="534" Count="0" />
       <LineId Id="533" Count="0" />
-      <LineId Id="537" Count="1" />
+      <LineId Id="1231" Count="5" />
       <LineId Id="536" Count="0" />
       <LineId Id="42" Count="0" />
       <LineId Id="63" Count="0" />
@@ -258,9 +328,18 @@ END_IF
       <LineId Id="777" Count="3" />
       <LineId Id="71" Count="8" />
       <LineId Id="88" Count="2" />
+      <LineId Id="1227" Count="1" />
+      <LineId Id="1230" Count="0" />
+      <LineId Id="1239" Count="1" />
+      <LineId Id="1250" Count="2" />
       <LineId Id="768" Count="0" />
+      <LineId Id="1255" Count="0" />
+      <LineId Id="1254" Count="0" />
+      <LineId Id="1253" Count="0" />
       <LineId Id="91" Count="5" />
-      <LineId Id="767" Count="0" />
+      <LineId Id="1221" Count="0" />
+      <LineId Id="1213" Count="0" />
+      <LineId Id="1222" Count="2" />
       <LineId Id="97" Count="41" />
       <LineId Id="786" Count="0" />
       <LineId Id="398" Count="0" />
@@ -269,12 +348,18 @@ END_IF
       <LineId Id="399" Count="0" />
       <LineId Id="168" Count="0" />
       <LineId Id="2" Count="0" />
+      <LineId Id="1241" Count="1" />
+      <LineId Id="1245" Count="0" />
+      <LineId Id="1243" Count="1" />
       <LineId Id="766" Count="0" />
       <LineId Id="765" Count="0" />
       <LineId Id="737" Count="0" />
       <LineId Id="1206" Count="0" />
       <LineId Id="738" Count="1" />
       <LineId Id="741" Count="0" />
+      <LineId Id="1351" Count="0" />
+      <LineId Id="1353" Count="0" />
+      <LineId Id="1352" Count="0" />
       <LineId Id="748" Count="1" />
       <LineId Id="1122" Count="0" />
       <LineId Id="750" Count="0" />
