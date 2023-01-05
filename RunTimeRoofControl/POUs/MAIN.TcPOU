@@ -196,12 +196,11 @@ Roof2CloseTimeOut(IN := (Roof1Command = CloseRoof) AND NOT (Roof2Status = Status
 
 	
 // disable light after 1 hour if on automatic
-LightTimer( IN := GVL_Environment.LightSwitch AND nMode = RoofAutomatic,
+LightTimer( IN := GVL_Environment.LightSwitch AND nMode = RoofAutomatic AND LightAuto,
 			PT := T#1H);
-GVL_Environment.LightBay := (LightTimer.Q AND GVL_Environment.LightSwitch) OR 
-						(nMode = RoofManual AND GVL_Environment.LightSwitch) OR
-						(nMode = RoofAutomatic AND LightAuto);	
-
+			
+GVL_Environment.LightBay := LightTimer.Q OR (nMode = RoofManual AND GVL_Environment.LightSwitch);	
+// reset LightAuto SIgnal after one hour
 IF nMode = RoofAutomatic AND LightAuto AND NOT LightTimer.Q1 THEN
 	LightAuto := FALSE;
 END_IF
@@ -336,7 +335,9 @@ END_IF
       <LineId Id="1255" Count="0" />
       <LineId Id="1254" Count="0" />
       <LineId Id="1253" Count="0" />
-      <LineId Id="91" Count="5" />
+      <LineId Id="91" Count="2" />
+      <LineId Id="1431" Count="0" />
+      <LineId Id="94" Count="0" />
       <LineId Id="1221" Count="0" />
       <LineId Id="1213" Count="0" />
       <LineId Id="1222" Count="2" />

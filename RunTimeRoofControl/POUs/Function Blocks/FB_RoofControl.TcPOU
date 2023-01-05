@@ -75,9 +75,13 @@ isMotorFast := (NOT bFastSwitch);
 // Generic conditions
 IF isOpen THEN bRoofOpen := FALSE; END_IF
 IF isClosed THEN bRoofClose := FALSE; END_IF
+IF bRoofClose THEN bRoofOpen := FALSE; END_IF
 MotorFastDelayed := isMotorFast; 
-IF bUnlocked1 THEN bOpenLock1 := FALSE; END_IF
-IF bUnlocked2 THEN bOpenLock2 := FALSE; END_IF
+// IF bUnlocked1 THEN bOpenLock1 := FALSE; END_IF
+// IF bUnlocked2 THEN bOpenLock2 := FALSE; END_IF
+IF bCloseLock1 THEN bOpenLock1 := FALSE; END_IF
+IF bCloseLock2 THEN	bOpenLock2 := FALSE; END_IF
+
 IF bLocked1 THEN bCloseLock1 := FALSE; END_IF
 IF bLocked2 THEN bCloseLock2 := FALSE; END_IF
 
@@ -96,7 +100,8 @@ IF cmdRoofCommand = OpenRoof THEN
 	IF NOT bUnlocked1 AND NOT bCloseLock1 THEN bOpenLock1 := TRUE; END_IF
 	IF NOT bUnlocked2 AND NOT bCloseLock2 THEN bOpenLock2 := TRUE; END_IF
 	RoofCloseDelayed  := FALSE;
-	RoofOpenDelayed := isBothUnlocked AND NOT isOpen AND NOT bRoofClose;	
+	// RoofOpenDelayed := isBothUnlocked AND NOT isOpen AND NOT bRoofClose;	
+	RoofOpenDelayed := isOneUnlocked AND NOT isOpen AND NOT bRoofClose;	
 	
 	// identify OpenRoof States
 	IF bOpenLock1 OR bOpenLock2 THEN nStatus := StatusUnlocking; END_IF
@@ -114,7 +119,8 @@ ELSIF cmdRoofCommand = CloseRoof THEN
 	bCloseLock1 := isClosed AND NOT isOpen AND NOT bLocked1 AND NOT bOpenLock1;
 	bCloseLock2 := isClosed AND NOT isOpen AND NOT bLocked2 AND NOT bOpenLock2;
 	RoofOpenDelayed := FALSE;
-	RoofCloseDelayed := isBothUnlocked AND NOT isOneLocked AND NOT isCLosed AND NOT bRoofOpen;
+	//RoofCloseDelayed := isBothUnlocked AND NOT isOneLocked AND NOT isCLosed AND NOT bRoofOpen;
+	RoofCloseDelayed := isOneUnlocked AND NOT isOneLocked AND NOT isCLosed AND NOT bRoofOpen;
 
 	// identify CloseRoof States
 	IF bCloseLock1 OR bCloseLock2 THEN nStatus := StatusLocking; END_IF
@@ -202,7 +208,17 @@ RoofStatus := nStatus;
       <LineId Id="240" Count="0" />
       <LineId Id="5" Count="5" />
       <LineId Id="184" Count="0" />
-      <LineId Id="11" Count="126" />
+      <LineId Id="11" Count="6" />
+      <LineId Id="304" Count="0" />
+      <LineId Id="18" Count="2" />
+      <LineId Id="296" Count="0" />
+      <LineId Id="300" Count="0" />
+      <LineId Id="303" Count="0" />
+      <LineId Id="21" Count="18" />
+      <LineId Id="305" Count="0" />
+      <LineId Id="40" Count="17" />
+      <LineId Id="306" Count="0" />
+      <LineId Id="58" Count="79" />
       <LineId Id="2" Count="0" />
     </LineIds>
   </POU>

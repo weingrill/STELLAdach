@@ -95,6 +95,168 @@
 					<Vars VarGrpType="1">
 						<Name>PlcTask Inputs</Name>
 						<Var>
+							<Name>GVL_Environment.Rain_alarm1</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>GVL_Environment.rawWindSpeed1</Name>
+							<Comment><![CDATA[ Weather Station 1]]></Comment>
+							<Type>INT</Type>
+						</Var>
+						<Var>
+							<Name>GVL_Environment.rawTemperature1</Name>
+							<Type>INT</Type>
+						</Var>
+						<Var>
+							<Name>GVL_Environment.rawHumidity1</Name>
+							<Type>INT</Type>
+						</Var>
+						<Var>
+							<Name>GVL_Environment.rawRain_analogue1</Name>
+							<Type>INT</Type>
+						</Var>
+						<Var>
+							<Name>GVL_Environment.rawWindDirection</Name>
+							<Type>INT</Type>
+						</Var>
+						<Var>
+							<Name>GVL_Environment.Overcorrect_status1</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>GVL_Environment.Rain_alarm2</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>GVL_Environment.rawPressure</Name>
+							<Type>INT</Type>
+						</Var>
+						<Var>
+							<Name>GVL_Environment.rawWindSpeed2</Name>
+							<Comment><![CDATA[ Weather Station 2]]></Comment>
+							<Type>INT</Type>
+						</Var>
+						<Var>
+							<Name>GVL_Environment.rawTemperature2</Name>
+							<Type>INT</Type>
+						</Var>
+						<Var>
+							<Name>GVL_Environment.rawHumidity2</Name>
+							<Type>INT</Type>
+						</Var>
+						<Var>
+							<Name>GVL_Environment.rawRain_analogue2</Name>
+							<Type>INT</Type>
+						</Var>
+						<Var>
+							<Name>GVL_Environment.rawBrightness</Name>
+							<Type>INT</Type>
+						</Var>
+						<Var>
+							<Name>GVL_Environment.rawBrightnessLow</Name>
+							<Type>INT</Type>
+						</Var>
+						<Var>
+							<Name>GVL_Environment.Overcorrect_status2</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>GVL_Environment.rawTemperature_Electronics</Name>
+							<Comment><![CDATA[ indoors]]></Comment>
+							<Type>INT</Type>
+						</Var>
+						<Var>
+							<Name>GVL_Environment.rawHumidity_Electronics</Name>
+							<Type>INT</Type>
+						</Var>
+						<Var>
+							<Name>GVL_Environment.rawTemperatureBay</Name>
+							<Type>INT</Type>
+						</Var>
+						<Var>
+							<Name>GVL_Environment.rawHumidityBay</Name>
+							<Type>INT</Type>
+						</Var>
+						<Var>
+							<Name>GVL_Environment.rawTemperature_Spec</Name>
+							<Type>INT</Type>
+						</Var>
+						<Var>
+							<Name>GVL_Environment.rawHumidity_Spec</Name>
+							<Type>INT</Type>
+						</Var>
+						<Var>
+							<Name>GVL_Environment.rawWindSpeedBay</Name>
+							<Comment><![CDATA[ Bay]]></Comment>
+							<Type>INT</Type>
+						</Var>
+						<Var>
+							<Name>GVL_Environment.rawDust</Name>
+							<Comment><![CDATA[ Dust Sensor 4..20mA]]></Comment>
+							<Type>INT</Type>
+						</Var>
+						<Var>
+							<Name>GVL_Environment.LightSwitch</Name>
+							<Comment><![CDATA[ Lichtschalter in der Kuppel]]></Comment>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>GVL_Environment.DustSensorError</Name>
+							<Comment><![CDATA[ sensor error]]></Comment>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>GVL_Environment.rawDust11</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>GVL_Environment.rawDust12</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>GVL_Environment.rawDust21</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>GVL_Environment.rawDust22</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>GVL_Panel.IManualSwitch</Name>
+							<Comment><![CDATA[ switch between automatic and manul]]></Comment>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>GVL_Panel.ILeftOpenswitch</Name>
+							<Comment><![CDATA[ left open switch]]></Comment>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>GVL_Panel.ILeftCloseswitch</Name>
+							<Comment><![CDATA[ left close switch]]></Comment>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>GVL_Panel.IRightOpenSwitch</Name>
+							<Comment><![CDATA[ right open switch]]></Comment>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>GVL_Panel.IRightCloseSwitch</Name>
+							<Comment><![CDATA[ right close switch]]></Comment>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>GVL_Panel.Us_Undervoltage</Name>
+							<Comment><![CDATA[EL9410 status US]]></Comment>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>GVL_Panel.Up_Undervoltage</Name>
+							<Comment><![CDATA[EL9410 status Up]]></Comment>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
 							<Name>GVL_Roof.IDach1auf</Name>
 							<Comment><![CDATA[KDach1auf]]></Comment>
 							<Type>BOOL</Type>
@@ -235,171 +397,39 @@
 							<Comment><![CDATA[MS6NC2]]></Comment>
 							<Type>BOOL</Type>
 						</Var>
-						<Var>
-							<Name>GVL_Panel.IManualSwitch</Name>
-							<Comment><![CDATA[ switch between automatic and manul]]></Comment>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>GVL_Panel.ILeftOpenswitch</Name>
-							<Comment><![CDATA[ left open switch]]></Comment>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>GVL_Panel.ILeftCloseswitch</Name>
-							<Comment><![CDATA[ left close switch]]></Comment>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>GVL_Panel.IRightOpenSwitch</Name>
-							<Comment><![CDATA[ right open switch]]></Comment>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>GVL_Panel.IRightCloseSwitch</Name>
-							<Comment><![CDATA[ right close switch]]></Comment>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>GVL_Panel.Us_Undervoltage</Name>
-							<Comment><![CDATA[EL9410 status US]]></Comment>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>GVL_Panel.Up_Undervoltage</Name>
-							<Comment><![CDATA[EL9410 status Up]]></Comment>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>GVL_Environment.Rain_alarm1</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>GVL_Environment.rawWindSpeed1</Name>
-							<Comment><![CDATA[ Weather Station 1]]></Comment>
-							<Type>INT</Type>
-						</Var>
-						<Var>
-							<Name>GVL_Environment.rawTemperature1</Name>
-							<Type>INT</Type>
-						</Var>
-						<Var>
-							<Name>GVL_Environment.rawHumidity1</Name>
-							<Type>INT</Type>
-						</Var>
-						<Var>
-							<Name>GVL_Environment.rawRain_analogue1</Name>
-							<Type>INT</Type>
-						</Var>
-						<Var>
-							<Name>GVL_Environment.rawWindDirection</Name>
-							<Type>INT</Type>
-						</Var>
-						<Var>
-							<Name>GVL_Environment.Overcorrect_status1</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>GVL_Environment.Rain_alarm2</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>GVL_Environment.rawPressure</Name>
-							<Type>INT</Type>
-						</Var>
-						<Var>
-							<Name>GVL_Environment.rawWindSpeed2</Name>
-							<Comment><![CDATA[ Weather Station 2]]></Comment>
-							<Type>INT</Type>
-						</Var>
-						<Var>
-							<Name>GVL_Environment.rawTemperature2</Name>
-							<Type>INT</Type>
-						</Var>
-						<Var>
-							<Name>GVL_Environment.rawHumidity2</Name>
-							<Type>INT</Type>
-						</Var>
-						<Var>
-							<Name>GVL_Environment.rawRain_analogue2</Name>
-							<Type>INT</Type>
-						</Var>
-						<Var>
-							<Name>GVL_Environment.rawBrightness</Name>
-							<Type>INT</Type>
-						</Var>
-						<Var>
-							<Name>GVL_Environment.rawBrightnessLow</Name>
-							<Type>INT</Type>
-						</Var>
-						<Var>
-							<Name>GVL_Environment.Overcorrect_status2</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>GVL_Environment.rawTemperature_Electronics</Name>
-							<Comment><![CDATA[ indoors]]></Comment>
-							<Type>INT</Type>
-						</Var>
-						<Var>
-							<Name>GVL_Environment.rawHumidity_Electronics</Name>
-							<Type>INT</Type>
-						</Var>
-						<Var>
-							<Name>GVL_Environment.rawTemperatureBay</Name>
-							<Type>INT</Type>
-						</Var>
-						<Var>
-							<Name>GVL_Environment.rawHumidityBay</Name>
-							<Type>INT</Type>
-						</Var>
-						<Var>
-							<Name>GVL_Environment.rawTemperature_Spec</Name>
-							<Type>INT</Type>
-						</Var>
-						<Var>
-							<Name>GVL_Environment.rawHumidity_Spec</Name>
-							<Type>INT</Type>
-						</Var>
-						<Var>
-							<Name>GVL_Environment.rawWindSpeedBay</Name>
-							<Comment><![CDATA[ Bay]]></Comment>
-							<Type>INT</Type>
-						</Var>
-						<Var>
-							<Name>GVL_Environment.rawDust</Name>
-							<Comment><![CDATA[ Dust Sensor 4..20mA]]></Comment>
-							<Type>INT</Type>
-						</Var>
-						<Var>
-							<Name>GVL_Environment.LightSwitch</Name>
-							<Comment><![CDATA[ Lichtschalter in der Kuppel]]></Comment>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>GVL_Environment.DustSensorError</Name>
-							<Comment><![CDATA[ sensor error]]></Comment>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>GVL_Environment.rawDust11</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>GVL_Environment.rawDust12</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>GVL_Environment.rawDust21</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>GVL_Environment.rawDust22</Name>
-							<Type>BOOL</Type>
-						</Var>
 					</Vars>
 					<Vars VarGrpType="2" AreaNo="1">
 						<Name>PlcTask Outputs</Name>
+						<Var>
+							<Name>GVL_Environment.Horn</Name>
+							<Comment><![CDATA[ Horn für Warnung beim Öffnen und Schliessen]]></Comment>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>GVL_Environment.Dehumidifier</Name>
+							<Comment><![CDATA[ Entfeuchter]]></Comment>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>GVL_Environment.RoofPower</Name>
+							<Comment><![CDATA[ RoofPower]]></Comment>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>GVL_Environment.LightBay</Name>
+							<Comment><![CDATA[ Licht in der Kuppel an]]></Comment>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>GVL_Panel.Roof1Lamp</Name>
+							<Comment><![CDATA[ roof status lamp 1	]]></Comment>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>GVL_Panel.Roof2Lamp</Name>
+							<Comment><![CDATA[ roof status lamp 2]]></Comment>
+							<Type>BOOL</Type>
+						</Var>
 						<Var>
 							<Name>GVL_Roof.ODach1auf</Name>
 							<Comment><![CDATA[ Dig. Output]]></Comment>
@@ -455,36 +485,6 @@
 						</Var>
 						<Var>
 							<Name>GVL_Roof.ODach2Schnell</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>GVL_Panel.Roof1Lamp</Name>
-							<Comment><![CDATA[ roof status lamp 1	]]></Comment>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>GVL_Panel.Roof2Lamp</Name>
-							<Comment><![CDATA[ roof status lamp 2]]></Comment>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>GVL_Environment.Horn</Name>
-							<Comment><![CDATA[ Horn für Warnung beim Öffnen und Schliessen]]></Comment>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>GVL_Environment.Dehumidifier</Name>
-							<Comment><![CDATA[ Entfeuchter]]></Comment>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>GVL_Environment.RoofPower</Name>
-							<Comment><![CDATA[ RoofPower]]></Comment>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>GVL_Environment.LightBay</Name>
-							<Comment><![CDATA[ Licht in der Kuppel an]]></Comment>
 							<Type>BOOL</Type>
 						</Var>
 					</Vars>

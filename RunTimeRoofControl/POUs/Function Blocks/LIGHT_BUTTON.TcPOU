@@ -29,8 +29,8 @@ pulse2(IN := pulse2delay.Q, PT := T#250MS);
 pulse3delay(IN:= lighttimer.Q, PT := PT - T#10S + T#500MS);
 pulse3(IN := pulse3delay.Q, PT := T#250MS);
 
-Q := lighttimer.Q AND NOT pulse1.Q AND NOT pulse2.Q AND NOT pulse3.Q;
-Q1 := lighttimer.Q;]]></ST>
+Q := IN AND lighttimer.Q AND NOT pulse1.Q AND NOT pulse2.Q AND NOT pulse3.Q;
+Q1 :=IN AND lighttimer.Q;]]></ST>
     </Implementation>
     <LineIds Name="LIGHT_BUTTON">
       <LineId Id="10" Count="8" />

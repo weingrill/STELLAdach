@@ -5,6 +5,8 @@
 VAR_INPUT
 	// enable signal for der Dehumidifier
 	Enable:	BOOL;
+	// manual enable signal
+	ManualEnable: BOOL;
 END_VAR
 VAR
 	// run dehumidifer at last for n seconds to avoid fast switching cycles
@@ -20,11 +22,18 @@ VAR CONSTANT
 	HumidityBayHigh:	REAL := 70.0;
 END_VAR]]></Declaration>
     <Implementation>
-      <ST><![CDATA[IF Environment.HumidityBay > HumidityBayHigh THEN
-	RunDelay.IN := Enable;
-ELSIF Environment.HumidityBay < HumidityBayLow THEN
-	RunDelay.IN := FALSE;
+      <ST><![CDATA[IF MAIN.nMode = RoofAutomatic THEN
+	IF Environment.HumidityBay > HumidityBayHigh THEN
+		RunDelay.IN := Enable;
+	ELSIF Environment.HumidityBay < HumidityBayLow THEN
+		RunDelay.IN := FALSE;
+	END_IF
+	// deaktivate manual signal
+	ManualEnable := FALSE;
+ELSE // manual operation
+	RunDelay.IN := ManualEnable;
 END_IF
+
 
 GVL_Environment.Dehumidifier := RunDelay.Q;
 
@@ -38,7 +47,12 @@ IF OnTrigger.Q OR OffTrigger.Q THEN
 END_IF]]></ST>
     </Implementation>
     <LineIds Name="DehumidifierControl">
+      <LineId Id="79" Count="0" />
       <LineId Id="14" Count="4" />
+      <LineId Id="83" Count="0" />
+      <LineId Id="82" Count="0" />
+      <LineId Id="80" Count="1" />
+      <LineId Id="77" Count="1" />
       <LineId Id="30" Count="0" />
       <LineId Id="5" Count="0" />
       <LineId Id="32" Count="1" />

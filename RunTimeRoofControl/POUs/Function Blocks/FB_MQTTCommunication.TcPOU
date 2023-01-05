@@ -89,6 +89,8 @@ IF fbMessageQueue.nQueuedMessages > 0 THEN
 					MAIN.LightAuto := STRING_TO_BOOL(value);
 				ELSIF parameter = 'RoofPower' THEN
 					Auxiliary.RoofPower := STRING_TO_BOOL(value);
+				ELSIF parameter = 'Dehumidifier' THEN
+					DehumidifierControl.ManualEnable := STRING_TO_BOOL(value);
 				END_IF // parameter
 			END_IF // measurement
 		END_IF // Topic
@@ -186,7 +188,9 @@ published := fbMqttClient.Publish(
     </Method>
     <LineIds Name="FB_MQTTCommunication">
       <LineId Id="308" Count="49" />
-      <LineId Id="453" Count="11" />
+      <LineId Id="453" Count="10" />
+      <LineId Id="490" Count="1" />
+      <LineId Id="464" Count="0" />
       <LineId Id="390" Count="3" />
       <LineId Id="105" Count="0" />
     </LineIds>
