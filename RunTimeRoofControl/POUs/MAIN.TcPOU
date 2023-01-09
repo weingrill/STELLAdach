@@ -68,6 +68,10 @@ VAR
 	Roof2OpenTimeOut,
 	Roof1CloseTimeOut,
 	Roof2CloseTimeOut:	TON;
+	Roof1LockTimeOut,
+	Roof2LockTimeOut,
+	Roof1UnlockTimeOut,
+	Roof2UnlockTimeOut:	TON;
 END_VAR
 VAR CONSTANT
 	HumidityLimitHigh:		REAL := 80.0;
@@ -133,13 +137,15 @@ IF nMode = RoofAutomatic THEN
 		OpenRoofAuto := TRUE;
 		OpenRoofAutoPending := FALSE;
 	END_IF			
-
-	IF OpenRoofAuto THEN
-		Roof1Command := OpenRoof;
-		Roof2Command := OpenRoof;
-	ELSIF CloseRoofAuto THEN
+	
+	IF CloseRoofAuto THEN
+		OpenRoofAuto := FALSE;
 		Roof1Command := CloseRoof;
 		Roof2Command := CloseRoof;
+	ELSIF OpenRoofAuto THEN
+		CloseRoofAuto := FALSE;
+		Roof1Command := OpenRoof;
+		Roof2Command := OpenRoof;
 	ELSE
 		Roof1Command := StopRoof;
 		Roof2Command := StopRoof;
@@ -154,16 +160,23 @@ IF nMode = RoofAutomatic THEN
 			Roof2Command := CloseRoof;	
 		END_IF
 	END_IF
-				
+	
+	IF (Roof1Status = StatusLocked) AND (Roof2Status = StatusLocked) THEN
+		CloseRoofAuto := FALSE;
+	END_IF			
+	IF (Roof1Status = StatusOpened) AND (Roof2Status = StatusOpened) THEN
+		OpenRoofAuto := FALSE;
+	END_IF			
+	
 ELSE //	RoofManual
 	OpenRoof1 := GVL_Panel.ILeftOpenSwitch AND NOT GVL_Panel.ILeftCloseSwitch;
 	CloseRoof1 := GVL_Panel.ILeftCloseSwitch AND NOT GVL_Panel.ILeftOpenSwitch;
 	StopRoof1 := NOT (GVL_Panel.ILeftOpenSwitch XOR GVL_Panel.ILeftCloseSwitch);
 	
-	IF OpenRoof1 THEN
-		Roof1Command := OpenRoof;
-	ELSIF CloseRoof1 THEN
+	IF CloseRoof1 THEN
 		Roof1Command := CloseRoof;
+	ELSIF OpenRoof1 THEN
+		Roof1Command := OpenRoof;
 	ELSE
 		Roof1Command := StopRoof;
 	END_IF
@@ -172,10 +185,10 @@ ELSE //	RoofManual
 	CloseRoof2 := GVL_Panel.IRightCloseSwitch AND NOT GVL_Panel.IRightOpenSwitch;
 	StopRoof2 := NOT (GVL_Panel.IRightOpenSwitch XOR GVL_Panel.IRightCloseSwitch);
 	
-	IF OpenRoof2 THEN
-		Roof2Command := OpenRoof;
-	ELSIF CloseRoof2 THEN
+	IF CloseRoof2 THEN
 		Roof2Command := CloseRoof;
+	ELSIF OpenRoof2 THEN
+		Roof2Command := OpenRoof;
 	ELSE
 		Roof2Command := StopRoof;
 	END_IF
@@ -194,16 +207,22 @@ Roof2OpenTimeOut(IN := (Roof2Command = OpenRoof) AND NOT (Roof2Status = StatusOp
 Roof1CloseTimeOut(IN := (Roof1Command = CloseRoof) AND NOT (Roof1Status = StatusLocked), PT := T#130S);
 Roof2CloseTimeOut(IN := (Roof1Command = CloseRoof) AND NOT (Roof2Status = StatusLocked), PT := T#130S);
 
+Roof1LockTimeOut(IN := (GVL_Roof.ORiegel11zu OR GVL_Roof.ORiegel21zu) AND NOT (GVL_Roof.IRiegel11zu OR GVL_Roof.IRiegel21zu), PT := T#10S);
+Roof2LockTimeOut(IN := (GVL_Roof.ORiegel12zu OR GVL_Roof.ORiegel22zu) AND NOT (GVL_Roof.IRiegel12zu OR GVL_Roof.IRiegel22zu), PT := T#10S);
+
+Roof1UnlockTimeOut(IN := (GVL_Roof.ORiegel11auf OR GVL_Roof.ORiegel21auf) AND NOT (GVL_Roof.IRiegel11auf OR GVL_Roof.IRiegel21auf), PT := T#10S);
+Roof2UnlockTimeOut(IN := (GVL_Roof.ORiegel12auf OR GVL_Roof.ORiegel22auf) AND NOT (GVL_Roof.IRiegel12auf OR GVL_Roof.IRiegel22auf), PT := T#10S);
+
 	
 // disable light after 1 hour if on automatic
-LightTimer( IN := GVL_Environment.LightSwitch AND nMode = RoofAutomatic AND LightAuto,
+LightTimer( IN := nMode = RoofAutomatic AND (LightAuto OR GVL_Environment.LightSwitch),
 			PT := T#1H);
 			
 GVL_Environment.LightBay := LightTimer.Q OR (nMode = RoofManual AND GVL_Environment.LightSwitch);	
 // reset LightAuto SIgnal after one hour
-IF nMode = RoofAutomatic AND LightAuto AND NOT LightTimer.Q1 THEN
-	LightAuto := FALSE;
-END_IF
+//IF nMode = RoofAutomatic AND LightAuto AND NOT LightTimer.Q1 THEN
+//	LightAuto := FALSE;
+//END_IF
 
 (*** Control Section ***)	
 
@@ -264,8 +283,8 @@ END_IF
 (*** MQTT Section ***)
 MQTTTimer(IN:=TRUE);
 IF MQTTTimer.Q OR Roof1Status <> LastRoof1Status OR Roof2Status <> LastRoof2Status THEN
-	MQTTClient.Publish('roof', 'roof1', 'Roof1Status', RoofStatus_TO_String(Roof1Status));
-	MQTTClient.Publish('roof', 'roof2', 'Roof2Status', RoofStatus_TO_String(Roof2Status));
+	MQTTClient.Publish('roof', 'roof1', 'Roof1Status', RoofStatus_TO_String(Roof1Status, Quoted := TRUE));
+	MQTTClient.Publish('roof', 'roof2', 'Roof2Status', RoofStatus_TO_String(Roof2Status, Quoted := TRUE));
 	MAIN.MQTTClient.Publish('environment', 'weatherstation', 'WeatherBad',	BOOL_TO_STRING(EnvironmentAlarm));		
 	MAIN.MQTTClient.Publish('roof', 'main', 'isRoofManual',	BOOL_TO_STRING(isRoofManual));		
 	
@@ -313,19 +332,35 @@ END_IF
       <LineId Id="1334" Count="0" />
       <LineId Id="1346" Count="0" />
       <LineId Id="1354" Count="0" />
-      <LineId Id="1336" Count="1" />
-      <LineId Id="32" Count="9" />
+      <LineId Id="1336" Count="0" />
+      <LineId Id="1443" Count="1" />
+      <LineId Id="1447" Count="0" />
+      <LineId Id="1445" Count="1" />
+      <LineId Id="32" Count="0" />
+      <LineId Id="1448" Count="0" />
+      <LineId Id="33" Count="1" />
+      <LineId Id="38" Count="3" />
       <LineId Id="539" Count="0" />
       <LineId Id="534" Count="0" />
       <LineId Id="533" Count="0" />
       <LineId Id="1231" Count="5" />
       <LineId Id="536" Count="0" />
       <LineId Id="42" Count="0" />
+      <LineId Id="1453" Count="0" />
+      <LineId Id="1455" Count="0" />
+      <LineId Id="1454" Count="0" />
+      <LineId Id="1457" Count="2" />
+      <LineId Id="1456" Count="0" />
       <LineId Id="63" Count="0" />
       <LineId Id="769" Count="3" />
-      <LineId Id="64" Count="6" />
+      <LineId Id="1449" Count="1" />
+      <LineId Id="64" Count="1" />
+      <LineId Id="68" Count="2" />
       <LineId Id="777" Count="3" />
-      <LineId Id="71" Count="8" />
+      <LineId Id="71" Count="0" />
+      <LineId Id="1451" Count="1" />
+      <LineId Id="72" Count="1" />
+      <LineId Id="76" Count="3" />
       <LineId Id="88" Count="2" />
       <LineId Id="1227" Count="1" />
       <LineId Id="1230" Count="0" />
@@ -333,7 +368,10 @@ END_IF
       <LineId Id="1250" Count="2" />
       <LineId Id="768" Count="0" />
       <LineId Id="1255" Count="0" />
+      <LineId Id="1436" Count="0" />
       <LineId Id="1254" Count="0" />
+      <LineId Id="1438" Count="3" />
+      <LineId Id="1437" Count="0" />
       <LineId Id="1253" Count="0" />
       <LineId Id="91" Count="2" />
       <LineId Id="1431" Count="0" />

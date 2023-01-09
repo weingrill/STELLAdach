@@ -880,12 +880,12 @@
 								</Entry>
 							</Pdo>
 							<Pdo Name="Channel 7" Index="#x1a06" Flags="#x0011" SyncMan="0">
-								<Entry Name="Input" Index="#x6060" Sub="#x01">
+								<Entry Name="GVL_Roof.IDach1Schnell" Index="#x6060" Sub="#x01">
 									<Type>BIT</Type>
 								</Entry>
 							</Pdo>
 							<Pdo Name="Channel 8" Index="#x1a07" Flags="#x0011" SyncMan="0">
-								<Entry Name="Input" Index="#x6070" Sub="#x01">
+								<Entry Name="GVL_Roof.IDach2Schnell" Index="#x6070" Sub="#x01">
 									<Type>BIT</Type>
 								</Entry>
 							</Pdo>
@@ -3031,7 +3031,6 @@ Bit1: Value bigger/equal Limit2]]></Comment>
 				<Link VarA="PlcTask Inputs^GVL_Roof.IRiegel21zu" VarB="Channel 6^GVL_Roof.IRiegel21zu"/>
 			</OwnerB>
 			<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1200)^Modul3 (EL1008)">
-				<Link VarA="PlcTask Inputs^GVL_Roof.IDach1Schnell" VarB="Channel 7^GVL_Roof.IDach1Schnell"/>
 				<Link VarA="PlcTask Inputs^GVL_Roof.IMotorschutz11" VarB="Channel 1^GVL_Roof.IMotorschutz11"/>
 				<Link VarA="PlcTask Inputs^GVL_Roof.IMotorschutz12" VarB="Channel 2^GVL_Roof.IMotorschutz12"/>
 				<Link VarA="PlcTask Inputs^GVL_Roof.IMotorschutz13" VarB="Channel 3^GVL_Roof.IMotorschutz13"/>
@@ -3059,7 +3058,6 @@ Bit1: Value bigger/equal Limit2]]></Comment>
 				<Link VarA="PlcTask Inputs^GVL_Roof.IRiegel22zu" VarB="Channel 6^GVL_Roof.IRiegel22zu"/>
 			</OwnerB>
 			<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1200)^Modul6 (EL1008)">
-				<Link VarA="PlcTask Inputs^GVL_Roof.IDach2Schnell" VarB="Channel 7^GVL_Roof.IDach2Schnell"/>
 				<Link VarA="PlcTask Inputs^GVL_Roof.IMotorschutz21" VarB="Channel 1^GVL_Roof.IMotorschutz21"/>
 				<Link VarA="PlcTask Inputs^GVL_Roof.IMotorschutz22" VarB="Channel 2^GVL_Roof.IMotorschutz22"/>
 				<Link VarA="PlcTask Inputs^GVL_Roof.IMotorschutz23" VarB="Channel 3^GVL_Roof.IMotorschutz23"/>
@@ -3073,6 +3071,8 @@ Bit1: Value bigger/equal Limit2]]></Comment>
 				<Link VarA="PlcTask Inputs^GVL_Panel.IManualSwitch" VarB="Channel 1^GVL_Panel.IManualSwitch"/>
 				<Link VarA="PlcTask Inputs^GVL_Panel.IRightCloseSwitch" VarB="Channel 5^GVL_Panel.IRightCloseSwitch"/>
 				<Link VarA="PlcTask Inputs^GVL_Panel.IRightOpenSwitch" VarB="Channel 4^GVL_Panel.IRightOpenSwitch"/>
+				<Link VarA="PlcTask Inputs^GVL_Roof.IDach1Schnell" VarB="Channel 7^GVL_Roof.IDach1Schnell"/>
+				<Link VarA="PlcTask Inputs^GVL_Roof.IDach2Schnell" VarB="Channel 8^GVL_Roof.IDach2Schnell"/>
 			</OwnerB>
 			<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1200)^Modul8 (EL3068)">
 				<Link VarA="PlcTask Inputs^GVL_Environment.rawHumidityBay" VarB="AI Standard Channel 4^Environment.rawHumidityBay"/>
