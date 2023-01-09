@@ -11,7 +11,7 @@ VAR_OUTPUT
 	Q1: BOOL;
 END_VAR
 VAR
-	lighttimer: TP;
+	lighttimer: TOF;
 	pulse1:	TP;
 	pulse2: TP;
 	pulse3: TP;
