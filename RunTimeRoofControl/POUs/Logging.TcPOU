@@ -15,6 +15,7 @@ VAR
 	Rain2Log,
 	OpenRoof1Log, CloseRoof1Log, StopRoof1Log,
 	OpenRoof2Log, CloseRoof2Log, StopRoof2Log,
+	Roof1StatusLog, Roof2StatusLog,
 	Roof1ErrorLog, Roof2ErrorLog,
 	Roof1WarningLog, Roof2WarningLog,
 	LightLog,
@@ -30,7 +31,15 @@ VAR
 	MotorProtection2Log: FB_EventLog;
 	
 	RoofOpenTimeoutLog,
-	RoofCloseTimeoutLog: FB_EventLog;
+	RoofCloseTimeoutLog,
+	Roof1LockTimeoutLog,
+	Roof2LockTimeoutLog,
+	Roof1UnlockTimeoutLog,
+	Roof2UnlockTimeoutLog:	FB_EventLog;
+	
+	LastRoof1Status,
+	LastRoof2Status:	E_RoofStatus;
+
 END_VAR
 ]]></Declaration>
     <Implementation>
@@ -58,6 +67,11 @@ Roof2ErrorLog( Trigger := MAIN.Roof2Status = StatusError, Level := ADSLOG_MSGTYP
 
 Roof1WarningLog( Trigger := MAIN.Roof1Status = StatusUndefined, Level := ADSLOG_MSGTYPE_WARN, OnMessage := 'The status of roof 1 is undefined!');
 Roof2WarningLog( Trigger := MAIN.Roof2Status = StatusUndefined, Level := ADSLOG_MSGTYPE_WARN, OnMessage := 'The status of roof 2 is undefined!');
+
+Roof1StatusLog( Trigger :=  MAIN.Roof1Status <> LastRoof1Status, FormatString := 'Roof1 status: %s', OnMessage := RoofStatus_TO_String(Main.Roof1Status, Quoted := FALSE));
+Roof2StatusLog( Trigger :=  MAIN.Roof2Status <> LastRoof1Status, FormatString := 'Roof2 status: %s', OnMessage := RoofStatus_TO_String(Main.Roof2Status, Quoted := FALSE));
+LastRoof1Status := MAIN.Roof1Status;
+LastRoof2Status := MAIN.Roof2Status;
 
 LightLog(Trigger := GVL_Environment.LightBay, OnMessage := 'The light is on.', OffMessage := 'The light is off.');
 ManualLog(Trigger := MAIN.isRoofManual, Level := ADSLOG_MSGTYPE_WARN, OnMessage := 'Roof is in manual mode.', OffMessage := 'Roof is in automatic mode.');
@@ -92,13 +106,22 @@ MotorProtection2Log( Trigger := Auxiliary.NC2Status <> 0,
 							
 RoofOpenTimeoutLog( Trigger := MAIN.Roof1OpenTimeOut.Q OR MAIN.Roof2OpenTimeOut.Q, Level := ADSLOG_MSGTYPE_ERROR, OnMessage := 'Roof time out error while opening!');
 RoofCloseTimeoutLog( Trigger := MAIN.Roof1CloseTimeOut.Q OR MAIN.Roof2CloseTimeOut.Q, Level := ADSLOG_MSGTYPE_ERROR, OnMessage := 'Roof timeout error while closing!');
+
+Roof1LockTimeoutLog( Trigger := MAIN.Roof1LockTimeOut.Q, Level := ADSLOG_MSGTYPE_ERROR, OnMessage := 'Roof1 lock time out!');
+Roof2LockTimeoutLog( Trigger := MAIN.Roof2LockTimeOut.Q, Level := ADSLOG_MSGTYPE_ERROR, OnMessage := 'Roof2 lock time out!');
+Roof1UnlockTimeoutLog( Trigger := MAIN.Roof1UnlockTimeOut.Q, Level := ADSLOG_MSGTYPE_ERROR, OnMessage := 'Roof1 unlock time out!');
+Roof2UnlockTimeoutLog( Trigger := MAIN.Roof2UnlockTimeOut.Q, Level := ADSLOG_MSGTYPE_ERROR, OnMessage := 'Roof2 unlock time out!');
 ]]></ST>
     </Implementation>
     <LineIds Name="Logging">
       <LineId Id="22" Count="4" />
       <LineId Id="50" Count="0" />
       <LineId Id="28" Count="1" />
-      <LineId Id="31" Count="17" />
+      <LineId Id="31" Count="15" />
+      <LineId Id="175" Count="2" />
+      <LineId Id="179" Count="1" />
+      <LineId Id="178" Count="0" />
+      <LineId Id="48" Count="0" />
       <LineId Id="5" Count="0" />
       <LineId Id="58" Count="0" />
       <LineId Id="57" Count="0" />
@@ -113,7 +136,10 @@ RoofCloseTimeoutLog( Trigger := MAIN.Roof1CloseTimeOut.Q OR MAIN.Roof2CloseTimeO
       <LineId Id="90" Count="0" />
       <LineId Id="124" Count="0" />
       <LineId Id="126" Count="1" />
+      <LineId Id="164" Count="0" />
       <LineId Id="125" Count="0" />
+      <LineId Id="166" Count="2" />
+      <LineId Id="165" Count="0" />
     </LineIds>
   </POU>
 </TcPlcObject>
