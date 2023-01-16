@@ -161,8 +161,8 @@ IF MQTTTimer.Q THEN // publish new payload every second
 	MAIN.MQTTClient.Publish('environment', 'weatherstation', 'EnvironmentDustPM1',	LREAL_TO_FMTSTR(DigitalDust1.concentration1 / 1000.0, 5, TRUE));		
 	MAIN.MQTTClient.Publish('environment', 'weatherstation', 'EnvironmentDustPM25',	LREAL_TO_FMTSTR(DigitalDust1.concentration2 / 1000.0, 5, TRUE));		
 	
-	//MAIN.MQTTClient.Publish('environment', 'bay', 'EnvironmentDust2PM1',	LREAL_TO_FMTSTR(DigitalDust2.concentration1, 5, TRUE));		
-	//MAIN.MQTTClient.Publish('environment', 'bay', 'EnvironmentDust2PM25',	LREAL_TO_FMTSTR(DigitalDust2.concentration2, 5, TRUE));		
+	MAIN.MQTTClient.Publish('environment', 'bay', 'EnvironmentDust2PM1',	LREAL_TO_FMTSTR(DigitalDust2.concentration1 / 1000.0, 5, TRUE));		
+	MAIN.MQTTClient.Publish('environment', 'bay', 'EnvironmentDust2PM25',	LREAL_TO_FMTSTR(DigitalDust2.concentration2 / 1000.0, 5, TRUE));		
 	
 	MAIN.MQTTClient.Publish('environment', 'spectrograph', 'SpectrographTemperature',	LREAL_TO_FMTSTR(Temperature_Spec, 2, TRUE));
 	MAIN.MQTTClient.Publish('environment', 'spectrograph', 'SpectrographHumidity',		LREAL_TO_FMTSTR(Humidity_Spec, 2, TRUE));		
