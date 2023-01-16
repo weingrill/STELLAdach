@@ -69,7 +69,7 @@ Roof1WarningLog( Trigger := MAIN.Roof1Status = StatusUndefined, Level := ADSLOG_
 Roof2WarningLog( Trigger := MAIN.Roof2Status = StatusUndefined, Level := ADSLOG_MSGTYPE_WARN, OnMessage := 'The status of roof 2 is undefined!');
 
 Roof1StatusLog( Trigger :=  MAIN.Roof1Status <> LastRoof1Status, FormatString := 'Roof1 status: %s', OnMessage := RoofStatus_TO_String(Main.Roof1Status, Quoted := FALSE));
-Roof2StatusLog( Trigger :=  MAIN.Roof2Status <> LastRoof1Status, FormatString := 'Roof2 status: %s', OnMessage := RoofStatus_TO_String(Main.Roof2Status, Quoted := FALSE));
+Roof2StatusLog( Trigger :=  MAIN.Roof2Status <> LastRoof2Status, FormatString := 'Roof2 status: %s', OnMessage := RoofStatus_TO_String(Main.Roof2Status, Quoted := FALSE));
 LastRoof1Status := MAIN.Roof1Status;
 LastRoof2Status := MAIN.Roof2Status;
 
