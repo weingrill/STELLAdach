@@ -64,6 +64,7 @@ VAR
 	SpectrographTemperatureTrigger:	SR;
 	SpectrographHumidityTrigger:	SR;
 	BayHumidityTrigger:				SR;
+	DustTrigger:					SR;
 	// MQTT timer
 	MQTTTimer : TON := (PT:=T#5S);
 END_VAR
@@ -129,6 +130,7 @@ SpectrographTemperatureTrigger(SET1 := Temperature_Spec >= 30.0, RESET := Temper
 ElectronicsHumidityTrigger(SET1 := Humidity_Electronics >= 65.0, RESET := Humidity_Electronics < 50.0);
 SpectrographHumidityTrigger(SET1 := Humidity_Spec >= 65.0, RESET := Humidity_Spec < 50.0);
 BayHumidityTrigger(SET1 := HumidityBay >= 65.0, RESET := HumidityBay < 55.0);
+DustTrigger( SET1 := DustAvg.AVG > 0.01, RESET := DustAvg.AVG < 0.0075);
 
 (* MQTT Section *)
 
@@ -189,6 +191,7 @@ END_IF
       <LineId Id="1036" Count="1" />
       <LineId Id="1169" Count="0" />
       <LineId Id="1035" Count="0" />
+      <LineId Id="1237" Count="0" />
       <LineId Id="776" Count="5" />
       <LineId Id="783" Count="4" />
       <LineId Id="789" Count="1" />

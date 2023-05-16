@@ -111,7 +111,7 @@ HumidityTrigger(SET1 := Environment.Humidity >= HumidityLimitHigh,
 				RESET := Environment.Humidity < HumidityLimitLow);
 						
 // define bad weather condition; rain is handled in EnvironmentAlarm
-EnvironmentBad := (Environment.Dust > DustLimit AND NOT DustSensorError) OR
+EnvironmentBad := (Environment.DustTrigger.Q1 AND NOT DustSensorError) OR
 		HumidityTrigger.Q1 OR
 		Environment.WindSpeed1 > WindSpeedLimit OR
 		Environment.WindSpeed2 > WindSpeedLimit OR
