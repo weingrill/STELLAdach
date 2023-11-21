@@ -105,12 +105,7 @@
 					<Vars VarGrpType="1">
 						<Name>PlcTask Inputs</Name>
 						<Var>
-							<Name>GVL_Environment.Rain_alarm1</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
 							<Name>GVL_Environment.rawWindSpeed1</Name>
-							<Comment><![CDATA[ Weather Station 1]]></Comment>
 							<Type>INT</Type>
 						</Var>
 						<Var>
@@ -126,16 +121,16 @@
 							<Type>INT</Type>
 						</Var>
 						<Var>
-							<Name>GVL_Environment.rawWindDirection</Name>
-							<Type>INT</Type>
+							<Name>GVL_Environment.Rain_alarm1</Name>
+							<Type>BOOL</Type>
 						</Var>
 						<Var>
 							<Name>GVL_Environment.Overcorrect_status1</Name>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>GVL_Environment.Rain_alarm2</Name>
-							<Type>BOOL</Type>
+							<Name>GVL_Environment.rawWindDirection</Name>
+							<Type>INT</Type>
 						</Var>
 						<Var>
 							<Name>GVL_Environment.rawPressure</Name>
@@ -159,16 +154,20 @@
 							<Type>INT</Type>
 						</Var>
 						<Var>
+							<Name>GVL_Environment.Rain_alarm2</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>GVL_Environment.Overcorrect_status2</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
 							<Name>GVL_Environment.rawBrightness</Name>
 							<Type>INT</Type>
 						</Var>
 						<Var>
 							<Name>GVL_Environment.rawBrightnessLow</Name>
 							<Type>INT</Type>
-						</Var>
-						<Var>
-							<Name>GVL_Environment.Overcorrect_status2</Name>
-							<Type>BOOL</Type>
 						</Var>
 						<Var>
 							<Name>GVL_Environment.rawTemperature_Electronics</Name>
@@ -406,6 +405,19 @@
 							<Name>GVL_Roof.IMotorschutz26</Name>
 							<Comment><![CDATA[MS6NC2]]></Comment>
 							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>GVL_Environment.rawLightDirection</Name>
+							<Comment><![CDATA[ Weather Station 1]]></Comment>
+							<Type>INT</Type>
+						</Var>
+						<Var>
+							<Name>GVL_Environment.rawBrightness1</Name>
+							<Type>INT</Type>
+						</Var>
+						<Var>
+							<Name>GVL_Environment.rawPressureBay</Name>
+							<Type>INT</Type>
 						</Var>
 					</Vars>
 					<Vars VarGrpType="2" AreaNo="1">
@@ -1287,7 +1299,7 @@ Bit1: Value bigger/equal Limit2]]></Comment>
 									<Type>BIT</Type>
 									<Comment><![CDATA[Bit toggles everytime when new value available]]></Comment>
 								</Entry>
-								<Entry Name="Value" Index="#x6070" Sub="#x11" Flags="#x00020000">
+								<Entry Name="GVL_Environment.rawPressureBay" Index="#x6070" Sub="#x11" Flags="#x00020000">
 									<Type>INT</Type>
 								</Entry>
 							</Pdo>
@@ -1676,8 +1688,9 @@ Bit1: Value bigger/equal Limit2]]></Comment>
 											<Type>BIT</Type>
 											<Comment><![CDATA[Bit toggles everytime when new value available]]></Comment>
 										</Entry>
-										<Entry Name="Environment.rawWindSpeed1" Index="#x6000" Sub="#x11" Flags="#x00020000">
+										<Entry Name="GVL_Environment.rawLightDirection" Index="#x6000" Sub="#x11" Flags="#x00020000">
 											<Type>INT</Type>
+											<Comment><![CDATA[ Weather Station 1]]></Comment>
 										</Entry>
 									</Pdo>
 									<Pdo Name="AI Compact Channel 1" Index="#x1a01" Flags="#x0010">
@@ -1724,7 +1737,7 @@ Bit1: Value bigger/equal Limit2]]></Comment>
 											<Type>BIT</Type>
 											<Comment><![CDATA[Bit toggles everytime when new value available]]></Comment>
 										</Entry>
-										<Entry Name="Environment.rawHumidity1" Index="#x6010" Sub="#x11" Flags="#x00020000">
+										<Entry Name="GVL_Environment.rawBrightness1" Index="#x6010" Sub="#x11" Flags="#x00020000">
 											<Type>INT</Type>
 										</Entry>
 									</Pdo>
@@ -1772,7 +1785,7 @@ Bit1: Value bigger/equal Limit2]]></Comment>
 											<Type>BIT</Type>
 											<Comment><![CDATA[Bit toggles everytime when new value available]]></Comment>
 										</Entry>
-										<Entry Name="Environment.rawTemperature1" Index="#x6020" Sub="#x11" Flags="#x00020000">
+										<Entry Name="GVL_Environment.rawPressure" Index="#x6020" Sub="#x11" Flags="#x00020000">
 											<Type>INT</Type>
 										</Entry>
 									</Pdo>
@@ -1820,7 +1833,7 @@ Bit1: Value bigger/equal Limit2]]></Comment>
 											<Type>BIT</Type>
 											<Comment><![CDATA[Bit toggles everytime when new value available]]></Comment>
 										</Entry>
-										<Entry Name="Environment.rawPressure" Index="#x6030" Sub="#x11" Flags="#x00020000">
+										<Entry Name="GVL_Environment.rawHumidity1" Index="#x6030" Sub="#x11" Flags="#x00020000">
 											<Type>INT</Type>
 										</Entry>
 									</Pdo>
@@ -1868,7 +1881,7 @@ Bit1: Value bigger/equal Limit2]]></Comment>
 											<Type>BIT</Type>
 											<Comment><![CDATA[Bit toggles everytime when new value available]]></Comment>
 										</Entry>
-										<Entry Name="Environment.rawWindDirection" Index="#x6040" Sub="#x11" Flags="#x00020000">
+										<Entry Name="GVL_Environment.rawTemperature1" Index="#x6040" Sub="#x11" Flags="#x00020000">
 											<Type>INT</Type>
 										</Entry>
 									</Pdo>
@@ -1916,7 +1929,7 @@ Bit1: Value bigger/equal Limit2]]></Comment>
 											<Type>BIT</Type>
 											<Comment><![CDATA[Bit toggles everytime when new value available]]></Comment>
 										</Entry>
-										<Entry Name="Value" Index="#x6050" Sub="#x11" Flags="#x00020000">
+										<Entry Name="GVL_Environment.rawRain_analogue1" Index="#x6050" Sub="#x11" Flags="#x00020000">
 											<Type>INT</Type>
 										</Entry>
 									</Pdo>
@@ -1964,7 +1977,7 @@ Bit1: Value bigger/equal Limit2]]></Comment>
 											<Type>BIT</Type>
 											<Comment><![CDATA[Bit toggles everytime when new value available]]></Comment>
 										</Entry>
-										<Entry Name="Value" Index="#x6060" Sub="#x11" Flags="#x00020000">
+										<Entry Name="GVL_Environment.rawWindDirection" Index="#x6060" Sub="#x11" Flags="#x00020000">
 											<Type>INT</Type>
 										</Entry>
 									</Pdo>
@@ -2012,8 +2025,9 @@ Bit1: Value bigger/equal Limit2]]></Comment>
 											<Type>BIT</Type>
 											<Comment><![CDATA[Bit toggles everytime when new value available]]></Comment>
 										</Entry>
-										<Entry Name="Value" Index="#x6070" Sub="#x11" Flags="#x00020000">
+										<Entry Name="GVL_Environment.rawWindSpeed1" Index="#x6070" Sub="#x11" Flags="#x00020000">
 											<Type>INT</Type>
+											<Comment><![CDATA[ Weather Station 1]]></Comment>
 										</Entry>
 									</Pdo>
 									<Pdo Name="AI Compact Channel 8" Index="#x1a0f" Flags="#x0010">
@@ -5992,6 +6006,7 @@ Bit1: Value bigger/equal Limit2]]></Comment>
 				<Link VarA="PlcTask Inputs^GVL_Environment.rawHumidityBay" VarB="AI Standard Channel 4^Environment.rawHumidityBay"/>
 				<Link VarA="PlcTask Inputs^GVL_Environment.rawHumidity_Electronics" VarB="AI Standard Channel 2^Environment.rawHumidity_Electronics"/>
 				<Link VarA="PlcTask Inputs^GVL_Environment.rawHumidity_Spec" VarB="AI Standard Channel 6^Environment.rawHumidity_Spec"/>
+				<Link VarA="PlcTask Inputs^GVL_Environment.rawPressureBay" VarB="AI Standard Channel 8^GVL_Environment.rawPressureBay"/>
 				<Link VarA="PlcTask Inputs^GVL_Environment.rawTemperatureBay" VarB="AI Standard Channel 3^Environment.rawTemperatureBay"/>
 				<Link VarA="PlcTask Inputs^GVL_Environment.rawTemperature_Electronics" VarB="AI Standard Channel 1^Environment.rawTemperature_Electronics"/>
 				<Link VarA="PlcTask Inputs^GVL_Environment.rawTemperature_Spec" VarB="AI Standard Channel 5^Environment.rawTemperature_Spec"/>
@@ -6010,17 +6025,17 @@ Bit1: Value bigger/equal Limit2]]></Comment>
 				<Link VarA="PlcTask Inputs^GVL_Panel.Us_Undervoltage" VarB="Status Us^Undervoltage"/>
 			</OwnerB>
 			<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1200)^Term 31 (EK1521)^WeatherStation1 (EK1501)^Term 33 (EL3068)">
-				<Link VarA="PlcTask Inputs^GVL_Environment.rawHumidity1" VarB="AI Standard Channel 2^Environment.rawHumidity1"/>
-				<Link VarA="PlcTask Inputs^GVL_Environment.rawPressure" VarB="AI Standard Channel 4^Environment.rawPressure"/>
-				<Link VarA="PlcTask Inputs^GVL_Environment.rawTemperature1" VarB="AI Standard Channel 3^Environment.rawTemperature1"/>
-				<Link VarA="PlcTask Inputs^GVL_Environment.rawWindDirection" VarB="AI Standard Channel 5^Environment.rawWindDirection"/>
-				<Link VarA="PlcTask Inputs^GVL_Environment.rawWindSpeed1" VarB="AI Standard Channel 1^Environment.rawWindSpeed1"/>
+				<Link VarA="PlcTask Inputs^GVL_Environment.rawBrightness1" VarB="AI Standard Channel 2^GVL_Environment.rawBrightness1"/>
+				<Link VarA="PlcTask Inputs^GVL_Environment.rawHumidity1" VarB="AI Standard Channel 4^GVL_Environment.rawHumidity1"/>
+				<Link VarA="PlcTask Inputs^GVL_Environment.rawLightDirection" VarB="AI Standard Channel 1^GVL_Environment.rawLightDirection"/>
+				<Link VarA="PlcTask Inputs^GVL_Environment.rawPressure" VarB="AI Standard Channel 3^GVL_Environment.rawPressure"/>
+				<Link VarA="PlcTask Inputs^GVL_Environment.rawRain_analogue1" VarB="AI Standard Channel 6^GVL_Environment.rawRain_analogue1"/>
+				<Link VarA="PlcTask Inputs^GVL_Environment.rawTemperature1" VarB="AI Standard Channel 5^GVL_Environment.rawTemperature1"/>
+				<Link VarA="PlcTask Inputs^GVL_Environment.rawWindDirection" VarB="AI Standard Channel 7^GVL_Environment.rawWindDirection"/>
+				<Link VarA="PlcTask Inputs^GVL_Environment.rawWindSpeed1" VarB="AI Standard Channel 8^GVL_Environment.rawWindSpeed1"/>
 			</OwnerB>
 			<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1200)^Term 31 (EK1521)^WeatherStation1 (EK1501)^Term 34 (EL1024)">
 				<Link VarA="PlcTask Inputs^GVL_Environment.Rain_alarm1" VarB="Channel 1^Environment.Rain_alarm1"/>
-			</OwnerB>
-			<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1200)^Term 31 (EK1521)^WeatherStation1 (EK1501)^Term 35 (EL3024)">
-				<Link VarA="PlcTask Inputs^GVL_Environment.rawRain_analogue1" VarB="AI Standard Channel 1^Rainanalog"/>
 			</OwnerB>
 			<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1200)^Term 36 (EK1521)^WeatherStation2 (EK1501)^Term 38 (EL3068)">
 				<Link VarA="PlcTask Inputs^GVL_Environment.rawBrightness" VarB="AI Standard Channel 4^Environment.rawBrightness"/>

@@ -43,7 +43,7 @@ VAR
 	DustSensorError: BOOL;
 	// Timer for Dome Light
 	LightTimer:		LIGHT_BUTTON;
-
+	LightAutoTimer:	TP;
 	RoofStatusLamp1,
 	RoofStatusLamp2: FB_StatusLamp;
 	WeatherAlarm,
@@ -74,8 +74,9 @@ VAR
 	Roof2UnlockTimeOut:	TON;
 END_VAR
 VAR CONSTANT
-	HumidityLimitHigh:		REAL := 80.0;
-	HumidityLimitLow:		REAL := 65.0;
+	HumidityLimitCritical:		REAL := 80.0;
+	HumidityLimitHigh:		REAL := 75.0;
+	HumidityLimitLow:		REAL := 55.0;
 	
 	WindSpeedLimit:		REAL := 20.0;
 	WindSpeedBayLimit:	REAL :=	15.0;
@@ -215,14 +216,23 @@ Roof2UnlockTimeOut(IN := (GVL_Roof.ORiegel12auf OR GVL_Roof.ORiegel22auf) AND NO
 
 	
 // disable light after 1 hour if on automatic
-LightTimer( IN := nMode = RoofAutomatic AND (LightAuto OR GVL_Environment.LightSwitch),
+LightTimer( IN := GVL_Environment.LightSwitch,
 			PT := T#1H);
 			
-GVL_Environment.LightBay := LightTimer.Q OR (nMode = RoofManual AND GVL_Environment.LightSwitch);	
-// reset LightAuto SIgnal after one hour
-//IF nMode = RoofAutomatic AND LightAuto AND NOT LightTimer.Q1 THEN
-//	LightAuto := FALSE;
-//END_IF
+LightAutoTimer(IN := LightAuto, PT := T#15M);
+
+// automatic, manual on
+IF nMode = RoofAutomatic THEN
+	GVL_Environment.LightBay := LightTimer.Q OR (LightAutoTimer.Q AND LightAuto);
+ELSIF nMode = RoofManual THEN
+	GVL_Environment.LightBay := LightTimer.Q;
+ELSE
+	GVL_Environment.LightBay := FALSE;
+END_IF
+IF (Roof1Status = StatusOpened) OR (Roof2Status = StatusOpened) THEN
+	GVL_Environment.LightBay := FALSE;
+END_IF
+
 
 (*** Control Section ***)	
 
@@ -375,10 +385,18 @@ END_IF
       <LineId Id="1253" Count="0" />
       <LineId Id="91" Count="2" />
       <LineId Id="1431" Count="0" />
-      <LineId Id="94" Count="0" />
-      <LineId Id="1221" Count="0" />
-      <LineId Id="1213" Count="0" />
-      <LineId Id="1222" Count="2" />
+      <LineId Id="1542" Count="0" />
+      <LineId Id="1548" Count="0" />
+      <LineId Id="1541" Count="0" />
+      <LineId Id="1549" Count="1" />
+      <LineId Id="1552" Count="0" />
+      <LineId Id="1554" Count="0" />
+      <LineId Id="1556" Count="0" />
+      <LineId Id="1553" Count="0" />
+      <LineId Id="1551" Count="0" />
+      <LineId Id="1558" Count="2" />
+      <LineId Id="1547" Count="0" />
+      <LineId Id="1224" Count="0" />
       <LineId Id="97" Count="41" />
       <LineId Id="786" Count="0" />
       <LineId Id="398" Count="0" />

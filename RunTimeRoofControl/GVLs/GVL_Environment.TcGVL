@@ -11,15 +11,17 @@ STELLA building control sensors & switches
 VAR_GLOBAL
 		
 	// Weather Station 1
-	rawWindSpeed1				AT%I*:	INT;
-	rawTemperature1				AT%I*:	INT;
-	rawHumidity1				AT%I*:	INT;
-	rawRain_analogue1			AT%I*:	INT;
-	Rain_alarm1					AT%I*:	BOOL;
-	rawWindDirection			AT%I*:	INT;
-	Overcorrect_status1			AT%I*:	BOOL;
+	rawLightDirection			AT%I*:	INT;
+	rawBrightness1				AT%I*:	INT;
 	rawPressure 				AT%I*:	INT;
-
+	rawHumidity1				AT%I*:	INT;
+	rawTemperature1				AT%I*:	INT;
+	rawRain_analogue1			AT%I*:	INT;
+	rawWindDirection			AT%I*:	INT;
+	Rain_alarm1					AT%I*:	BOOL;
+	rawWindSpeed1				AT%I*:	INT;
+	Overcorrect_status1			AT%I*:	BOOL;
+	
 	// Weather Station 2
 	rawWindSpeed2				AT%I*:	INT;
 	rawTemperature2				AT%I*:	INT;
@@ -40,6 +42,7 @@ VAR_GLOBAL
 	
 	// Bay
 	rawWindSpeedBay				AT%I*:	INT;
+	rawPressureBay 				AT%I*:	INT;
 	// Dust Sensor 4..20mA
 	rawDust						AT%I*:	INT;
 

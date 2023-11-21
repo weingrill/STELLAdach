@@ -11,9 +11,15 @@ VAR_OUTPUT
 	Q1: BOOL;
 END_VAR
 VAR
-	lighttimer: TOF;
+	onstate:	BOOL;
+	trigger:	R_TRIG;
+	// main timer
+	lighttimer: TP;
+	// first warning pulse
 	pulse1:	TP;
+	// second warning pulse
 	pulse2: TP;
+	// third warning pulse
 	pulse3: TP;
 	pulse1delay: TON;
 	pulse2delay: TON;
@@ -21,7 +27,11 @@ VAR
 END_VAR
 ]]></Declaration>
     <Implementation>
-      <ST><![CDATA[lighttimer(IN := IN, PT := PT);
+      <ST><![CDATA[trigger(CLK := IN);
+IF trigger.Q THEN // if we detect a button press, we flip the onstate
+	onstate := NOT onstate;
+END_IF
+lighttimer(IN := onstate, PT := PT);
 pulse1delay(IN:= lighttimer.Q, PT := PT - T#20S);
 pulse1(IN := pulse1delay.Q, PT := T#250MS);
 pulse2delay(IN:= lighttimer.Q, PT := PT - T#10S);
@@ -29,10 +39,13 @@ pulse2(IN := pulse2delay.Q, PT := T#250MS);
 pulse3delay(IN:= lighttimer.Q, PT := PT - T#10S + T#500MS);
 pulse3(IN := pulse3delay.Q, PT := T#250MS);
 
-Q := IN AND lighttimer.Q AND NOT pulse1.Q AND NOT pulse2.Q AND NOT pulse3.Q;
-Q1 :=IN AND lighttimer.Q;]]></ST>
+Q := onstate AND lighttimer.Q AND NOT pulse1.Q AND NOT pulse2.Q AND NOT pulse3.Q;
+Q1 := onstate AND lighttimer.Q;]]></ST>
     </Implementation>
     <LineIds Name="LIGHT_BUTTON">
+      <LineId Id="43" Count="1" />
+      <LineId Id="48" Count="0" />
+      <LineId Id="46" Count="0" />
       <LineId Id="10" Count="8" />
       <LineId Id="9" Count="0" />
     </LineIds>
