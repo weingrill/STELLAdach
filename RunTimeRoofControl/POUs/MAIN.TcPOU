@@ -215,16 +215,17 @@ Roof1UnlockTimeOut(IN := (GVL_Roof.ORiegel11auf OR GVL_Roof.ORiegel21auf) AND NO
 Roof2UnlockTimeOut(IN := (GVL_Roof.ORiegel12auf OR GVL_Roof.ORiegel22auf) AND NOT (GVL_Roof.IRiegel12auf OR GVL_Roof.IRiegel22auf), PT := T#10S);
 
 	
-// disable light after 1 hour if on automatic
-LightTimer( IN := GVL_Environment.LightSwitch,
-			PT := T#1H);
-			
+LightTimer( IN := GVL_Environment.LightSwitch, PT := T#1H);
+
+// disable light after 15 minutes if on automatic			
 LightAutoTimer(IN := LightAuto, PT := T#15M);
 
 // automatic, manual on
 IF nMode = RoofAutomatic THEN
+	LightTimer.PT := T#1H;
 	GVL_Environment.LightBay := LightTimer.Q OR (LightAutoTimer.Q AND LightAuto);
 ELSIF nMode = RoofManual THEN
+	LightTimer.PT := T#8H; // we are in service mode
 	GVL_Environment.LightBay := LightTimer.Q;
 ELSE
 	GVL_Environment.LightBay := FALSE;
@@ -383,13 +384,17 @@ END_IF
       <LineId Id="1438" Count="3" />
       <LineId Id="1437" Count="0" />
       <LineId Id="1253" Count="0" />
-      <LineId Id="91" Count="2" />
-      <LineId Id="1431" Count="0" />
+      <LineId Id="92" Count="0" />
+      <LineId Id="1643" Count="0" />
+      <LineId Id="1642" Count="0" />
       <LineId Id="1542" Count="0" />
       <LineId Id="1548" Count="0" />
       <LineId Id="1541" Count="0" />
-      <LineId Id="1549" Count="1" />
+      <LineId Id="1549" Count="0" />
+      <LineId Id="1646" Count="0" />
+      <LineId Id="1550" Count="0" />
       <LineId Id="1552" Count="0" />
+      <LineId Id="1645" Count="0" />
       <LineId Id="1554" Count="0" />
       <LineId Id="1556" Count="0" />
       <LineId Id="1553" Count="0" />

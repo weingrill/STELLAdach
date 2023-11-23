@@ -2,117 +2,128 @@
 <VarLinks>
 	<OwnerA Name="TIPC^RunTimeRoofControl^RunTimeRoofControl Instance">
 		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1200)^Modul1 (EL2008)">
-			<Link VarA="PlcTask Outputs^GVL_Roof.ODach1Schnell" VarB="Channel 7^Dach1schnell"/>
-			<Link VarA="PlcTask Outputs^GVL_Roof.ODach1auf" VarB="Channel 1^Dach1auf"/>
-			<Link VarA="PlcTask Outputs^GVL_Roof.ODach1zu" VarB="Channel 2^Dach1zu"/>
-			<Link VarA="PlcTask Outputs^GVL_Roof.ORiegel11auf" VarB="Channel 3^Riegel11auf"/>
-			<Link VarA="PlcTask Outputs^GVL_Roof.ORiegel11zu" VarB="Channel 5^Riegel11zu"/>
-			<Link VarA="PlcTask Outputs^GVL_Roof.ORiegel21auf" VarB="Channel 4^Riegel21auf"/>
-			<Link VarA="PlcTask Outputs^GVL_Roof.ORiegel21zu" VarB="Channel 6^Riegel21zu"/>
+			<Link VarA="PlcTask Outputs^GVL_Roof.ODach1Schnell" VarB="Channel 7^GVL_Roof.ODach1Schnell"/>
+			<Link VarA="PlcTask Outputs^GVL_Roof.ODach1auf" VarB="Channel 1^GVL_Roof.ODach1auf"/>
+			<Link VarA="PlcTask Outputs^GVL_Roof.ODach1zu" VarB="Channel 2^GVL_Roof.ODach1zu"/>
+			<Link VarA="PlcTask Outputs^GVL_Roof.ORiegel11auf" VarB="Channel 3^GVL_Roof.ORiegel11auf"/>
+			<Link VarA="PlcTask Outputs^GVL_Roof.ORiegel11zu" VarB="Channel 5^GVL_Roof.ORiegel11zu"/>
+			<Link VarA="PlcTask Outputs^GVL_Roof.ORiegel21auf" VarB="Channel 4^GVL_Roof.ORiegel21auf"/>
+			<Link VarA="PlcTask Outputs^GVL_Roof.ORiegel21zu" VarB="Channel 6^GVL_Roof.ORiegel21zu"/>
 		</OwnerB>
 		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1200)^Modul10 (EL1024)">
-			<Link VarA="PlcTask Inputs^Environment.LightSwitch" VarB="Channel 1^LightSwitch"/>
+			<Link VarA="PlcTask Inputs^GVL_Environment.LightSwitch" VarB="Channel 1^Environment.LightSwitch"/>
 		</OwnerB>
 		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1200)^Modul11 (EL3024)">
-			<Link VarA="PlcTask Inputs^Environment.DustSensorError" VarB="AI Standard Channel 1^Status^Error"/>
-			<Link VarA="PlcTask Inputs^Environment.rawDust" VarB="AI Standard Channel 1^Dust"/>
+			<Link VarA="PlcTask Inputs^GVL_Environment.DustSensorError" VarB="AI Standard Channel 1^Status^Error"/>
+			<Link VarA="PlcTask Inputs^GVL_Environment.rawDust" VarB="AI Standard Channel 1^Dust"/>
 		</OwnerB>
 		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1200)^Modul2 (EL1008)">
-			<Link VarA="PlcTask Inputs^GVL_Roof.IDach1auf" VarB="Channel 1^Dach1auf"/>
-			<Link VarA="PlcTask Inputs^GVL_Roof.IDach1auf2" VarB="Channel 2^Dach1auf2"/>
-			<Link VarA="PlcTask Inputs^GVL_Roof.IDach1zu" VarB="Channel 7^Dach1zu"/>
-			<Link VarA="PlcTask Inputs^GVL_Roof.IDach1zu2" VarB="Channel 8^Dach1zu2"/>
-			<Link VarA="PlcTask Inputs^GVL_Roof.IRiegel11auf" VarB="Channel 3^Riegel11auf"/>
-			<Link VarA="PlcTask Inputs^GVL_Roof.IRiegel11zu" VarB="Channel 5^Riegel11zu"/>
-			<Link VarA="PlcTask Inputs^GVL_Roof.IRiegel21auf" VarB="Channel 4^Riegel21auf"/>
-			<Link VarA="PlcTask Inputs^GVL_Roof.IRiegel21zu" VarB="Channel 6^Riegel21zu"/>
+			<Link VarA="PlcTask Inputs^GVL_Roof.IDach1auf" VarB="Channel 1^GVL_Roof.IDach1auf"/>
+			<Link VarA="PlcTask Inputs^GVL_Roof.IDach1auf2" VarB="Channel 2^GVL_Roof.IDach1auf2"/>
+			<Link VarA="PlcTask Inputs^GVL_Roof.IDach1zu" VarB="Channel 7^GVL_Roof.IDach1zu"/>
+			<Link VarA="PlcTask Inputs^GVL_Roof.IDach1zu2" VarB="Channel 8^GVL_Roof.IDach1zu2"/>
+			<Link VarA="PlcTask Inputs^GVL_Roof.IRiegel11auf" VarB="Channel 3^GVL_Roof.IRiegel11auf"/>
+			<Link VarA="PlcTask Inputs^GVL_Roof.IRiegel11zu" VarB="Channel 5^GVL_Roof.IRiegel11zu"/>
+			<Link VarA="PlcTask Inputs^GVL_Roof.IRiegel21auf" VarB="Channel 4^GVL_Roof.IRiegel21auf"/>
+			<Link VarA="PlcTask Inputs^GVL_Roof.IRiegel21zu" VarB="Channel 6^GVL_Roof.IRiegel21zu"/>
 		</OwnerB>
 		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1200)^Modul3 (EL1008)">
-			<Link VarA="PlcTask Inputs^GVL_Roof.IDach1Schnell" VarB="Channel 7^Dach1schnell"/>
-			<Link VarA="PlcTask Inputs^GVL_Roof.IMotorschutz11" VarB="Channel 1^MS1NC"/>
-			<Link VarA="PlcTask Inputs^GVL_Roof.IMotorschutz12" VarB="Channel 2^MS2NC"/>
-			<Link VarA="PlcTask Inputs^GVL_Roof.IMotorschutz13" VarB="Channel 3^MS3NC"/>
-			<Link VarA="PlcTask Inputs^GVL_Roof.IMotorschutz14" VarB="Channel 4^MS4NC"/>
-			<Link VarA="PlcTask Inputs^GVL_Roof.IMotorschutz15" VarB="Channel 5^MS5NC"/>
-			<Link VarA="PlcTask Inputs^GVL_Roof.IMotorschutz16" VarB="Channel 6^MS6NC"/>
+			<Link VarA="PlcTask Inputs^GVL_Roof.IMotorschutz11" VarB="Channel 1^GVL_Roof.IMotorschutz11"/>
+			<Link VarA="PlcTask Inputs^GVL_Roof.IMotorschutz12" VarB="Channel 2^GVL_Roof.IMotorschutz12"/>
+			<Link VarA="PlcTask Inputs^GVL_Roof.IMotorschutz13" VarB="Channel 3^GVL_Roof.IMotorschutz13"/>
+			<Link VarA="PlcTask Inputs^GVL_Roof.IMotorschutz14" VarB="Channel 4^GVL_Roof.IMotorschutz14"/>
+			<Link VarA="PlcTask Inputs^GVL_Roof.IMotorschutz15" VarB="Channel 5^GVL_Roof.IMotorschutz15"/>
+			<Link VarA="PlcTask Inputs^GVL_Roof.IMotorschutz16" VarB="Channel 6^GVL_Roof.IMotorschutz16"/>
 		</OwnerB>
 		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1200)^Modul4 (EL2008)">
-			<Link VarA="PlcTask Outputs^GVL_Roof.ODach2Schnell" VarB="Channel 7^Dach2schnell"/>
-			<Link VarA="PlcTask Outputs^GVL_Roof.ODach2auf" VarB="Channel 1^Dach2auf"/>
-			<Link VarA="PlcTask Outputs^GVL_Roof.ODach2zu" VarB="Channel 2^Dach2zu"/>
-			<Link VarA="PlcTask Outputs^GVL_Roof.ORiegel12auf" VarB="Channel 3^Riegel12auf"/>
-			<Link VarA="PlcTask Outputs^GVL_Roof.ORiegel12zu" VarB="Channel 5^Riegel12zu"/>
-			<Link VarA="PlcTask Outputs^GVL_Roof.ORiegel22auf" VarB="Channel 4^Riegel22auf"/>
-			<Link VarA="PlcTask Outputs^GVL_Roof.ORiegel22zu" VarB="Channel 6^Riegel22zu"/>
+			<Link VarA="PlcTask Outputs^GVL_Roof.ODach2Schnell" VarB="Channel 7^GVL_Roof.ODach2Schnell"/>
+			<Link VarA="PlcTask Outputs^GVL_Roof.ODach2auf" VarB="Channel 1^GVL_Roof.ODach2auf"/>
+			<Link VarA="PlcTask Outputs^GVL_Roof.ODach2zu" VarB="Channel 2^GVL_Roof.ODach2zu"/>
+			<Link VarA="PlcTask Outputs^GVL_Roof.ORiegel12auf" VarB="Channel 3^GVL_Roof.ORiegel12auf"/>
+			<Link VarA="PlcTask Outputs^GVL_Roof.ORiegel12zu" VarB="Channel 5^GVL_Roof.ORiegel12zu"/>
+			<Link VarA="PlcTask Outputs^GVL_Roof.ORiegel22auf" VarB="Channel 4^GVL_Roof.ORiegel22auf"/>
+			<Link VarA="PlcTask Outputs^GVL_Roof.ORiegel22zu" VarB="Channel 6^GVL_Roof.ORiegel22zu"/>
 		</OwnerB>
 		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1200)^Modul5 (EL1008)">
-			<Link VarA="PlcTask Inputs^GVL_Roof.IDach2auf" VarB="Channel 1^Dach2auf"/>
-			<Link VarA="PlcTask Inputs^GVL_Roof.IDach2auf2" VarB="Channel 2^Dach2auf2"/>
-			<Link VarA="PlcTask Inputs^GVL_Roof.IDach2zu" VarB="Channel 7^Dach2zu"/>
-			<Link VarA="PlcTask Inputs^GVL_Roof.IDach2zu2" VarB="Channel 8^Dach2zu2"/>
-			<Link VarA="PlcTask Inputs^GVL_Roof.IRiegel12auf" VarB="Channel 3^Riegel12auf"/>
-			<Link VarA="PlcTask Inputs^GVL_Roof.IRiegel12zu" VarB="Channel 5^Riegel12zu"/>
-			<Link VarA="PlcTask Inputs^GVL_Roof.IRiegel22auf" VarB="Channel 4^Riegel22auf"/>
-			<Link VarA="PlcTask Inputs^GVL_Roof.IRiegel22zu" VarB="Channel 6^Riegel22zu"/>
+			<Link VarA="PlcTask Inputs^GVL_Roof.IDach2auf" VarB="Channel 1^GVL_Roof.IDach2auf"/>
+			<Link VarA="PlcTask Inputs^GVL_Roof.IDach2auf2" VarB="Channel 2^GVL_Roof.IDach2auf2"/>
+			<Link VarA="PlcTask Inputs^GVL_Roof.IDach2zu" VarB="Channel 7^GVL_Roof.IDach2zu"/>
+			<Link VarA="PlcTask Inputs^GVL_Roof.IDach2zu2" VarB="Channel 8^GVL_Roof.IDach2zu2"/>
+			<Link VarA="PlcTask Inputs^GVL_Roof.IRiegel12auf" VarB="Channel 3^GVL_Roof.IRiegel12auf"/>
+			<Link VarA="PlcTask Inputs^GVL_Roof.IRiegel12zu" VarB="Channel 5^GVL_Roof.IRiegel12zu"/>
+			<Link VarA="PlcTask Inputs^GVL_Roof.IRiegel22auf" VarB="Channel 4^GVL_Roof.IRiegel22auf"/>
+			<Link VarA="PlcTask Inputs^GVL_Roof.IRiegel22zu" VarB="Channel 6^GVL_Roof.IRiegel22zu"/>
 		</OwnerB>
 		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1200)^Modul6 (EL1008)">
-			<Link VarA="PlcTask Inputs^GVL_Roof.IDach2Schnell" VarB="Channel 7^Dach2schnell"/>
-			<Link VarA="PlcTask Inputs^GVL_Roof.IMotorschutz21" VarB="Channel 1^MS1NC"/>
-			<Link VarA="PlcTask Inputs^GVL_Roof.IMotorschutz22" VarB="Channel 2^MS2NC"/>
-			<Link VarA="PlcTask Inputs^GVL_Roof.IMotorschutz23" VarB="Channel 3^MS3NC"/>
-			<Link VarA="PlcTask Inputs^GVL_Roof.IMotorschutz24" VarB="Channel 4^MS4NC"/>
-			<Link VarA="PlcTask Inputs^GVL_Roof.IMotorschutz25" VarB="Channel 5^MS5NC"/>
-			<Link VarA="PlcTask Inputs^GVL_Roof.IMotorschutz26" VarB="Channel 6^MS6NC"/>
+			<Link VarA="PlcTask Inputs^GVL_Roof.IMotorschutz21" VarB="Channel 1^GVL_Roof.IMotorschutz21"/>
+			<Link VarA="PlcTask Inputs^GVL_Roof.IMotorschutz22" VarB="Channel 2^GVL_Roof.IMotorschutz22"/>
+			<Link VarA="PlcTask Inputs^GVL_Roof.IMotorschutz23" VarB="Channel 3^GVL_Roof.IMotorschutz23"/>
+			<Link VarA="PlcTask Inputs^GVL_Roof.IMotorschutz24" VarB="Channel 4^GVL_Roof.IMotorschutz24"/>
+			<Link VarA="PlcTask Inputs^GVL_Roof.IMotorschutz25" VarB="Channel 5^GVL_Roof.IMotorschutz25"/>
+			<Link VarA="PlcTask Inputs^GVL_Roof.IMotorschutz26" VarB="Channel 6^GVL_Roof.IMotorschutz26"/>
 		</OwnerB>
 		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1200)^Modul7 (EL1008)">
-			<Link VarA="PlcTask Inputs^GVL_Panel.ILeftCloseswitch" VarB="Channel 3^Input"/>
-			<Link VarA="PlcTask Inputs^GVL_Panel.ILeftOpenswitch" VarB="Channel 2^Input"/>
-			<Link VarA="PlcTask Inputs^GVL_Panel.IManualSwitch" VarB="Channel 1^Input"/>
-			<Link VarA="PlcTask Inputs^GVL_Panel.IRightCloseSwitch" VarB="Channel 5^Input"/>
-			<Link VarA="PlcTask Inputs^GVL_Panel.IRightOpenSwitch" VarB="Channel 4^Input"/>
+			<Link VarA="PlcTask Inputs^GVL_Panel.ILeftCloseswitch" VarB="Channel 3^GVL_Panel.ILeftCloseswitch"/>
+			<Link VarA="PlcTask Inputs^GVL_Panel.ILeftOpenswitch" VarB="Channel 2^GVL_Panel.ILeftOpenswitch"/>
+			<Link VarA="PlcTask Inputs^GVL_Panel.IManualSwitch" VarB="Channel 1^GVL_Panel.IManualSwitch"/>
+			<Link VarA="PlcTask Inputs^GVL_Panel.IRightCloseSwitch" VarB="Channel 5^GVL_Panel.IRightCloseSwitch"/>
+			<Link VarA="PlcTask Inputs^GVL_Panel.IRightOpenSwitch" VarB="Channel 4^GVL_Panel.IRightOpenSwitch"/>
+			<Link VarA="PlcTask Inputs^GVL_Roof.IDach1Schnell" VarB="Channel 7^GVL_Roof.IDach1Schnell"/>
+			<Link VarA="PlcTask Inputs^GVL_Roof.IDach2Schnell" VarB="Channel 8^GVL_Roof.IDach2Schnell"/>
 		</OwnerB>
 		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1200)^Modul8 (EL3068)">
-			<Link VarA="PlcTask Inputs^Environment.rawHumidityBay" VarB="AI Standard Channel 4^HumidityBay"/>
-			<Link VarA="PlcTask Inputs^Environment.rawHumidity_Electronics" VarB="AI Standard Channel 2^HumidityElec"/>
-			<Link VarA="PlcTask Inputs^Environment.rawHumidity_Spec" VarB="AI Standard Channel 6^HumiditySpec"/>
-			<Link VarA="PlcTask Inputs^Environment.rawTemperatureBay" VarB="AI Standard Channel 3^TemperatureBay"/>
-			<Link VarA="PlcTask Inputs^Environment.rawTemperature_Electronics" VarB="AI Standard Channel 1^TermperaturElec"/>
-			<Link VarA="PlcTask Inputs^Environment.rawTemperature_Spec" VarB="AI Standard Channel 5^TemperatureSpec"/>
-			<Link VarA="PlcTask Inputs^Environment.rawWindSpeedBay" VarB="AI Standard Channel 7^WindspeedBay"/>
+			<Link VarA="PlcTask Inputs^GVL_Environment.rawHumidityBay" VarB="AI Standard Channel 4^Environment.rawHumidityBay"/>
+			<Link VarA="PlcTask Inputs^GVL_Environment.rawHumidity_Electronics" VarB="AI Standard Channel 2^Environment.rawHumidity_Electronics"/>
+			<Link VarA="PlcTask Inputs^GVL_Environment.rawHumidity_Spec" VarB="AI Standard Channel 6^Environment.rawHumidity_Spec"/>
+			<Link VarA="PlcTask Inputs^GVL_Environment.rawPressureBay" VarB="AI Standard Channel 8^GVL_Environment.rawPressureBay"/>
+			<Link VarA="PlcTask Inputs^GVL_Environment.rawTemperatureBay" VarB="AI Standard Channel 3^Environment.rawTemperatureBay"/>
+			<Link VarA="PlcTask Inputs^GVL_Environment.rawTemperature_Electronics" VarB="AI Standard Channel 1^Environment.rawTemperature_Electronics"/>
+			<Link VarA="PlcTask Inputs^GVL_Environment.rawTemperature_Spec" VarB="AI Standard Channel 5^Environment.rawTemperature_Spec"/>
+			<Link VarA="PlcTask Inputs^GVL_Environment.rawWindSpeedBay" VarB="AI Standard Channel 7^Environment.rawWindSpeedBay"/>
 		</OwnerB>
 		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1200)^Modul9 (EL2008)">
-			<Link VarA="PlcTask Outputs^Environment.Dehumidifier" VarB="Channel 4^Dehumidifier"/>
-			<Link VarA="PlcTask Outputs^Environment.Horn" VarB="Channel 3^Horn"/>
-			<Link VarA="PlcTask Outputs^Environment.LightBay" VarB="Channel 1^LightBay"/>
-			<Link VarA="PlcTask Outputs^Environment.RoofPower" VarB="Channel 2^RoofPowerNA"/>
-			<Link VarA="PlcTask Outputs^GVL_Panel.Roof1Lamp" VarB="Channel 7^Dach1Fehler"/>
-			<Link VarA="PlcTask Outputs^GVL_Panel.Roof2Lamp" VarB="Channel 8^Dach2Fehler"/>
+			<Link VarA="PlcTask Outputs^GVL_Environment.Dehumidifier" VarB="Channel 4^Environment.Dehumidifier"/>
+			<Link VarA="PlcTask Outputs^GVL_Environment.Horn" VarB="Channel 3^Environment.Horn"/>
+			<Link VarA="PlcTask Outputs^GVL_Environment.LightBay" VarB="Channel 1^Environment.LightBay"/>
+			<Link VarA="PlcTask Outputs^GVL_Environment.RoofPower" VarB="Channel 2^Environment.RoofPower"/>
+			<Link VarA="PlcTask Outputs^GVL_Panel.Roof1Lamp" VarB="Channel 7^GVL_Panel.Roof1Lamp"/>
+			<Link VarA="PlcTask Outputs^GVL_Panel.Roof2Lamp" VarB="Channel 8^GVL_Panel.Roof2Lamp"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1200)^Term 21 (EL9410)">
+			<Link VarA="PlcTask Inputs^GVL_Panel.Up_Undervoltage" VarB="Status Up^Undervoltage"/>
+			<Link VarA="PlcTask Inputs^GVL_Panel.Us_Undervoltage" VarB="Status Us^Undervoltage"/>
 		</OwnerB>
 		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1200)^Term 31 (EK1521)^WeatherStation1 (EK1501)^Term 33 (EL3068)">
-			<Link VarA="PlcTask Inputs^Environment.rawHumidity1" VarB="AI Standard Channel 2^Humidity"/>
-			<Link VarA="PlcTask Inputs^Environment.rawPressure" VarB="AI Standard Channel 4^Pressure"/>
-			<Link VarA="PlcTask Inputs^Environment.rawTemperature1" VarB="AI Standard Channel 3^Temperatur"/>
-			<Link VarA="PlcTask Inputs^Environment.rawWindDirection" VarB="AI Standard Channel 5^WindDir"/>
-			<Link VarA="PlcTask Inputs^Environment.rawWindSpeed1" VarB="AI Standard Channel 1^WindSpeed"/>
+			<Link VarA="PlcTask Inputs^GVL_Environment.rawBrightness1" VarB="AI Standard Channel 2^GVL_Environment.rawBrightness1"/>
+			<Link VarA="PlcTask Inputs^GVL_Environment.rawHumidity1" VarB="AI Standard Channel 4^GVL_Environment.rawHumidity1"/>
+			<Link VarA="PlcTask Inputs^GVL_Environment.rawLightDirection" VarB="AI Standard Channel 1^GVL_Environment.rawLightDirection"/>
+			<Link VarA="PlcTask Inputs^GVL_Environment.rawPressure" VarB="AI Standard Channel 3^GVL_Environment.rawPressure"/>
+			<Link VarA="PlcTask Inputs^GVL_Environment.rawRain_analogue1" VarB="AI Standard Channel 6^GVL_Environment.rawRain_analogue1"/>
+			<Link VarA="PlcTask Inputs^GVL_Environment.rawTemperature1" VarB="AI Standard Channel 5^GVL_Environment.rawTemperature1"/>
+			<Link VarA="PlcTask Inputs^GVL_Environment.rawWindDirection" VarB="AI Standard Channel 7^GVL_Environment.rawWindDirection"/>
+			<Link VarA="PlcTask Inputs^GVL_Environment.rawWindSpeed1" VarB="AI Standard Channel 8^GVL_Environment.rawWindSpeed1"/>
 		</OwnerB>
 		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1200)^Term 31 (EK1521)^WeatherStation1 (EK1501)^Term 34 (EL1024)">
-			<Link VarA="PlcTask Inputs^Environment.Rain_alarm1" VarB="Channel 1^RainAlarm"/>
-		</OwnerB>
-		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1200)^Term 31 (EK1521)^WeatherStation1 (EK1501)^Term 35 (EL3024)">
-			<Link VarA="PlcTask Inputs^Environment.rawRain_analogue1" VarB="AI Standard Channel 1^Rainanalog"/>
+			<Link VarA="PlcTask Inputs^GVL_Environment.Rain_alarm1" VarB="Channel 1^Environment.Rain_alarm1"/>
 		</OwnerB>
 		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1200)^Term 36 (EK1521)^WeatherStation2 (EK1501)^Term 38 (EL3068)">
-			<Link VarA="PlcTask Inputs^Environment.rawBrightness" VarB="AI Standard Channel 4^Brightness"/>
-			<Link VarA="PlcTask Inputs^Environment.rawBrightnessLow" VarB="AI Standard Channel 5^BrightnessLow"/>
-			<Link VarA="PlcTask Inputs^Environment.rawHumidity2" VarB="AI Standard Channel 2^Humidity"/>
-			<Link VarA="PlcTask Inputs^Environment.rawTemperature2" VarB="AI Standard Channel 3^Temperature"/>
-			<Link VarA="PlcTask Inputs^Environment.rawWindSpeed2" VarB="AI Standard Channel 1^Windspeed"/>
+			<Link VarA="PlcTask Inputs^GVL_Environment.rawBrightness" VarB="AI Standard Channel 4^Environment.rawBrightness"/>
+			<Link VarA="PlcTask Inputs^GVL_Environment.rawBrightnessLow" VarB="AI Standard Channel 5^Environment.rawBrightnessLow"/>
+			<Link VarA="PlcTask Inputs^GVL_Environment.rawHumidity2" VarB="AI Standard Channel 2^Environment.rawHumidity2"/>
+			<Link VarA="PlcTask Inputs^GVL_Environment.rawTemperature2" VarB="AI Standard Channel 3^Environment.rawTemperature2"/>
+			<Link VarA="PlcTask Inputs^GVL_Environment.rawWindSpeed2" VarB="AI Standard Channel 1^Environment.rawWindSpeed2"/>
 		</OwnerB>
 		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1200)^Term 36 (EK1521)^WeatherStation2 (EK1501)^Term 39 (EL1024)">
-			<Link VarA="PlcTask Inputs^Environment.Rain_alarm2" VarB="Channel 1^Input"/>
+			<Link VarA="PlcTask Inputs^GVL_Environment.Rain_alarm2" VarB="Channel 1^Environment.Rain_alarm2"/>
 		</OwnerB>
 		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1200)^Term 36 (EK1521)^WeatherStation2 (EK1501)^Term 40 (EL3024)">
-			<Link VarA="PlcTask Inputs^Environment.rawRain_analogue2" VarB="AI Standard Channel 1^Rainanalog"/>
+			<Link VarA="PlcTask Inputs^GVL_Environment.rawRain_analogue2" VarB="AI Standard Channel 1^Environment.rawRain_analogue2"/>
+		</OwnerB>
+		<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1200)^Term 48 (EL1124)">
+			<Link VarA="PlcTask Inputs^GVL_Environment.rawDust11" VarB="Channel 1^Environment.rawDust11"/>
+			<Link VarA="PlcTask Inputs^GVL_Environment.rawDust12" VarB="Channel 2^Environment.rawDust12"/>
+			<Link VarA="PlcTask Inputs^GVL_Environment.rawDust21" VarB="Channel 3^Environment.rawDust21"/>
+			<Link VarA="PlcTask Inputs^GVL_Environment.rawDust22" VarB="Channel 4^Environment.rawDust22"/>
 		</OwnerB>
 	</OwnerA>
 </VarLinks>

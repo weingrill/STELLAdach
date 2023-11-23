@@ -10,12 +10,11 @@ VAR
 	Humidity1:		REAL;
 	Rain_analogue1:	REAL;
 	WindDirection:	REAL;
-	Pressure:		REAL;
+	Pressure0, Pressure:		REAL;
 	
 	WindSpeed2:		REAL;
 	Temperature2:	REAL;
 	Humidity2:		REAL;
-	Rain_analogue2:	REAL;
 	Brightness2:		REAL;
 	WindSpeed:		REAL;
 	Humidity:		REAL;
@@ -38,10 +37,6 @@ VAR
 	// analog dust sensor
 	
 	Dust:				REAL;
-	// raw rain current (helper variable)
-	Rain1Current:		REAL;
-	// raw rain current (helper variable)
-	Rain2Current:		REAL;
 	// digital rain sensor
 	RainAlarm1:			BOOL;
 	// digital rain sensor
@@ -54,6 +49,10 @@ VAR
 	RainTimer2:			TON;
 	// delay timer for combined rain signals
 	RainMasterTimer:	TON;
+	Humidity1_brokendelay:	TON := (PT := T#60S);
+	Humidity2_brokendelay:	TON := (PT := T#60S);
+	Wind1_brokendelay:	TON := (PT := T#60S);
+	Wind2_brokendelay:	TON := (PT := T#60S);
 	// maximum wind speed 1
 	MaximumWind1: REAL;
 	MaximumWind2: REAL;
@@ -85,20 +84,25 @@ VAR_OUTPUT
 	Wind1_broken:			BOOL;
 	Wind2_broken:			BOOL;
 	Dust_broken:			BOOL;
+END_VAR
+VAR CONSTANT
+	h:	REAL := 2390.0;
 END_VAR]]></Declaration>
     <Implementation>
       <ST><![CDATA[(* convert raw Sensor values to real values *)
 (* Weather Station 1 *)
 LightDirection := 	F_Y(GVL_Environment.rawLightDirection,	0, 32767,	0.0, 360.0); // degrees
 Brightness1 := 		F_Y(GVL_Environment.rawBrightness,		0, 32767,	0.0, 120000.0); // Lux
-Pressure := 		F_Y(GVL_Environment.rawPressure,		0, 32767,	800.0, 1020.0); // hPa
+Pressure0 := 		F_Y(GVL_Environment.rawPressure,		0, 32767,	800.0, 1020.0); // hPa
 Humidity1 :=		F_Y(GVL_Environment.rawHumidity1, 		0, 32767,   0.0, 100.0); // %
 Temperature1 :=  	F_Y(GVL_Environment.rawTemperature1, 	0, 32767, -40.0, 60.0); // °C
 Rain_analogue1 := 	F_Y(GVL_Environment.rawRain_analogue1,	0, 32767,	0.0, 100.0); // mm/h
 WindDirection := 	F_Y(GVL_Environment.rawWindDirection,	0, 32767,   0.0, 360.0); // degrees
 WindSpeed1 := 		F_Y(GVL_Environment.rawWindSpeed1, 		0, 32767,   0.0, 60.0); // m/s
 
-RainAlarm1 := Rain_analogue1 > 0.02;
+Pressure := LREAL_TO_REAL(Pressure0 * EXPT(1.0 - (0.0065*h/(Temperature1+273.15)) , 5.255));
+
+RainAlarm1 := Rain_analogue1 > 0.1;
 RainAlarm2 := NOT GVL_Environment.Rain_alarm2;
 
 RainTimer1(IN := RainAlarm1, PT := T#30S);
@@ -112,9 +116,6 @@ RainMasterAlarm := RainTimer1.Q OR RainTimer2.Q OR RainMasterTimer.Q;
 WindSpeed2 := 		F_Y(GVL_Environment.rawWindSpeed2, 		0, 32767,   0.0, 50.0); // m/s
 Temperature2 :=  	F_Y(GVL_Environment.rawTemperature2, 	0, 32767, -30.0, 70.0); // °C
 Humidity2 :=		F_Y(GVL_Environment.rawHumidity2, 		0, 32767,   0.0, 100.0); // %
-Rain2Current := 	F_Y(GVL_Environment.rawRain_analogue2,	0, 32767,	4.0, 20.0); // mA --> mm/min
-
-Rain_analogue2 := F_RainConversion(Rain2Current);
 
 Brightness2 :=		F_Y(GVL_Environment.rawBrightness, 		0, 32767,   0.0, 150000.0); // lux
 IF Brightness2 < 1000.0 THEN 
@@ -148,11 +149,14 @@ BayHumidityTrigger(SET1 := HumidityBay >= MAIN.HumidityLimitHigh, RESET := Humid
 BayHumidityCriticalTrigger(SET1 := HumidityBay >= MAIN.HumidityLimitCritical, RESET := HumidityBay < MAIN.HumidityLimitHigh);
 
 Rainanalogue1brokenTrigger( SET1:= RainMasterAlarm AND Rain_analogue1 < 1E-3, RESET := Rain_analogue1 > 1E-2);
-Rainanalogue2brokenTrigger( SET1:= RainMasterAlarm AND Rain_analogue2 < 1E-3, RESET := Rain_analogue2 > 1E-2);
-Humidity1_broken:= Humidity > 10.0 AND Humidity1 < 0.5 * Humidity;
-Humidity2_broken:= Humidity > 10.0 AND Humidity2 < 0.5 * Humidity;
-Wind1_broken:= WindSpeed1 < 0.5 * WindSpeed;
-Wind2_broken:= WindSpeed2 < 0.5 * WindSpeed;
+Humidity1_brokendelay(IN := Humidity > 10.0 AND Humidity1 < 0.5 * Humidity);
+Humidity2_brokendelay(IN := Humidity > 10.0 AND Humidity2 < 0.5 * Humidity);
+Humidity1_broken:= Humidity1_brokendelay.Q;
+Humidity2_broken:= Humidity2_brokendelay.Q;
+Wind1_brokendelay(IN := WindSpeed1 < 0.5 * WindSpeed);
+Wind1_broken:= Wind1_brokendelay.Q;
+Wind2_brokendelay(IN := WindSpeed2 < 0.5 * WindSpeed);
+Wind2_broken:= Wind2_brokendelay.Q;
 
 (*** Dust section ***)
 // digital dust sensors
@@ -184,7 +188,6 @@ IF MQTTTimer.Q THEN // publish new payload every second
 	
 	MAIN.MQTTClient.Publish('environment', 'weatherstation2', 'EnvironmentTemperature2',LREAL_TO_FMTSTR(Temperature2, 2, TRUE));
 	MAIN.MQTTClient.Publish('environment', 'weatherstation2', 'EnvironmentHumidity2', 	LREAL_TO_FMTSTR(Humidity2, 2, TRUE));		
-	MAIN.MQTTClient.Publish('environment', 'weatherstation2', 'EnvironmentRain2', 		LREAL_TO_FMTSTR(Rain_analogue2, 5, TRUE));		
 	MAIN.MQTTClient.Publish('environment', 'weatherstation2', 'EnvironmentWindSpeed2', 	LREAL_TO_FMTSTR(WindSpeed2, 2, TRUE));		
 	MAIN.MQTTClient.Publish('environment', 'weatherstation2', 'EnvironmentBrightness2',	LREAL_TO_FMTSTR(Brightness2, 2, TRUE));		
 	MAIN.MQTTClient.Publish('environment', 'weatherstation2', 'EnvironmentDust',		LREAL_TO_FMTSTR(Dust, 5, TRUE));		
@@ -215,10 +218,10 @@ END_IF
       <LineId Id="1497" Count="1" />
       <LineId Id="1500" Count="4" />
       <LineId Id="709" Count="0" />
+      <LineId Id="1517" Count="1" />
       <LineId Id="877" Count="0" />
       <LineId Id="723" Count="7" />
-      <LineId Id="733" Count="6" />
-      <LineId Id="874" Count="1" />
+      <LineId Id="733" Count="5" />
       <LineId Id="748" Count="4" />
       <LineId Id="889" Count="0" />
       <LineId Id="753" Count="9" />
@@ -235,7 +238,13 @@ END_IF
       <LineId Id="1415" Count="0" />
       <LineId Id="1306" Count="1" />
       <LineId Id="1314" Count="0" />
-      <LineId Id="1320" Count="5" />
+      <LineId Id="1320" Count="0" />
+      <LineId Id="1526" Count="1" />
+      <LineId Id="1322" Count="1" />
+      <LineId Id="1528" Count="0" />
+      <LineId Id="1324" Count="0" />
+      <LineId Id="1529" Count="0" />
+      <LineId Id="1325" Count="0" />
       <LineId Id="1329" Count="0" />
       <LineId Id="1327" Count="0" />
       <LineId Id="1331" Count="3" />
@@ -253,7 +262,8 @@ END_IF
       <LineId Id="789" Count="0" />
       <LineId Id="1513" Count="0" />
       <LineId Id="799" Count="0" />
-      <LineId Id="803" Count="6" />
+      <LineId Id="803" Count="1" />
+      <LineId Id="806" Count="3" />
       <LineId Id="818" Count="0" />
       <LineId Id="822" Count="1" />
       <LineId Id="834" Count="0" />

@@ -40,7 +40,10 @@ pulse3delay(IN:= lighttimer.Q, PT := PT - T#10S + T#500MS);
 pulse3(IN := pulse3delay.Q, PT := T#250MS);
 
 Q := onstate AND lighttimer.Q AND NOT pulse1.Q AND NOT pulse2.Q AND NOT pulse3.Q;
-Q1 := onstate AND lighttimer.Q;]]></ST>
+Q1 := onstate AND lighttimer.Q;
+IF NOT Q1 THEN
+	onstate := FALSE;
+END_IF]]></ST>
     </Implementation>
     <LineIds Name="LIGHT_BUTTON">
       <LineId Id="43" Count="1" />
@@ -48,6 +51,7 @@ Q1 := onstate AND lighttimer.Q;]]></ST>
       <LineId Id="46" Count="0" />
       <LineId Id="10" Count="8" />
       <LineId Id="9" Count="0" />
+      <LineId Id="51" Count="2" />
     </LineIds>
   </POU>
 </TcPlcObject>

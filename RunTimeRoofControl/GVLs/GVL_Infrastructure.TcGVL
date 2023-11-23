@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <GVL Name="GVL_Infrastructure" Id="{13f4e1c3-e06f-4043-b789-369a00da11f8}">
+    <Declaration><![CDATA[{attribute 'qualified_only'}
+VAR_GLOBAL
+	MainUPS_MainsPreset		AT%I*:	BOOL;
+	MainUPS_LoadOnInverter		AT%I*:	BOOL;
+	MainUPS_BatteryLow		AT%I*:	BOOL;
+	MainUPS_CommonAlarm		AT%I*:	BOOL;
+
+END_VAR]]></Declaration>
+  </GVL>
+</TcPlcObject>

@@ -26,7 +26,6 @@ VAR_GLOBAL
 	rawWindSpeed2				AT%I*:	INT;
 	rawTemperature2				AT%I*:	INT;
 	rawHumidity2				AT%I*:	INT;
-	rawRain_analogue2			AT%I*:	INT;
 	Rain_alarm2					AT%I*:	BOOL;
 	rawBrightness				AT%I*:	INT;
 	rawBrightnessLow			AT%I*:	INT;

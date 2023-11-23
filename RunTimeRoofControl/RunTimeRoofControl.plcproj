@@ -34,6 +34,10 @@
     <Compile Include="GVLs\GVL_Environment.TcGVL">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="GVLs\GVL_Infrastructure.TcGVL">
+      <SubType>Code</SubType>
+      <LinkAlways>true</LinkAlways>
+    </Compile>
     <Compile Include="GVLs\GVL_Panel.TcGVL">
       <SubType>Code</SubType>
     </Compile>

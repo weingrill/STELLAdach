@@ -91,6 +91,14 @@
 	</ImageDatas>
 	<Project ProjectGUID="{E6AB21C7-CA7E-42BC-987D-1BB842293F1C}" AmlIdsEnabled="true" TargetNetId="5.40.71.146.1.1" ShowHideConfigurations="#x3c6">
 		<System>
+			<Licenses IgnoreProjectLicenses="true">
+				<Target BkhfOrder="Restore" CustomOrder="66100685">
+					<ManualSelect>{3FF18E97-7754-401B-93FB-70544DE28A13}</ManualSelect>
+					<ManualSelect>{0ABFD2B0-EAE1-4DC7-AABE-03093B0786B7}</ManualSelect>
+					<ManualSelect>{66689887-CCBD-452C-AC9A-039D997C6E66}</ManualSelect>
+					<ManualSelect>{4C256767-E6E6-4AF5-BD68-9F7ABAD0C200}</ManualSelect>
+				</Target>
+			</Licenses>
 			<Tasks>
 				<Task Id="3" Priority="20" CycleTime="100000" AmsPort="350">
 					<Name>PlcTask</Name>
@@ -104,6 +112,22 @@
 					<CLSID ClassFactory="TcPlc30">{08500001-0000-0000-F000-000000000064}</CLSID>
 					<Vars VarGrpType="1">
 						<Name>PlcTask Inputs</Name>
+						<Var>
+							<Name>GVL_Infrastructure.MainUPS_MainsPreset</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>GVL_Infrastructure.MainUPS_LoadOnInverter</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>GVL_Infrastructure.MainUPS_BatteryLow</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>GVL_Infrastructure.MainUPS_CommonAlarm</Name>
+							<Type>BOOL</Type>
+						</Var>
 						<Var>
 							<Name>GVL_Environment.rawWindSpeed1</Name>
 							<Type>INT</Type>
@@ -147,10 +171,6 @@
 						</Var>
 						<Var>
 							<Name>GVL_Environment.rawHumidity2</Name>
-							<Type>INT</Type>
-						</Var>
-						<Var>
-							<Name>GVL_Environment.rawRain_analogue2</Name>
 							<Type>INT</Type>
 						</Var>
 						<Var>
@@ -5904,10 +5924,58 @@ Bit1: Value bigger/equal Limit2]]></Comment>
 							</Pdo>
 						</EtherCAT>
 					</Box>
+					<Box Id="58" AmlId="{742342DE-6A76-480C-9C14-EB5DAA3CE162}" BoxType="9099">
+						<Name>Term 58 (EL1008)</Name>
+						<ImageId>7</ImageId>
+						<EtherCAT SlaveType="1" PdiType="#x0104" CycleMBoxPollingTime="0" VendorId="#x00000002" ProductCode="#x03f03052" RevisionNo="#x00120000" RepeatSupport="true" PortPhys="51" MaxSlotCount="256" MaxSlotGroupCount="1" SlotPdoIncrement="1" SlotIndexIncrement="16" Type="EL1008 8Ch. Dig. Input 24V, 3ms" Desc="EL1008" PortABoxInfo="#x01000030">
+							<SyncMan>001001000000010004000000000000000100001000010000</SyncMan>
+							<Fmmu>0000000000000000001000010100000002000000000000000000000000000000</Fmmu>
+							<Pdo Name="Channel 1" Index="#x1a00" Flags="#x0011" SyncMan="0">
+								<Entry Name="GVL_Infrastructure.MainUPS_MainsPreset" Index="#x6000" Sub="#x01">
+									<Type>BIT</Type>
+								</Entry>
+							</Pdo>
+							<Pdo Name="Channel 2" Index="#x1a01" Flags="#x0011" SyncMan="0">
+								<Entry Name="GVL_Infrastructure.MainUPS_LoadOnInverter" Index="#x6010" Sub="#x01">
+									<Type>BIT</Type>
+								</Entry>
+							</Pdo>
+							<Pdo Name="Channel 3" Index="#x1a02" Flags="#x0011" SyncMan="0">
+								<Entry Name="GVL_Infrastructure.MainUPS_BatteryLow" Index="#x6020" Sub="#x01">
+									<Type>BIT</Type>
+								</Entry>
+							</Pdo>
+							<Pdo Name="Channel 4" Index="#x1a03" Flags="#x0011" SyncMan="0">
+								<Entry Name="GVL_Infrastructure.MainUPS_CommonAlarm" Index="#x6030" Sub="#x01">
+									<Type>BIT</Type>
+								</Entry>
+							</Pdo>
+							<Pdo Name="Channel 5" Index="#x1a04" Flags="#x0011" SyncMan="0">
+								<Entry Name="Input" Index="#x6040" Sub="#x01">
+									<Type>BIT</Type>
+								</Entry>
+							</Pdo>
+							<Pdo Name="Channel 6" Index="#x1a05" Flags="#x0011" SyncMan="0">
+								<Entry Name="Input" Index="#x6050" Sub="#x01">
+									<Type>BIT</Type>
+								</Entry>
+							</Pdo>
+							<Pdo Name="Channel 7" Index="#x1a06" Flags="#x0011" SyncMan="0">
+								<Entry Name="Input" Index="#x6060" Sub="#x01">
+									<Type>BIT</Type>
+								</Entry>
+							</Pdo>
+							<Pdo Name="Channel 8" Index="#x1a07" Flags="#x0011" SyncMan="0">
+								<Entry Name="Input" Index="#x6070" Sub="#x01">
+									<Type>BIT</Type>
+								</Entry>
+							</Pdo>
+						</EtherCAT>
+					</Box>
 					<Box Id="51" AmlId="{147A2887-24BF-4059-BF32-5BCC9BDC6BC3}" BoxType="9099">
 						<Name>Term 51 (EL9011)</Name>
 						<ImageId>1007</ImageId>
-						<EtherCAT CycleMBoxPollingTime="0" VendorId="#x00000002" ProductCode="#x23333050" InfoDataState="false" MaxSlotCount="256" MaxSlotGroupCount="1" SlotPdoIncrement="1" SlotIndexIncrement="16" Type="EL9011 End Terminal" Desc="EL9011" PortABoxInfo="#x01000030"/>
+						<EtherCAT CycleMBoxPollingTime="0" VendorId="#x00000002" ProductCode="#x23333050" InfoDataState="false" MaxSlotCount="256" MaxSlotGroupCount="1" SlotPdoIncrement="1" SlotIndexIncrement="16" Type="EL9011 End Terminal" Desc="EL9011" PortABoxInfo="#x0100003a"/>
 					</Box>
 				</Box>
 				<EtherCAT/>
@@ -6047,14 +6115,17 @@ Bit1: Value bigger/equal Limit2]]></Comment>
 			<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1200)^Term 36 (EK1521)^WeatherStation2 (EK1501)^Term 39 (EL1024)">
 				<Link VarA="PlcTask Inputs^GVL_Environment.Rain_alarm2" VarB="Channel 1^Environment.Rain_alarm2"/>
 			</OwnerB>
-			<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1200)^Term 36 (EK1521)^WeatherStation2 (EK1501)^Term 40 (EL3024)">
-				<Link VarA="PlcTask Inputs^GVL_Environment.rawRain_analogue2" VarB="AI Standard Channel 1^Environment.rawRain_analogue2"/>
-			</OwnerB>
 			<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1200)^Term 48 (EL1124)">
 				<Link VarA="PlcTask Inputs^GVL_Environment.rawDust11" VarB="Channel 1^Environment.rawDust11"/>
 				<Link VarA="PlcTask Inputs^GVL_Environment.rawDust12" VarB="Channel 2^Environment.rawDust12"/>
 				<Link VarA="PlcTask Inputs^GVL_Environment.rawDust21" VarB="Channel 3^Environment.rawDust21"/>
 				<Link VarA="PlcTask Inputs^GVL_Environment.rawDust22" VarB="Channel 4^Environment.rawDust22"/>
+			</OwnerB>
+			<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 1 (EK1200)^Term 58 (EL1008)">
+				<Link VarA="PlcTask Inputs^GVL_Infrastructure.MainUPS_BatteryLow" VarB="Channel 3^GVL_Infrastructure.MainUPS_BatteryLow"/>
+				<Link VarA="PlcTask Inputs^GVL_Infrastructure.MainUPS_CommonAlarm" VarB="Channel 4^GVL_Infrastructure.MainUPS_CommonAlarm"/>
+				<Link VarA="PlcTask Inputs^GVL_Infrastructure.MainUPS_LoadOnInverter" VarB="Channel 2^GVL_Infrastructure.MainUPS_LoadOnInverter"/>
+				<Link VarA="PlcTask Inputs^GVL_Infrastructure.MainUPS_MainsPreset" VarB="Channel 1^GVL_Infrastructure.MainUPS_MainsPreset"/>
 			</OwnerB>
 		</OwnerA>
 	</Mappings>
