@@ -49,8 +49,9 @@ VAR
 	RainTimer2:			TON;
 	// delay timer for combined rain signals
 	RainMasterTimer:	TON;
-	Humidity1_brokendelay:	TON := (PT := T#60S);
-	Humidity2_brokendelay:	TON := (PT := T#60S);
+	Rain1_brokendelay:	TON := (PT := T#60M);
+	Humidity1_brokendelay:	TON := (PT := T#60M);
+	Humidity2_brokendelay:	TON := (PT := T#60M);
 	Wind1_brokendelay:	TON := (PT := T#60S);
 	Wind2_brokendelay:	TON := (PT := T#60S);
 	// maximum wind speed 1
@@ -102,7 +103,7 @@ WindSpeed1 := 		F_Y(GVL_Environment.rawWindSpeed1, 		0, 32767,   0.0, 60.0); // 
 
 Pressure := LREAL_TO_REAL(Pressure0 * EXPT(1.0 - (0.0065*h/(Temperature1+273.15)) , 5.255));
 
-RainAlarm1 := Rain_analogue1 > 0.1;
+RainAlarm1 := Rain_analogue1 > 0.5; // was 0.1
 RainAlarm2 := NOT GVL_Environment.Rain_alarm2;
 
 RainTimer1(IN := RainAlarm1, PT := T#30S);
@@ -149,6 +150,7 @@ BayHumidityTrigger(SET1 := HumidityBay >= MAIN.HumidityLimitHigh, RESET := Humid
 BayHumidityCriticalTrigger(SET1 := HumidityBay >= MAIN.HumidityLimitCritical, RESET := HumidityBay < MAIN.HumidityLimitHigh);
 
 Rainanalogue1brokenTrigger( SET1:= RainMasterAlarm AND Rain_analogue1 < 1E-3, RESET := Rain_analogue1 > 1E-2);
+Rain1_brokendelay( IN := Rainanalogue1brokenTrigger.Q1);
 Humidity1_brokendelay(IN := Humidity > 10.0 AND Humidity1 < 0.5 * Humidity);
 Humidity2_brokendelay(IN := Humidity > 10.0 AND Humidity2 < 0.5 * Humidity);
 Humidity1_broken:= Humidity1_brokendelay.Q;
@@ -239,6 +241,7 @@ END_IF
       <LineId Id="1306" Count="1" />
       <LineId Id="1314" Count="0" />
       <LineId Id="1320" Count="0" />
+      <LineId Id="1617" Count="0" />
       <LineId Id="1526" Count="1" />
       <LineId Id="1322" Count="1" />
       <LineId Id="1528" Count="0" />

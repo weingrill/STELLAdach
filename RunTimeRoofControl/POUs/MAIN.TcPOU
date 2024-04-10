@@ -146,7 +146,7 @@ IF nMode = RoofAutomatic THEN
 	ELSIF OpenRoofAuto THEN
 		CloseRoofAuto := FALSE;
 		Roof1Command := OpenRoof;
-		Roof2Command := OpenRoof;
+		//Roof2Command := OpenRoof;
 	ELSE
 		Roof1Command := StopRoof;
 		Roof2Command := StopRoof;

@@ -57,12 +57,15 @@ END_VAR
     <Implementation>
       <ST><![CDATA[(*** Logging Section ***)
 
-EnvironmentLog(	Trigger := MAIN.EnvironmentAlarm, Level := ADSLOG_MSGTYPE_WARN, OnMessage := 'The weather is bad!', OffMessage := 'The weather is good.');
-DustLog(		Trigger := Environment.DustTrigger.Q1, Level := ADSLOG_MSGTYPE_WARN, OnMessage := 'Dust is over limit!');
-HumidityLog(	Trigger := Main.HumidityTrigger.Q1, Level := ADSLOG_MSGTYPE_WARN, OnMessage := 'Humidity is over limit!');
+EnvironmentLog(	Trigger := MAIN.EnvironmentAlarm AND (MAIN.Roof1Status = StatusOpened), 
+				Level := ADSLOG_MSGTYPE_WARN, OnMessage := 'The weather is bad!', OffMessage := 'The weather is good.');
+DustLog(		Trigger := Environment.DustTrigger.Q1 AND (MAIN.Roof1Status = StatusOpened), 
+				Level := ADSLOG_MSGTYPE_WARN, OnMessage := 'Dust is over limit!');
+HumidityLog(	Trigger := Main.HumidityTrigger.Q1 AND (MAIN.Roof1Status = StatusOpened), Level := ADSLOG_MSGTYPE_WARN, OnMessage := 'Humidity is over limit!');
 HumidityErrorLog(	Trigger := Environment.HumidityBay > 85.0, Level := ADSLOG_MSGTYPE_ERROR, OnMessage := 'Bay humidity is high! Dehumidifier failure!');
 HumidityBayLog(	Trigger := Environment.BayHumidityTrigger.Q1, Level := ADSLOG_MSGTYPE_WARN, OnMessage := 'Bay humidity bay is over limit', OffMessage := 'Bay humidity is nominal.');
-WindSpeedLog(	Trigger := Environment.WindSpeed > MAIN.WindSpeedLimit, Level := ADSLOG_MSGTYPE_WARN, OnMessage := 'Wind speed is over limit!');
+WindSpeedLog(	Trigger := Environment.WindSpeed > MAIN.WindSpeedLimit AND (MAIN.Roof1Status = StatusOpened), 
+				Level := ADSLOG_MSGTYPE_WARN, OnMessage := 'Wind speed is over limit!');
 WindSpeedBayLog(Trigger := Environment.Windspeed_bay > MAIN.WindSpeedBayLimit, Level := ADSLOG_MSGTYPE_WARN, OnMessage := 'Wind speed in bay is over limit');
 // Rain1Log(		Trigger := NOT GVL_Environment.Rain_alarm1, Level := ADSLOG_MSGTYPE_WARN, OnMessage := 'Rain alarm 1 is on!');
 // Rain2Log(		Trigger := NOT GVL_Environment.Rain_alarm2, Level := ADSLOG_MSGTYPE_WARN, OnMessage := 'Rain alarm 2 is on!');
@@ -129,7 +132,7 @@ Roof2LockTimeoutLog( Trigger := MAIN.Roof2LockTimeOut.Q, Level := ADSLOG_MSGTYPE
 Roof1UnlockTimeoutLog( Trigger := MAIN.Roof1UnlockTimeOut.Q, Level := ADSLOG_MSGTYPE_ERROR, OnMessage := 'Roof1 unlock time out!');
 Roof2UnlockTimeoutLog( Trigger := MAIN.Roof2UnlockTimeOut.Q, Level := ADSLOG_MSGTYPE_ERROR, OnMessage := 'Roof2 unlock time out!');
 
-Rain_analogue1_brokenLog( Trigger := Environment.Rainanalogue1brokenTrigger.Q1, Level := ADSLOG_MSGTYPE_ERROR, OnMessage := 'Analog rain sensor 1 is broken!');
+Rain_analogue1_brokenLog( Trigger := Environment.Rain1_brokendelay.Q, Level := ADSLOG_MSGTYPE_ERROR, OnMessage := 'Analog rain sensor 1 is broken!');
 Rain_analogue2_brokenLog( Trigger := Environment.Rainanalogue2brokenTrigger.Q1, Level := ADSLOG_MSGTYPE_ERROR, OnMessage := 'Analog rain sensor 2 is broken!');
 Humidity1_brokenLog( Trigger := Environment.Humidity1_broken, Level := ADSLOG_MSGTYPE_ERROR, OnMessage := 'Humidity sensor 1 is broken!');
 Humidity2_brokenLog( Trigger := Environment.Humidity2_broken, Level := ADSLOG_MSGTYPE_ERROR, OnMessage := 'Humidity sensor 2 is broken!');
@@ -140,9 +143,14 @@ Dust_brokenLog( Trigger := Environment.Dust_broken, Level := ADSLOG_MSGTYPE_ERRO
 ]]></ST>
     </Implementation>
     <LineIds Name="Logging">
-      <LineId Id="22" Count="4" />
+      <LineId Id="22" Count="2" />
+      <LineId Id="342" Count="0" />
+      <LineId Id="25" Count="0" />
+      <LineId Id="343" Count="0" />
+      <LineId Id="26" Count="0" />
       <LineId Id="50" Count="0" />
       <LineId Id="28" Count="1" />
+      <LineId Id="345" Count="0" />
       <LineId Id="31" Count="0" />
       <LineId Id="221" Count="0" />
       <LineId Id="33" Count="13" />
