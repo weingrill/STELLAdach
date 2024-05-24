@@ -72,6 +72,9 @@ VAR
 	Roof2LockTimeOut,
 	Roof1UnlockTimeOut,
 	Roof2UnlockTimeOut:	TON;
+	
+	Roof1StatusWord:	WORD;
+	Roof2StatusWord:	WORD;
 END_VAR
 VAR CONSTANT
 	HumidityLimitCritical:		REAL := 80.0;
@@ -146,7 +149,7 @@ IF nMode = RoofAutomatic THEN
 	ELSIF OpenRoofAuto THEN
 		CloseRoofAuto := FALSE;
 		Roof1Command := OpenRoof;
-		//Roof2Command := OpenRoof;
+		Roof2Command := OpenRoof;
 	ELSE
 		Roof1Command := StopRoof;
 		Roof2Command := StopRoof;
@@ -290,14 +293,37 @@ IF GVL_Panel.Us_Undervoltage OR GVL_Panel.Up_Undervoltage THEN
 	Roof2Status := StatusError;
 END_IF
 
+// set status words
+Roof1StatusWord.0   := GVL_Roof.IDach1auf;
+Roof1StatusWord.1   := GVL_Roof.IDach1auf2;
+Roof1StatusWord.2 	:= GVL_Roof.IDach1zu;
+Roof1StatusWord.3 	:= GVL_Roof.IDach1zu2;
+Roof1StatusWord.4   := GVL_Roof.IRiegel11zu;
+Roof1StatusWord.5   := GVL_Roof.IRiegel11auf;
+Roof1StatusWord.6   := GVL_Roof.IRiegel21zu;
+Roof1StatusWord.7   := GVL_Roof.IRiegel21auf;
+Roof1StatusWord.8   := GVL_Roof.IDach1Schnell;
+
+Roof2StatusWord.0   := GVL_Roof.IDach2auf;
+Roof2StatusWord.1   := GVL_Roof.IDach2auf2;
+Roof2StatusWord.2 	:= GVL_Roof.IDach2zu;
+Roof2StatusWord.3 	:= GVL_Roof.IDach2zu2;
+Roof2StatusWord.4   := GVL_Roof.IRiegel12zu;
+Roof2StatusWord.5   := GVL_Roof.IRiegel12auf;
+Roof2StatusWord.6   := GVL_Roof.IRiegel22zu;
+Roof2StatusWord.7   := GVL_Roof.IRiegel22auf;
+Roof2StatusWord.8   := GVL_Roof.IDach2Schnell;
+
 
 (*** MQTT Section ***)
 MQTTTimer(IN:=TRUE);
 IF MQTTTimer.Q OR Roof1Status <> LastRoof1Status OR Roof2Status <> LastRoof2Status THEN
 	MQTTClient.Publish('roof', 'roof1', 'Roof1Status', RoofStatus_TO_String(Roof1Status, Quoted := TRUE));
 	MQTTClient.Publish('roof', 'roof2', 'Roof2Status', RoofStatus_TO_String(Roof2Status, Quoted := TRUE));
-	MAIN.MQTTClient.Publish('environment', 'weatherstation', 'WeatherBad',	BOOL_TO_STRING(EnvironmentAlarm));		
-	MAIN.MQTTClient.Publish('roof', 'main', 'isRoofManual',	BOOL_TO_STRING(isRoofManual));		
+	MQTTClient.Publish('environment', 'weatherstation', 'WeatherBad',	BOOL_TO_STRING(EnvironmentAlarm));		
+	MQTTClient.Publish('roof', 'main', 'isRoofManual',	BOOL_TO_STRING(isRoofManual));		
+	MQTTClient.Publish('roof', 'roof1', 'Roof1StatusWord',	WORD_TO_STRING(Roof1StatusWord));		
+	MQTTClient.Publish('roof', 'roof2', 'Roof2StatusWord',	WORD_TO_STRING(Roof2StatusWord));		
 	
 	MQTTTimer(IN:=FALSE);
 	LastRoof1Status := Roof1Status;
@@ -415,13 +441,18 @@ END_IF
       <LineId Id="1243" Count="1" />
       <LineId Id="766" Count="0" />
       <LineId Id="765" Count="0" />
+      <LineId Id="1732" Count="7" />
+      <LineId Id="1731" Count="0" />
+      <LineId Id="1741" Count="10" />
+      <LineId Id="1740" Count="0" />
       <LineId Id="737" Count="0" />
       <LineId Id="1206" Count="0" />
       <LineId Id="738" Count="1" />
       <LineId Id="741" Count="0" />
       <LineId Id="1351" Count="0" />
       <LineId Id="1353" Count="0" />
-      <LineId Id="1352" Count="0" />
+      <LineId Id="1754" Count="1" />
+      <LineId Id="1752" Count="0" />
       <LineId Id="748" Count="1" />
       <LineId Id="1122" Count="0" />
       <LineId Id="750" Count="0" />
