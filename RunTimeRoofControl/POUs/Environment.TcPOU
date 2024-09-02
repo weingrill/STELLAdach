@@ -50,10 +50,10 @@ VAR
 	// delay timer for combined rain signals
 	RainMasterTimer:	TON;
 	Rain1_brokendelay:	TON := (PT := T#60M);
-	Humidity1_brokendelay:	TON := (PT := T#60M);
-	Humidity2_brokendelay:	TON := (PT := T#60M);
-	Wind1_brokendelay:	TON := (PT := T#60S);
-	Wind2_brokendelay:	TON := (PT := T#60S);
+	Humidity1_brokendelay:	TON := (PT := T#480M);
+	Humidity2_brokendelay:	TON := (PT := T#480M);
+	Wind1_brokendelay:	TON := (PT := T#60M);
+	Wind2_brokendelay:	TON := (PT := T#60M);
 	// maximum wind speed 1
 	MaximumWind1: REAL;
 	MaximumWind2: REAL;
@@ -95,9 +95,9 @@ END_VAR]]></Declaration>
 LightDirection := 	F_Y(GVL_Environment.rawLightDirection,	0, 32767,	0.0, 360.0); // degrees
 Brightness1 := 		F_Y(GVL_Environment.rawBrightness,		0, 32767,	0.0, 120000.0); // Lux
 Pressure0 := 		F_Y(GVL_Environment.rawPressure,		0, 32767,	800.0, 1020.0); // hPa
-Humidity1 :=		F_Y(GVL_Environment.rawHumidity1, 		0, 32767,   0.0, 100.0); // %
+Humidity1 :=		F_Y(GVL_Environment.rawHumidity1, 		16, 32767,   0.0, 100.0); // %
 Temperature1 :=  	F_Y(GVL_Environment.rawTemperature1, 	0, 32767, -40.0, 60.0); // °C
-Rain_analogue1 := 	F_Y(GVL_Environment.rawRain_analogue1,	0, 32767,	0.0, 100.0); // mm/h
+Rain_analogue1 := 	F_Y(GVL_Environment.rawRain_analogue1,	8, 32767,	0.0, 100.0); // mm/h
 WindDirection := 	F_Y(GVL_Environment.rawWindDirection,	0, 32767,   0.0, 360.0); // degrees
 WindSpeed1 := 		F_Y(GVL_Environment.rawWindSpeed1, 		0, 32767,   0.0, 60.0); // m/s
 
@@ -182,7 +182,9 @@ IF MQTTTimer.Q THEN // publish new payload every second
 	MAIN.MQTTClient.Publish('environment', 'weatherstation1', 'EnvironmentBrightness1',		LREAL_TO_FMTSTR(Brightness1, 2, TRUE));		
 	MAIN.MQTTClient.Publish('environment', 'weatherstation1', 'EnvironmentWindSpeed1',		LREAL_TO_FMTSTR(WindSpeed1, 2, TRUE));		
 	MAIN.MQTTClient.Publish('environment', 'weatherstation1', 'EnvironmentTemperature1',	LREAL_TO_FMTSTR(Temperature1, 2, TRUE));
-	MAIN.MQTTClient.Publish('environment', 'weatherstation1', 'EnvironmentHumidity1',		LREAL_TO_FMTSTR(Humidity1, 2, TRUE));		
+	IF Humidity1 > 1.0 THEN
+		MAIN.MQTTClient.Publish('environment', 'weatherstation1', 'EnvironmentHumidity1',		LREAL_TO_FMTSTR(Humidity1, 2, TRUE));		
+	END_IF
 	MAIN.MQTTClient.Publish('environment', 'weatherstation1', 'EnvironmentRain1',			LREAL_TO_FMTSTR(Rain_analogue1, 5, TRUE));		
 	MAIN.MQTTClient.Publish('environment', 'weatherstation1', 'EnvironmentWindDirection',	LREAL_TO_FMTSTR(WindDirection, 1, TRUE));		
 	MAIN.MQTTClient.Publish('environment', 'weatherstation1', 'EnvironmentPressure',		LREAL_TO_FMTSTR(PressureAverage.AVG, 2, TRUE));		
@@ -260,7 +262,9 @@ END_IF
       <LineId Id="1330" Count="0" />
       <LineId Id="776" Count="5" />
       <LineId Id="1514" Count="2" />
-      <LineId Id="783" Count="2" />
+      <LineId Id="1705" Count="2" />
+      <LineId Id="783" Count="0" />
+      <LineId Id="785" Count="0" />
       <LineId Id="787" Count="0" />
       <LineId Id="789" Count="0" />
       <LineId Id="1513" Count="0" />
