@@ -44,7 +44,7 @@ IF (fXmax - fXmin) <> 0 THEN
 		F_Y := fYmax;
 	END_IF	
 	F_Y := fgain * fX + foffset;
-		
+	F_Y := LIMIT(fYmin, F_Y, FYmax);	
 END_IF
 ]]></ST>
     </Implementation>
