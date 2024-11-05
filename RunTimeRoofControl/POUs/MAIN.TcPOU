@@ -58,6 +58,13 @@ VAR
 	MQTTTimer : TON := (PT:=T#5S);
 	// MQTT class for publishing
 	MQTTClient:		FB_MQTTCommunication;
+	// precise astronomical	time
+	fbTime: FB_AstroClock;
+	// current Julian Date calculated from system time
+	jd:				LREAL;
+	// calculation for solar position
+	sunpos:	FB_SUNPOS;
+	eq2hor2: FB_EQ2HOR2;
 	// Humidity Trigger
 	HumidityTrigger:	SR;
 	Roof1OpenTimer,
@@ -77,6 +84,11 @@ VAR
 	Roof2StatusWord:	WORD;
 END_VAR
 VAR CONSTANT
+	// telescope site longitude, source: Google 
+	longitude: 		LREAL := -16.50926; //13.101867;
+	// telescope site latitude, source: Google
+	latitude: 		LREAL := 28.30120; //52.404940;
+
 	HumidityLimitCritical:		REAL := 80.0;
 	HumidityLimitHigh:		REAL := 75.0;
 	HumidityLimitLow:		REAL := 55.0;
@@ -113,14 +125,21 @@ DehumidifierControl(Enable := nMode = RoofAutomatic AND Roof1Status = StatusLock
 
 HumidityTrigger(SET1 := Environment.Humidity >= HumidityLimitHigh,
 				RESET := Environment.Humidity < HumidityLimitLow);
+
+fbTime();
+jd := DateTime2JD(fbTime.time_RTCEX2);
+				
+sunpos(JD := jd);
+eq2hor2(alpha := sunpos.RA, delta := sunpos.Dec, lon := longitude, lat := latitude, JD := jd);
 						
 // define bad weather condition; rain is handled in EnvironmentAlarm
 EnvironmentBad := (Environment.DustTrigger.Q1 AND NOT DustSensorError) OR
 		HumidityTrigger.Q1 OR
 		Environment.WindSpeed1 > WindSpeedLimit OR
 		Environment.WindSpeed2 > WindSpeedLimit OR
-		Environment.Windspeed_bay > WindSpeedBayLimit; // OR
-		//ConvertEnvironment.Brightness > BrightnessLimit;
+		Environment.Windspeed_bay > WindSpeedBayLimit OR
+		Environment.Brightness1 > BrightnessLimit OR 
+		eq2hor2.alt > 6.0;
 
 EnvironmentBadTimer(IN := EnvironmentBad,
 					PT := T#125S);
@@ -345,13 +364,18 @@ END_IF
       <LineId Id="798" Count="2" />
       <LineId Id="1207" Count="2" />
       <LineId Id="1035" Count="2" />
-      <LineId Id="1216" Count="3" />
+      <LineId Id="1216" Count="2" />
+      <LineId Id="1844" Count="2" />
+      <LineId Id="1842" Count="1" />
+      <LineId Id="1857" Count="0" />
+      <LineId Id="1219" Count="0" />
       <LineId Id="211" Count="0" />
       <LineId Id="213" Count="0" />
       <LineId Id="1220" Count="0" />
       <LineId Id="216" Count="0" />
       <LineId Id="218" Count="1" />
       <LineId Id="605" Count="0" />
+      <LineId Id="1858" Count="0" />
       <LineId Id="531" Count="0" />
       <LineId Id="278" Count="0" />
       <LineId Id="532" Count="0" />

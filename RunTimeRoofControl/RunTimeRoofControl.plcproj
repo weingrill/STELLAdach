@@ -53,10 +53,16 @@
     <Compile Include="POUs\DehumidifierControl.TcPOU">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="POUs\Function Blocks\FB_AstroClock.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="POUs\Function Blocks\FB_BLINK.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="POUs\Function Blocks\FB_Dust.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\Function Blocks\FB_EQ2HOR2.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="POUs\Function Blocks\FB_EventLog.TcPOU">
@@ -65,10 +71,16 @@
     <Compile Include="POUs\Function Blocks\FB_MQTTCommunication.TcPOU">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="POUs\Function Blocks\FB_PRECESS3.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="POUs\Function Blocks\FB_RoofControl.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="POUs\Function Blocks\FB_StatusLamp.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\Function Blocks\FB_SUNPOS.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="POUs\Function Blocks\FB_TimeAverage.TcPOU">
@@ -86,10 +98,22 @@
     <Compile Include="POUs\Functions\APPEND.TcPOU">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="POUs\Functions\ATAN2.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\Functions\CT2LST.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\Functions\DateTime2JD.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="POUs\Functions\F_RainConversion.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="POUs\Functions\F_Y.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\Functions\Refraction.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="POUs\Functions\RoofStatus_TO_String.TcPOU">
@@ -114,6 +138,10 @@
     <Folder Include="POUs" />
   </ItemGroup>
   <ItemGroup>
+    <PlaceholderReference Include="Tc2_Math">
+      <DefaultResolution>Tc2_Math, * (Beckhoff Automation GmbH)</DefaultResolution>
+      <Namespace>Tc2_Math</Namespace>
+    </PlaceholderReference>
     <PlaceholderReference Include="Tc2_Standard">
       <DefaultResolution>Tc2_Standard, * (Beckhoff Automation GmbH)</DefaultResolution>
       <Namespace>Tc2_Standard</Namespace>
