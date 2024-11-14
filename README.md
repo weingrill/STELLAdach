@@ -20,12 +20,11 @@ angelegt werden.
 * Horn geht für 2 Sekunden an, wenn das Dach bewegt wird.
 * Lichttaster schaltet für eine Stunde das Licht an, wenn im Automodus betätigt.
 * Lichttaster schaltet das Licht dauerhalft an, wenn im manuellen Modus betätigt.
+* Licht schaltet ab, wenn das Dach geoeffnet wird.
 * Entfeuchter wird eingeschalten bei Dach geschlossen und
   * Luftfeuchtigkeit innen > aussen, oder
   * Luftfeuchtigkeit innen > 50%
 
 
 ## TODO
-* Dach schliessen bei 50000 lux
-* Dach schliessen bei Sonne 2 Grad über dem Horizont (FB_LocalSystemTime, SUNPOS)
-* Zustände mitloggen (ADSLOGSTR)
+- [ ] Environment in eignen Task kapseln
