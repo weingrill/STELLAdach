@@ -14,7 +14,7 @@ angelegt werden.
 * Öffnen und Schließen ist in jeder Lage möglich, auch Fahrtrichtungswechsel.
 * Dach schließt automatisch bei Schlechtwetter:
   * Regensensor digital an,
-  * >80% Luftfeuchtigkeit,
+  * Luftfeuchtigkeit > 80%,
   * Dust > 0.01 µg/m³, oder
   * Wind > 10 m/s
 * Horn geht für 2 Sekunden an, wenn das Dach bewegt wird.
