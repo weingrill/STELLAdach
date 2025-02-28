@@ -47,7 +47,7 @@ GetHostName(sHostName => HostName);
 // set the parameters once
 IF bSetParameter THEN
     bSetParameter               := FALSE;
-    fbMqttClient.sHostName      := 'sky.stella.iac.es';
+    fbMqttClient.sHostName      := '192.168.1.74';
     fbMqttClient.nHostPort      := 1883;
     fbMqttClient.sClientId      := HostName; 
     fbMqttClient.sTopicPrefix   := ''; 
@@ -91,6 +91,18 @@ IF fbMessageQueue.nQueuedMessages > 0 THEN
 					Auxiliary.RoofPower := STRING_TO_BOOL(value);
 				ELSIF parameter = 'Dehumidifier' THEN
 					DehumidifierControl.ManualEnable := STRING_TO_BOOL(value);
+				ELSIF parameter = 'ThAr1' THEN
+					CalibrationUnit.lampindex := 1;
+					CalibrationUnit.lampenable := STRING_TO_BOOL(value);
+				ELSIF parameter = 'ThAr2' THEN
+					CalibrationUnit.lampindex := 2;
+					CalibrationUnit.lampenable := STRING_TO_BOOL(value);
+				ELSIF parameter = 'Halo1' THEN
+					CalibrationUnit.lampindex := 3;
+					CalibrationUnit.lampenable := STRING_TO_BOOL(value);
+				ELSIF parameter = 'Halo2' THEN
+					CalibrationUnit.lampindex := 4;
+					CalibrationUnit.lampenable := STRING_TO_BOOL(value);
 				END_IF // parameter
 			END_IF // measurement
 		END_IF // Topic
@@ -190,6 +202,15 @@ published := fbMqttClient.Publish(
       <LineId Id="308" Count="49" />
       <LineId Id="453" Count="10" />
       <LineId Id="490" Count="1" />
+      <LineId Id="517" Count="0" />
+      <LineId Id="525" Count="0" />
+      <LineId Id="518" Count="1" />
+      <LineId Id="526" Count="0" />
+      <LineId Id="520" Count="1" />
+      <LineId Id="527" Count="0" />
+      <LineId Id="522" Count="1" />
+      <LineId Id="528" Count="0" />
+      <LineId Id="524" Count="0" />
       <LineId Id="464" Count="0" />
       <LineId Id="390" Count="3" />
       <LineId Id="105" Count="0" />

@@ -1,0 +1,77 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <POU Name="Chamber" Id="{b417a3c0-d91e-4494-b164-7f7093880844}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM Chamber
+VAR
+	rawTemperature1	AT%I*:	INT;
+	rawTemperature2	AT%I*:	INT;
+	rawTemperature3	AT%I*:	INT;
+	rawTemperature4	AT%I*:	INT;
+	rawTemperature5	AT%I*:	INT;
+	rawTemperature6	AT%I*:	INT;
+	// pressure sensor 4mA...20mA => 700mbar ... 900mbar
+	rawpressure 	AT%I*:	INT;
+	// MQTT timer
+	MQTTTimer : TON := (PT:=T#5S);
+END_VAR
+VAR_OUTPUT
+
+	temperature1: 	REAL;
+	temperature2: 	REAL;
+	temperature3: 	REAL;
+	temperature4: 	REAL;
+	temperature5: 	REAL;
+	temperature6: 	REAL;
+	chambertemperature:	REAL;
+	// mbar
+	chamberpressure: 	REAL;
+END_VAR
+
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[temperature1 := rawTemperature1 / 100.0;
+temperature2 := rawTemperature2 / 100.0;
+temperature3 := rawTemperature3 / 100.0;
+temperature4 := rawTemperature4 / 100.0;
+temperature5 := rawTemperature5 / 100.0;
+temperature6 := rawTemperature6 / 100.0;
+
+chambertemperature := (	temperature1 +
+						temperature2 +
+						temperature3 +
+						temperature4 +
+						temperature5 +
+						temperature6) / 6.0;
+						
+
+chamberpressure :=	F_Y(rawpressure, 	0, 32767,   700.0, 900.0);
+
+MQTTTimer(IN:=TRUE);
+IF MQTTTimer.Q THEN // publish new payload every second
+	MAIN.MQTTClient.Publish('environment', 'chamber', 'temperature1',	LREAL_TO_FMTSTR(temperature1, 2, TRUE));
+	MAIN.MQTTClient.Publish('environment', 'chamber', 'temperature2',	LREAL_TO_FMTSTR(temperature2, 2, TRUE));
+	MAIN.MQTTClient.Publish('environment', 'chamber', 'temperature3',	LREAL_TO_FMTSTR(temperature3, 2, TRUE));
+	MAIN.MQTTClient.Publish('environment', 'chamber', 'temperature4',	LREAL_TO_FMTSTR(temperature4, 2, TRUE));
+	MAIN.MQTTClient.Publish('environment', 'chamber', 'temperature5',	LREAL_TO_FMTSTR(temperature5, 2, TRUE));
+	MAIN.MQTTClient.Publish('environment', 'chamber', 'temperature6',	LREAL_TO_FMTSTR(temperature6, 2, TRUE));
+	MAIN.MQTTClient.Publish('environment', 'chamber', 'chamber_temperature',	REAL_TO_STRING(chambertemperature));
+	MAIN.MQTTClient.Publish('environment', 'chamber', 'chamber_pressure',	REAL_TO_STRING(chamberpressure));
+END_IF]]></ST>
+    </Implementation>
+    <LineIds Name="Chamber">
+      <LineId Id="60" Count="0" />
+      <LineId Id="68" Count="4" />
+      <LineId Id="244" Count="2" />
+      <LineId Id="248" Count="3" />
+      <LineId Id="247" Count="0" />
+      <LineId Id="242" Count="1" />
+      <LineId Id="98" Count="0" />
+      <LineId Id="53" Count="1" />
+      <LineId Id="62" Count="4" />
+      <LineId Id="56" Count="0" />
+      <LineId Id="133" Count="0" />
+      <LineId Id="135" Count="0" />
+      <LineId Id="5" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

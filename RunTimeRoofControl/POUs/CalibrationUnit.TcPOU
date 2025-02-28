@@ -1,0 +1,160 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <POU Name="CalibrationUnit" Id="{5283b43b-6316-4991-8941-5e4184cc6e88}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM CalibrationUnit
+VAR_INPUT
+	lampindex: USINT;
+	lampenable:	BOOL;
+END_VAR
+VAR
+	lampsensor1	AT%I*: BOOL;
+	lampsensor2	AT%I*: BOOL;
+	ThArlamp1	AT%Q*: BOOL;
+	ThArlamp2	AT%Q*: BOOL;
+	Halolamp1	AT%Q*: BOOL;
+	Halolamp2	AT%Q*: BOOL;
+	
+	SESdewarpressureraw 	AT%I*:	INT;
+	SESpumppressureraw 		AT%I*:	INT;
+	cryosupplyraw 	AT%I*:	INT;
+	cryoreturnraw	 AT%I*:	INT;
+	
+	rawTemperature1	AT%I*:	INT;
+	rawTemperature2	AT%I*:	INT;
+	rawTemperature3	AT%I*:	INT;
+	rawTemperature4	AT%I*:	INT;
+	rawTemperature5	AT%I*:	INT;
+	rawTemperature6	AT%I*:	INT;
+	// volts
+	SESdewarvoltage:	REAL;
+	// volts
+	SESpumpvoltage:		REAL;
+// MQTT timer
+	MQTTTimer : TON := (PT:=T#5S);
+END_VAR
+VAR_OUTPUT
+	// mbar
+	SESdewarpressure: 	REAL;
+	// mbar
+	SESpumppressure: 	REAL;
+	// Bar
+	cryosupply: 	REAL;
+	// Bar
+	cryoreturn: 	REAL;
+	
+	temperature1: 	REAL;
+	temperature2: 	REAL;
+	temperature3: 	REAL;
+	temperature4: 	REAL;
+	temperature5: 	REAL;
+	temperature6: 	REAL;
+	meantemperature:	REAL;
+END_VAR
+
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[SESdewarvoltage :=	F_Y(SESdewarpressureraw, 	0, 32767,   0.0, 10.0);
+SESpumpvoltage :=	F_Y(SESpumppressureraw, 	0, 32767,   0.0, 10.0);
+SESdewarpressure := LREAL_TO_REAL(EXPT(10.0, F_Y(SESdewarvoltage, 2.0, 10.0, -9.0, 3.0)));
+SESpumppressure  := LREAL_TO_REAL(EXPT(10.0, F_Y(SESpumpvoltage, 2.0, 10.0, -9.0, 3.0)));
+
+cryosupply := 		F_Y(cryosupplyraw, 		0, 32767,   0.0, 25.0);
+cryoreturn := 		F_Y(cryoreturnraw, 		0, 32767,   0.0, 25.0);
+
+temperature1 := rawTemperature1 / 100.0;
+temperature2 := rawTemperature2 / 100.0;
+temperature3 := rawTemperature3 / 100.0;
+temperature4 := rawTemperature4 / 100.0;
+temperature5 := rawTemperature5 / 100.0;
+temperature6 := rawTemperature6 / 100.0;
+
+CASE lampindex OF
+	1:	ThArlamp1 := lampenable;
+		ThArlamp2 := FALSE;
+		Halolamp1 := FALSE;
+		Halolamp2 := FALSE;
+		
+	2:	ThArlamp1 := FALSE;
+		ThArlamp2 := lampenable;
+		Halolamp1 := FALSE;
+		Halolamp2 := FALSE;
+		
+	3:	ThArlamp1 := FALSE;
+		ThArlamp2 := FALSE;
+		Halolamp1 := lampenable;
+		Halolamp2 := FALSE;
+		
+	4:	ThArlamp1 := FALSE;
+		ThArlamp2 := FALSE;
+		Halolamp1 := FALSE;
+		Halolamp2 := lampenable;
+ELSE
+	ThArlamp1 := FALSE;
+	ThArlamp2 := FALSE;
+	Halolamp1 := FALSE;
+	Halolamp2 := FALSE;
+	lampenable := FALSE;
+END_CASE
+
+MQTTTimer(IN:=TRUE);
+IF MQTTTimer.Q THEN // publish new payload every second
+	MAIN.MQTTClient.Publish('environment', 'calibrationunit', 'thar1on',	BOOL_TO_STRING(NOT lampsensor1));
+	MAIN.MQTTClient.Publish('environment', 'calibrationunit', 'thar2on',	BOOL_TO_STRING(NOT lampsensor2));
+	MAIN.MQTTClient.Publish('environment', 'calibrationunit', 'oil1_temperature',	LREAL_TO_FMTSTR(temperature1, 2, TRUE));
+	MAIN.MQTTClient.Publish('environment', 'calibrationunit', 'oilroom1_temperature',	LREAL_TO_FMTSTR(temperature2, 2, TRUE));
+	MAIN.MQTTClient.Publish('environment', 'calibrationunit', 'oil2_temperature',	LREAL_TO_FMTSTR(temperature3, 2, TRUE));
+	MAIN.MQTTClient.Publish('environment', 'calibrationunit', 'oilroom2_temperature',	LREAL_TO_FMTSTR(temperature4, 2, TRUE));
+	MAIN.MQTTClient.Publish('environment', 'calibrationunit', 'lounge_temperature',	LREAL_TO_FMTSTR(temperature5, 2, TRUE));
+	MAIN.MQTTClient.Publish('environment', 'calibrationunit', 'lab_temperature',	LREAL_TO_FMTSTR(temperature6, 2, TRUE));
+	MAIN.MQTTClient.Publish('environment', 'calibrationunit', 'CryoPressureSupply',	REAL_TO_STRING(cryosupply));
+	MAIN.MQTTClient.Publish('environment', 'calibrationunit', 'CryoPressureReturn',	REAL_TO_STRING(cryoreturn));
+	MAIN.MQTTClient.Publish('environment', 'calibrationunit', 'SESDewarPressure',	REAL_TO_STRING(SESdewarpressure));
+	MAIN.MQTTClient.Publish('environment', 'calibrationunit', 'SESpumpPressure',	REAL_TO_STRING(SESpumppressure));
+	
+END_IF]]></ST>
+    </Implementation>
+    <LineIds Name="CalibrationUnit">
+      <LineId Id="78" Count="1" />
+      <LineId Id="82" Count="0" />
+      <LineId Id="85" Count="0" />
+      <LineId Id="80" Count="0" />
+      <LineId Id="73" Count="0" />
+      <LineId Id="75" Count="0" />
+      <LineId Id="74" Count="0" />
+      <LineId Id="60" Count="0" />
+      <LineId Id="68" Count="4" />
+      <LineId Id="98" Count="2" />
+      <LineId Id="107" Count="2" />
+      <LineId Id="114" Count="0" />
+      <LineId Id="102" Count="0" />
+      <LineId Id="126" Count="0" />
+      <LineId Id="111" Count="0" />
+      <LineId Id="110" Count="0" />
+      <LineId Id="117" Count="0" />
+      <LineId Id="103" Count="0" />
+      <LineId Id="122" Count="0" />
+      <LineId Id="119" Count="0" />
+      <LineId Id="121" Count="0" />
+      <LineId Id="120" Count="0" />
+      <LineId Id="123" Count="1" />
+      <LineId Id="104" Count="0" />
+      <LineId Id="125" Count="0" />
+      <LineId Id="105" Count="0" />
+      <LineId Id="127" Count="1" />
+      <LineId Id="106" Count="0" />
+      <LineId Id="130" Count="0" />
+      <LineId Id="129" Count="0" />
+      <LineId Id="101" Count="0" />
+      <LineId Id="67" Count="0" />
+      <LineId Id="53" Count="1" />
+      <LineId Id="76" Count="1" />
+      <LineId Id="62" Count="4" />
+      <LineId Id="56" Count="0" />
+      <LineId Id="133" Count="0" />
+      <LineId Id="135" Count="0" />
+      <LineId Id="186" Count="1" />
+      <LineId Id="134" Count="0" />
+      <LineId Id="5" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

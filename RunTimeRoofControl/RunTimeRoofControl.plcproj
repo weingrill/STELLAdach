@@ -50,6 +50,12 @@
     <Compile Include="POUs\Auxiliary.TcPOU">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="POUs\CalibrationUnit.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\Chamber.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="POUs\DehumidifierControl.TcPOU">
       <SubType>Code</SubType>
     </Compile>

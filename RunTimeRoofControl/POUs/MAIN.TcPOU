@@ -117,6 +117,9 @@ Environment();
 // Handle Auxiliary inputs and outputs
 Auxiliary();
 
+CalibrationUnit();
+Chamber();
+
 // Handle Logging
 Logging();
 
@@ -362,7 +365,11 @@ END_IF
       <LineId Id="785" Count="0" />
       <LineId Id="784" Count="0" />
       <LineId Id="798" Count="2" />
-      <LineId Id="1207" Count="2" />
+      <LineId Id="1955" Count="0" />
+      <LineId Id="1207" Count="0" />
+      <LineId Id="2053" Count="0" />
+      <LineId Id="1956" Count="0" />
+      <LineId Id="1208" Count="1" />
       <LineId Id="1035" Count="2" />
       <LineId Id="1216" Count="2" />
       <LineId Id="1844" Count="2" />
