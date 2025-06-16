@@ -3,11 +3,17 @@
   <POU Name="Chamber" Id="{b417a3c0-d91e-4494-b164-7f7093880844}" SpecialFunc="None">
     <Declaration><![CDATA[PROGRAM Chamber
 VAR
+	// SES cover(=copy of room regulation)
 	rawTemperature1	AT%I*:	INT;
+	// inside SES cover
 	rawTemperature2	AT%I*:	INT;
+	// optical bench inside of cover
 	rawTemperature3	AT%I*:	INT;
+	// floor(copy of floor regulation)
 	rawTemperature4	AT%I*:	INT;
+	//optical bench outside cover
 	rawTemperature5	AT%I*:	INT;
+	// e-box
 	rawTemperature6	AT%I*:	INT;
 	// pressure sensor 4mA...20mA => 700mbar ... 900mbar
 	rawpressure 	AT%I*:	INT;
@@ -15,13 +21,19 @@ VAR
 	MQTTTimer : TON := (PT:=T#5S);
 END_VAR
 VAR_OUTPUT
-
+	// SES cover(=copy of room regulation)
 	temperature1: 	REAL;
+	// inside SES cover
 	temperature2: 	REAL;
+	// optical bench inside of cover
 	temperature3: 	REAL;
+	// floor(copy of floor regulation)
 	temperature4: 	REAL;
+	//optical bench outside cover
 	temperature5: 	REAL;
+	// e-box
 	temperature6: 	REAL;
+	// average temperature
 	chambertemperature:	REAL;
 	// mbar
 	chamberpressure: 	REAL;
@@ -36,12 +48,10 @@ temperature4 := rawTemperature4 / 100.0;
 temperature5 := rawTemperature5 / 100.0;
 temperature6 := rawTemperature6 / 100.0;
 
-chambertemperature := (	temperature1 +
-						temperature2 +
+chambertemperature := (	temperature2 +
 						temperature3 +
 						temperature4 +
-						temperature5 +
-						temperature6) / 6.0;
+						temperature5) / 4.0;
 						
 
 chamberpressure :=	F_Y(rawpressure, 	0, 32767,   700.0, 900.0);
@@ -61,8 +71,8 @@ END_IF]]></ST>
     <LineIds Name="Chamber">
       <LineId Id="60" Count="0" />
       <LineId Id="68" Count="4" />
-      <LineId Id="244" Count="2" />
-      <LineId Id="248" Count="3" />
+      <LineId Id="244" Count="1" />
+      <LineId Id="248" Count="2" />
       <LineId Id="247" Count="0" />
       <LineId Id="242" Count="1" />
       <LineId Id="98" Count="0" />
