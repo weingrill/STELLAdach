@@ -55,7 +55,7 @@ END_VAR
     <Implementation>
       <ST><![CDATA[SESdewarvoltage :=	F_Y(SESdewarpressureraw, 	0, 32767,   0.0, 10.0);
 SESpumpvoltage :=	F_Y(SESpumppressureraw, 	0, 32767,   0.0, 10.0);
-SESdewarpressure := LREAL_TO_REAL(EXPT(10.0, F_Y(SESdewarvoltage, 2.0, 10.0, -9.0, 3.0)));
+SESdewarpressure := LREAL_TO_REAL(EXPT(10.0, 1.667 * SESdewarvoltage - 17.07691)); // d = 11.33
 SESpumppressure  := LREAL_TO_REAL(EXPT(10.0, F_Y(SESpumpvoltage, 2.0, 10.0, -9.0, 3.0)));
 
 cryosupply := 		F_Y(cryosupplyraw, 		0, 32767,   0.0, 25.0);
