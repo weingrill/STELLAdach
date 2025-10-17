@@ -133,6 +133,89 @@
 					<Vars VarGrpType="1">
 						<Name>PlcTask Inputs</Name>
 						<Var>
+							<Name>CalibrationUnit.lampsensor1</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>CalibrationUnit.lampsensor2</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>CalibrationUnit.SESdewarpressureraw</Name>
+							<Type>INT</Type>
+						</Var>
+						<Var>
+							<Name>CalibrationUnit.SESpumppressureraw</Name>
+							<Type>INT</Type>
+						</Var>
+						<Var>
+							<Name>CalibrationUnit.cryosupplyraw</Name>
+							<Type>INT</Type>
+						</Var>
+						<Var>
+							<Name>CalibrationUnit.cryoreturnraw</Name>
+							<Type>INT</Type>
+						</Var>
+						<Var>
+							<Name>CalibrationUnit.rawTemperature1</Name>
+							<Type>INT</Type>
+						</Var>
+						<Var>
+							<Name>CalibrationUnit.rawTemperature2</Name>
+							<Type>INT</Type>
+						</Var>
+						<Var>
+							<Name>CalibrationUnit.rawTemperature3</Name>
+							<Type>INT</Type>
+						</Var>
+						<Var>
+							<Name>CalibrationUnit.rawTemperature4</Name>
+							<Type>INT</Type>
+						</Var>
+						<Var>
+							<Name>CalibrationUnit.rawTemperature5</Name>
+							<Type>INT</Type>
+						</Var>
+						<Var>
+							<Name>CalibrationUnit.rawTemperature6</Name>
+							<Type>INT</Type>
+						</Var>
+						<Var>
+							<Name>Chamber.rawTemperature1</Name>
+							<Comment><![CDATA[ SES cover(=copy of room regulation)]]></Comment>
+							<Type>INT</Type>
+						</Var>
+						<Var>
+							<Name>Chamber.rawTemperature2</Name>
+							<Comment><![CDATA[ inside SES cover]]></Comment>
+							<Type>INT</Type>
+						</Var>
+						<Var>
+							<Name>Chamber.rawTemperature3</Name>
+							<Comment><![CDATA[ optical bench inside of cover]]></Comment>
+							<Type>INT</Type>
+						</Var>
+						<Var>
+							<Name>Chamber.rawTemperature4</Name>
+							<Comment><![CDATA[ floor(copy of floor regulation)]]></Comment>
+							<Type>INT</Type>
+						</Var>
+						<Var>
+							<Name>Chamber.rawTemperature5</Name>
+							<Comment><![CDATA[optical bench outside cover]]></Comment>
+							<Type>INT</Type>
+						</Var>
+						<Var>
+							<Name>Chamber.rawTemperature6</Name>
+							<Comment><![CDATA[ e-box]]></Comment>
+							<Type>INT</Type>
+						</Var>
+						<Var>
+							<Name>Chamber.rawpressure</Name>
+							<Comment><![CDATA[ pressure sensor 4mA...20mA => 700mbar ... 900mbar]]></Comment>
+							<Type>INT</Type>
+						</Var>
+						<Var>
 							<Name>GVL_Environment.rawLightDirection</Name>
 							<Comment><![CDATA[ Weather Station 1]]></Comment>
 							<Type>INT</Type>
@@ -459,92 +542,25 @@
 							<Comment><![CDATA[MS6NC2]]></Comment>
 							<Type>BOOL</Type>
 						</Var>
-						<Var>
-							<Name>Chamber.rawTemperature1</Name>
-							<Comment><![CDATA[ SES cover(=copy of room regulation)]]></Comment>
-							<Type>INT</Type>
-						</Var>
-						<Var>
-							<Name>Chamber.rawTemperature2</Name>
-							<Comment><![CDATA[ inside SES cover]]></Comment>
-							<Type>INT</Type>
-						</Var>
-						<Var>
-							<Name>Chamber.rawTemperature3</Name>
-							<Comment><![CDATA[ optical bench inside of cover]]></Comment>
-							<Type>INT</Type>
-						</Var>
-						<Var>
-							<Name>Chamber.rawTemperature4</Name>
-							<Comment><![CDATA[ floor(copy of floor regulation)]]></Comment>
-							<Type>INT</Type>
-						</Var>
-						<Var>
-							<Name>Chamber.rawTemperature5</Name>
-							<Comment><![CDATA[optical bench outside cover]]></Comment>
-							<Type>INT</Type>
-						</Var>
-						<Var>
-							<Name>Chamber.rawTemperature6</Name>
-							<Comment><![CDATA[ e-box]]></Comment>
-							<Type>INT</Type>
-						</Var>
-						<Var>
-							<Name>Chamber.rawpressure</Name>
-							<Comment><![CDATA[ pressure sensor 4mA...20mA => 700mbar ... 900mbar]]></Comment>
-							<Type>INT</Type>
-						</Var>
-						<Var>
-							<Name>CalibrationUnit.lampsensor1</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>CalibrationUnit.lampsensor2</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>CalibrationUnit.SESdewarpressureraw</Name>
-							<Type>INT</Type>
-						</Var>
-						<Var>
-							<Name>CalibrationUnit.SESpumppressureraw</Name>
-							<Type>INT</Type>
-						</Var>
-						<Var>
-							<Name>CalibrationUnit.cryosupplyraw</Name>
-							<Type>INT</Type>
-						</Var>
-						<Var>
-							<Name>CalibrationUnit.cryoreturnraw</Name>
-							<Type>INT</Type>
-						</Var>
-						<Var>
-							<Name>CalibrationUnit.rawTemperature1</Name>
-							<Type>INT</Type>
-						</Var>
-						<Var>
-							<Name>CalibrationUnit.rawTemperature2</Name>
-							<Type>INT</Type>
-						</Var>
-						<Var>
-							<Name>CalibrationUnit.rawTemperature3</Name>
-							<Type>INT</Type>
-						</Var>
-						<Var>
-							<Name>CalibrationUnit.rawTemperature4</Name>
-							<Type>INT</Type>
-						</Var>
-						<Var>
-							<Name>CalibrationUnit.rawTemperature5</Name>
-							<Type>INT</Type>
-						</Var>
-						<Var>
-							<Name>CalibrationUnit.rawTemperature6</Name>
-							<Type>INT</Type>
-						</Var>
 					</Vars>
 					<Vars VarGrpType="2" AreaNo="1">
 						<Name>PlcTask Outputs</Name>
+						<Var>
+							<Name>CalibrationUnit.ThArlamp1</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>CalibrationUnit.ThArlamp2</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>CalibrationUnit.Halolamp1</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>CalibrationUnit.Halolamp2</Name>
+							<Type>BOOL</Type>
+						</Var>
 						<Var>
 							<Name>GVL_Environment.Horn</Name>
 							<Comment><![CDATA[ Horn für Warnung beim Öffnen und Schliessen]]></Comment>
@@ -630,22 +646,6 @@
 						</Var>
 						<Var>
 							<Name>GVL_Roof.ODach2Schnell</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>CalibrationUnit.ThArlamp1</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>CalibrationUnit.ThArlamp2</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>CalibrationUnit.Halolamp1</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>CalibrationUnit.Halolamp2</Name>
 							<Type>BOOL</Type>
 						</Var>
 					</Vars>

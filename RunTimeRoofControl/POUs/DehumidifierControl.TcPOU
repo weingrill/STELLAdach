@@ -4,13 +4,14 @@
     <Declaration><![CDATA[PROGRAM DehumidifierControl
 VAR_INPUT
 	// enable signal for der Dehumidifier
-	Enable:	BOOL;
+	Enable:	BOOL := TRUE;
 	// manual enable signal
 	ManualEnable: BOOL;
 END_VAR
 VAR
 	// run dehumidifer at last for n seconds to avoid fast switching cycles
-	RunDelay : TOF := (PT:=T#30S);
+	HumidityTrigger: SR;
+	RunDelay : TON := (PT:=T#30S);
 	ManualTimer: TON := (PT := T#3H);
 	// classic event log
 	DehumidifierLog: FB_EventLog;
@@ -19,22 +20,12 @@ VAR
 	OffTrigger:	F_TRIG;
 END_VAR
 VAR CONSTANT
-	HumidityBayLow:		REAL := 55.0;
-	HumidityBayHigh:	REAL := 70.0;
+	HumidityBayLow:		REAL := 65.0;
+	HumidityBayHigh:	REAL := 75.0;
 END_VAR]]></Declaration>
     <Implementation>
-      <ST><![CDATA[IF MAIN.nMode = RoofAutomatic THEN
-	IF Environment.HumidityBay > HumidityBayHigh THEN
-		RunDelay.IN := Enable;
-	ELSIF Environment.HumidityBay < HumidityBayLow THEN
-		//RunDelay.IN := FALSE;
-		RunDelay.IN := ManualEnable;
-	END_IF
-	// deaktivate manual signal
-	// ManualEnable := FALSE;
-ELSE // manual operation
-	RunDelay.IN := ManualEnable;
-END_IF
+      <ST><![CDATA[HumidityTrigger( SET1 := ManualEnable OR (Enable AND Environment.HumidityBay > HumidityBayHigh),
+				RESET := Environment.HumidityBay < HumidityBayLow);
 
 // deactivate Manual Signal aftern n hours
 ManualTimer( IN := ManualEnable);
@@ -42,6 +33,7 @@ IF ManualTimer.Q AND ManualEnable THEN
 	ManualEnable := FALSE;
 END_IF
 
+RunDelay(IN := HumidityTrigger.Q1);
 GVL_Environment.Dehumidifier := RunDelay.Q;
 
 DehumidifierLog(Trigger := GVL_Environment.Dehumidifier, OnMessage := 'The dehumidifier is on.', OffMessage := 'The dehumidifier is off.');
@@ -54,18 +46,13 @@ IF OnTrigger.Q OR OffTrigger.Q THEN
 END_IF]]></ST>
     </Implementation>
     <LineIds Name="DehumidifierControl">
-      <LineId Id="79" Count="0" />
-      <LineId Id="14" Count="3" />
-      <LineId Id="84" Count="0" />
-      <LineId Id="18" Count="0" />
-      <LineId Id="83" Count="0" />
-      <LineId Id="82" Count="0" />
-      <LineId Id="80" Count="1" />
-      <LineId Id="77" Count="0" />
+      <LineId Id="112" Count="0" />
+      <LineId Id="115" Count="0" />
       <LineId Id="90" Count="0" />
       <LineId Id="86" Count="0" />
       <LineId Id="78" Count="0" />
       <LineId Id="87" Count="2" />
+      <LineId Id="116" Count="0" />
       <LineId Id="30" Count="0" />
       <LineId Id="5" Count="0" />
       <LineId Id="32" Count="1" />
