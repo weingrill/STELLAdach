@@ -1,0 +1,41 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <POU Name="FB_Kalman1D" Id="{ad3230cd-961b-40f2-a90c-4f855740b617}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_Kalman1D
+VAR_INPUT
+	// Measurement input
+	z: LREAL;
+END_VAR
+VAR_IN_OUT
+	// Process noise variance
+    Q:	LREAL;  
+	// Measurement noise variance
+    V:	LREAL;   
+END_VAR
+VAR_OUTPUT
+	// Kalman gain
+	K: LREAL;
+	// Filtered state
+	x: LREAL;
+END_VAR
+VAR
+	// Error covariance
+	P: LREAL := 1.0;
+	// State estimate
+	x_est: LREAL := 0.0;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[// Kalman Filter Execution
+P := P + Q;  // Prediction covariance
+K := P / (P + V); // Kalman gain
+x_est := x_est + K * (z - x_est); // Update estimate
+P := (1 - K) * P; // Update covariance
+x := x_est;]]></ST>
+    </Implementation>
+    <LineIds Name="FB_Kalman1D">
+      <LineId Id="10" Count="4" />
+      <LineId Id="9" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

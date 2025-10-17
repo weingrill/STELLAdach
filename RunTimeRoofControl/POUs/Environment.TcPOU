@@ -61,9 +61,19 @@ VAR
 	WindAvg1:	FB_TimeAverage; 
 	Windavg2:	FB_TimeAverage;
 	PressureAverage:	FB_TimeAverage;
-	
+	// Dust Sensors
 	DigitalDust1:	FB_Dust;
 	DigitalDust2:	FB_Dust;
+	Dust11Kalman:	FB_Kalman1D;
+	Dust12Kalman:	FB_Kalman1D;
+	Dust21Kalman:	FB_Kalman1D;
+	Dust22Kalman:	FB_Kalman1D;
+	dustratio:		LREAL := 1.0;
+	// Kalman Process noise variance
+	Qv_Kalman:		LREAL := 1E-5;
+	// Kalman measurement noise variance
+	Vv_Kalman:		LREAL := 1E-3;
+	// Triggers
 	ElectronicsTemperatureTrigger:	SR;
 	ElectronicsHumidityTrigger:		SR;
 	SpectrographTemperatureTrigger:	SR;
@@ -164,11 +174,16 @@ Wind2_broken:= Wind2_brokendelay.Q;
 // digital dust sensors
 DigitalDust1(pwm1 := GVL_Environment.rawDust11, pwm2 := GVL_Environment.rawDust12);
 DigitalDust2(pwm1 := GVL_Environment.rawDust21, pwm2 := GVL_Environment.rawDust22);
+Dust11Kalman(z := dustratio * DigitalDust1.concentration1 / 1000.0, Q := Qv_Kalman, V := Vv_Kalman);
+Dust12Kalman(z := dustratio * DigitalDust1.concentration2 / 1000.0, Q := Qv_Kalman, V := Vv_Kalman);
+Dust21Kalman(z := dustratio * DigitalDust2.concentration1 / 1000.0, Q := Qv_Kalman, V := Vv_Kalman);
+Dust22Kalman(z := dustratio * DigitalDust2.concentration2 / 1000.0, Q := Qv_Kalman, V := Vv_Kalman);
+
 
 Dust_broken := (GVL_Environment.rawDust = 0) OR (GVL_Environment.rawDust >= 32000);
 Dust := F_Y(GVL_Environment.rawDust, 0, 32767,   0.0, 0.1);
 IF Dust_broken THEN
-	Dust := DigitalDust2.concentration2 / 1000.0;
+	Dust := dustratio * DigitalDust1.concentration2 / 1000.0;
 END_IF
 DustAvg(IN := Dust, PT := T#2M); // m^3
 DustTrigger( SET1 := DustAvg.AVG > 0.01, RESET := DustAvg.AVG < 0.0075);
@@ -205,11 +220,11 @@ IF MQTTTimer.Q THEN // publish new payload every second
 	MAIN.MQTTClient.Publish('environment', 'bay', 'BayWindSpeed',	LREAL_TO_FMTSTR(Windspeed_bay, 2, TRUE));		
 	MAIN.MQTTClient.Publish('environment', 'bay', 'BayPressure',	LREAL_TO_FMTSTR(Pressure_bay, 2, TRUE));		
 	
-	MAIN.MQTTClient.Publish('environment', 'weatherstation', 'EnvironmentDustPM1',	LREAL_TO_FMTSTR(DigitalDust1.concentration1 / 1000.0, 5, TRUE));		
-	MAIN.MQTTClient.Publish('environment', 'weatherstation', 'EnvironmentDustPM25',	LREAL_TO_FMTSTR(DigitalDust1.concentration2 / 1000.0, 5, TRUE));		
+	MAIN.MQTTClient.Publish('environment', 'weatherstation', 'EnvironmentDustPM1',	LREAL_TO_FMTSTR(Dust11Kalman.x, 5, TRUE));		
+	MAIN.MQTTClient.Publish('environment', 'weatherstation', 'EnvironmentDustPM25',	LREAL_TO_FMTSTR(Dust12Kalman.x, 5, TRUE));		
 	
-	MAIN.MQTTClient.Publish('environment', 'bay', 'EnvironmentDust2PM1',	LREAL_TO_FMTSTR(DigitalDust2.concentration1 / 1000.0, 5, TRUE));		
-	MAIN.MQTTClient.Publish('environment', 'bay', 'EnvironmentDust2PM25',	LREAL_TO_FMTSTR(DigitalDust2.concentration2 / 1000.0, 5, TRUE));		
+	MAIN.MQTTClient.Publish('environment', 'bay', 'EnvironmentDust2PM1',	LREAL_TO_FMTSTR(Dust21Kalman.x, 5, TRUE));		
+	MAIN.MQTTClient.Publish('environment', 'bay', 'EnvironmentDust2PM25',	LREAL_TO_FMTSTR(Dust22Kalman.x, 5, TRUE));		
 	
 	MAIN.MQTTClient.Publish('environment', 'spectrograph', 'SpectrographTemperature',	LREAL_TO_FMTSTR(Temperature_Spec, 2, TRUE));
 	MAIN.MQTTClient.Publish('environment', 'spectrograph', 'SpectrographHumidity',		LREAL_TO_FMTSTR(Humidity_Spec, 2, TRUE));		
@@ -252,7 +267,11 @@ END_IF
       <LineId Id="1325" Count="0" />
       <LineId Id="1329" Count="0" />
       <LineId Id="1327" Count="0" />
-      <LineId Id="1331" Count="3" />
+      <LineId Id="1331" Count="2" />
+      <LineId Id="1802" Count="0" />
+      <LineId Id="1804" Count="2" />
+      <LineId Id="1803" Count="0" />
+      <LineId Id="1334" Count="0" />
       <LineId Id="1237" Count="0" />
       <LineId Id="1337" Count="0" />
       <LineId Id="1315" Count="0" />

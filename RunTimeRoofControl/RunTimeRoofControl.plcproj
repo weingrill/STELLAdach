@@ -74,6 +74,9 @@
     <Compile Include="POUs\Function Blocks\FB_EventLog.TcPOU">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="POUs\Function Blocks\FB_Kalman1D.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="POUs\Function Blocks\FB_MQTTCommunication.TcPOU">
       <SubType>Code</SubType>
     </Compile>

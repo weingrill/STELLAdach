@@ -461,26 +461,32 @@
 						</Var>
 						<Var>
 							<Name>Chamber.rawTemperature1</Name>
+							<Comment><![CDATA[ SES cover(=copy of room regulation)]]></Comment>
 							<Type>INT</Type>
 						</Var>
 						<Var>
 							<Name>Chamber.rawTemperature2</Name>
+							<Comment><![CDATA[ inside SES cover]]></Comment>
 							<Type>INT</Type>
 						</Var>
 						<Var>
 							<Name>Chamber.rawTemperature3</Name>
+							<Comment><![CDATA[ optical bench inside of cover]]></Comment>
 							<Type>INT</Type>
 						</Var>
 						<Var>
 							<Name>Chamber.rawTemperature4</Name>
+							<Comment><![CDATA[ floor(copy of floor regulation)]]></Comment>
 							<Type>INT</Type>
 						</Var>
 						<Var>
 							<Name>Chamber.rawTemperature5</Name>
+							<Comment><![CDATA[optical bench outside cover]]></Comment>
 							<Type>INT</Type>
 						</Var>
 						<Var>
 							<Name>Chamber.rawTemperature6</Name>
+							<Comment><![CDATA[ e-box]]></Comment>
 							<Type>INT</Type>
 						</Var>
 						<Var>
