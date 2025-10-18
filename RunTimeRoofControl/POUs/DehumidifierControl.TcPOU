@@ -13,6 +13,7 @@ VAR
 	HumidityTrigger: SR;
 	RunDelay : TON := (PT:=T#30S);
 	ManualTimer: TON := (PT := T#3H);
+	LowOverride: TON := (PT := T#3H);
 	// classic event log
 	DehumidifierLog: FB_EventLog;
 	
@@ -24,15 +25,20 @@ VAR CONSTANT
 	HumidityBayHigh:	REAL := 75.0;
 END_VAR]]></Declaration>
     <Implementation>
-      <ST><![CDATA[HumidityTrigger( SET1 := ManualEnable OR (Enable AND Environment.HumidityBay > HumidityBayHigh),
+      <ST><![CDATA[HumidityTrigger( SET1 := ManualEnable OR 
+						LowOverride.Q OR
+						(Enable AND Environment.HumidityBay > HumidityBayHigh),
 				RESET := Environment.HumidityBay < HumidityBayLow);
-
+// override if we stay above low limit for too long
+LowOverride( In := Environment.HumidityBay > HumidityBayLow);
+				
 // deactivate Manual Signal aftern n hours
 ManualTimer( IN := ManualEnable);
 IF ManualTimer.Q AND ManualEnable THEN
 	ManualEnable := FALSE;
 END_IF
 
+// delay switch on to avoid overload
 RunDelay(IN := HumidityTrigger.Q1);
 GVL_Environment.Dehumidifier := RunDelay.Q;
 
@@ -47,11 +53,15 @@ END_IF]]></ST>
     </Implementation>
     <LineIds Name="DehumidifierControl">
       <LineId Id="112" Count="0" />
+      <LineId Id="141" Count="1" />
       <LineId Id="115" Count="0" />
+      <LineId Id="140" Count="0" />
+      <LineId Id="138" Count="0" />
       <LineId Id="90" Count="0" />
       <LineId Id="86" Count="0" />
       <LineId Id="78" Count="0" />
       <LineId Id="87" Count="2" />
+      <LineId Id="143" Count="0" />
       <LineId Id="116" Count="0" />
       <LineId Id="30" Count="0" />
       <LineId Id="5" Count="0" />
